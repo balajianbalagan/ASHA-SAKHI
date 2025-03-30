@@ -1,4 +1,4 @@
-package com.darrylbayliss.simonsays.ui.theme
+package com.littleb01s.ashasakhichat.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun SimonSaysTheme(
+fun AshaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

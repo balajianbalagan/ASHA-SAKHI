@@ -1,15 +1,10 @@
-package com.darrylbayliss.simonsays.presentation
+package com.littleb01s.ashasakhichat.presentation
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.darrylbayliss.simonsays.data.ImageClassificationState
-import com.darrylbayliss.simonsays.domain.RequestNewTaskFromSimon
-import com.darrylbayliss.simonsays.domain.SendImageToSimon
-import com.darrylbayliss.simonsays.domain.SendMessageToSimon
-import com.darrylbayliss.simonsays.domain.StartSimonSays
-import com.google.mediapipe.framework.image.BitmapImageBuilder
+import com.littleb01s.ashasakhichat.domain.SendMessageToSimon
+import com.littleb01s.ashasakhichat.domain.StartSimonSays
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +21,6 @@ private val awaitingMessageFromSimon = Message(
 class PlayViewModel @Inject constructor(
     private val startSimonSays: StartSimonSays,
     private val sendMessageToSimon: SendMessageToSimon,
-    private val sendImageToSimon: SendImageToSimon,
-    private val requestNewTaskFromSimon: RequestNewTaskFromSimon
 ) : ViewModel() {
     val messages: StateFlow<List<Message>>
         get() = _messages
@@ -92,21 +85,8 @@ class PlayViewModel @Inject constructor(
             list
         }
 
-        val imageClassificationState =
-            sendImageToSimon(image = BitmapImageBuilder(imageBitmap.asAndroidBitmap()).build())
-
-        val message = when (imageClassificationState) {
-            is ImageClassificationState.NotRecognised -> {
-                imageClassificationState.message
-            }
-
-            is ImageClassificationState.Recognised -> {
-                imageClassificationState.message
-            }
-        }
-
         val newMessageFromSimon = Message(
-            text = message,
+            text = "Processing image",
             isFromMe = true
         )
 
@@ -114,21 +94,6 @@ class PlayViewModel @Inject constructor(
 
         _messages.update {
             list
-        }
-
-        if (imageClassificationState is ImageClassificationState.NotRecognised) {
-            val newTask = requestNewTaskFromSimon()
-
-            val newTaskFromSimon = Message(
-                text = newTask,
-                isFromMe = true
-            )
-
-            list += newTaskFromSimon
-
-            _messages.update {
-                list
-            }
         }
     }
 }

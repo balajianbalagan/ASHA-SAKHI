@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.darrylbayliss.simonsays"
+    namespace = "com.littleb01s"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.darrylbayliss.simonsays"
+        applicationId = "com.littleb01s.ashasakhichat"
         minSdk = 28
         targetSdk = 34
         versionCode = 1

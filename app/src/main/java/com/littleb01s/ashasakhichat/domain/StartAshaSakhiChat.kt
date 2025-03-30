@@ -1,7 +1,7 @@
-package com.darrylbayliss.simonsays.domain
+package com.littleb01s.ashasakhichat.domain
 
-import com.darrylbayliss.simonsays.data.MediapipeRepository
-import com.darrylbayliss.simonsays.presentation.Message
+import com.littleb01s.ashasakhichat.data.MediapipeRepository
+import com.littleb01s.ashasakhichat.presentation.Message
 import javax.inject.Inject
 
 class StartSimonSays @Inject constructor(private val mediapipeRepository: MediapipeRepository) {

@@ -1,4 +1,4 @@
-package com.darrylbayliss.simonsays.presentation
+package com.littleb01s.ashasakhichat.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.darrylbayliss.simonsays.ui.theme.SimonSaysTheme
+import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -45,7 +45,7 @@ fun WelcomeScreen(onNavigateToPlay: () -> Unit, onNavigateToInstructions: () -> 
 @Preview(showBackground = true)
 @Composable
 fun WelcomePreview() {
-    SimonSaysTheme {
+    AshaTheme {
         PlayScreen(hiltViewModel<PlayViewModel>())
     }
 }

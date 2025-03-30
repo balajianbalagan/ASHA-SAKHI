@@ -1,4 +1,4 @@
-package com.darrylbayliss.simonsays.ui.theme
+package com.littleb01s.ashasakhichat.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

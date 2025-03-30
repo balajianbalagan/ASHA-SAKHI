@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package com.darrylbayliss.simonsays.presentation
+package com.littleb01s.ashasakhichat.presentation
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,9 +45,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.darrylbayliss.simonsays.R
-import com.darrylbayliss.simonsays.ui.theme.PurpleGrey80
-import com.darrylbayliss.simonsays.ui.theme.SimonSaysTheme
+import com.littleb01s.R
+import com.littleb01s.ashasakhichat.ui.theme.PurpleGrey80
+import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -223,7 +223,7 @@ fun ChatBox(
 @Preview(showBackground = true)
 @Composable
 fun PlayPreview() {
-    SimonSaysTheme {
+    AshaTheme {
         PlayScreen(hiltViewModel<PlayViewModel>())
     }
 }

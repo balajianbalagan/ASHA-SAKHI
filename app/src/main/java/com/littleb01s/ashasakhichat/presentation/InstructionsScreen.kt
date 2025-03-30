@@ -1,4 +1,4 @@
-package com.darrylbayliss.simonsays.presentation
+package com.littleb01s.ashasakhichat.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.darrylbayliss.simonsays.ui.theme.SimonSaysTheme
+import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -26,7 +26,7 @@ fun InstructionsScreen() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Do what simon tells you.")
+            Text("Welcome to ASHA FAQ Chat")
         }
     }
 }
@@ -34,7 +34,7 @@ fun InstructionsScreen() {
 @Preview(showBackground = true)
 @Composable
 fun InstructionsPreview() {
-    SimonSaysTheme {
+    AshaTheme {
         InstructionsScreen()
     }
 }

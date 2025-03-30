@@ -1,6 +1,6 @@
-package com.darrylbayliss.simonsays.data
+package com.littleb01s.ashasakhichat.data
 
-import com.darrylbayliss.simonsays.presentation.Message
+import com.littleb01s.ashasakhichat.presentation.Message
 import com.google.mediapipe.framework.image.MPImage
 import javax.inject.Inject
 
@@ -19,7 +19,7 @@ class MediapipeRepository @Inject constructor(private val mediapipeLLMDataSource
     }
 
     suspend fun sendMessage(message: Message): String {
-        return mediapipeLLMDataSource.sendMessage()
+        return mediapipeLLMDataSource.sendMessage(message.text)
     }
 
     fun checkImage(image: MPImage): ImageClassificationState {
@@ -35,5 +35,4 @@ class MediapipeRepository @Inject constructor(private val mediapipeLLMDataSource
             ImageClassificationState.NotRecognised("That doesn't look right to me. Let's try another task.")
         }
     }
-    fun requestNewTask(): String = mediapipeLLMDataSource.requestNewTask()
 }

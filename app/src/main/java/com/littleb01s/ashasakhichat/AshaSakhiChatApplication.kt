@@ -1,7 +1,7 @@
-package com.darrylbayliss.simonsays
+package com.littleb01s.ashasakhichat
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class SimonSaysApplication : Application()
+class AshaSakhiChatApplication : Application()
