@@ -1,5 +1,9 @@
 # ASHA Sakhi Chat 🤖
 
+## Demo Video
+
+[![ASHA Sakhi Chat Demo](https://img.youtube.com/vi/Lpq2BTU-o5M/0.jpg)](https://youtu.be/Lpq2BTU-o5M)
+
 https://github.com/littleb01s/asha-sakhi-chat/assets/123456789/Asha_sakhi_demo.mp4
 
 ## Overview
