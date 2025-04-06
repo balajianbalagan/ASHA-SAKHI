@@ -5,7 +5,7 @@
 [![ASHA Sakhi Chat Demo](https://img.youtube.com/vi/Lpq2BTU-o5M/0.jpg)](https://youtu.be/Lpq2BTU-o5M)
 
 <video width="560" height="315" controls>
-  <source src="https://github.com/littleb01s/asha-sakhi-chat/assets/123456789/Asha_sakhi_demo.mp4" type="video/mp4">
+  <source src="./Asha_sakhi_demo.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
