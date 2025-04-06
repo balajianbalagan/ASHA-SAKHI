@@ -11,10 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.littleb01s.ashasakhichat.presentation.Instructions
-import com.littleb01s.ashasakhichat.presentation.PlayViewModel
+import com.littleb01s.ashasakhichat.presentation.ChatViewModel
 import com.littleb01s.ashasakhichat.presentation.InstructionsScreen
-import com.littleb01s.ashasakhichat.presentation.Play
-import com.littleb01s.ashasakhichat.presentation.PlayScreen
+import com.littleb01s.ashasakhichat.presentation.Chat
+import com.littleb01s.ashasakhichat.presentation.ChatScreen
 import com.littleb01s.ashasakhichat.presentation.Welcome
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
@@ -41,14 +41,11 @@ fun AshaSakhiChatApp() {
     NavHost(navController, startDestination = Welcome) {
         composable<Welcome> {
             WelcomeScreen(
-                onNavigateToPlay = {
-                    navController.navigate(Play)
-                },
-                onNavigateToInstructions = {
-                    navController.navigate(Instructions)
+                onGetStarted = {
+                    navController.navigate(Chat)
                 })
         }
-        composable<Play> { PlayScreen(hiltViewModel<PlayViewModel>()) }
+        composable<Chat> { ChatScreen(hiltViewModel<ChatViewModel>()) }
         composable<Instructions> { InstructionsScreen() }
     }
 }
@@ -58,8 +55,7 @@ fun AshaSakhiChatApp() {
 fun GreetingPreview() {
     AshaTheme {
         WelcomeScreen(
-            onNavigateToPlay = { },
-            onNavigateToInstructions = { }
+            onGetStarted = { },
         )
     }
 }
