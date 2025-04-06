@@ -10,7 +10,7 @@ sealed class ImageClassificationState {
 }
 
 class MediapipeRepository @Inject constructor(private val mediapipeLLMDataSource: MediapipeLLMDataSource) {
-    suspend fun startGame(): Message {
+    suspend fun startChat(): Message {
         val message = mediapipeLLMDataSource.start()
         return Message(
             text = message,

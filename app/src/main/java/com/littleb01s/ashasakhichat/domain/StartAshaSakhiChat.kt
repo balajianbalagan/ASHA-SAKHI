@@ -4,8 +4,8 @@ import com.littleb01s.ashasakhichat.data.MediapipeRepository
 import com.littleb01s.ashasakhichat.presentation.Message
 import javax.inject.Inject
 
-class StartSimonSays @Inject constructor(private val mediapipeRepository: MediapipeRepository) {
+class StartAshaSakhiChat @Inject constructor(private val mediapipeRepository: MediapipeRepository) {
     suspend operator fun invoke(): Message {
-        return mediapipeRepository.startGame()
+        return mediapipeRepository.startChat()
     }
 }

@@ -41,14 +41,11 @@ fun AshaSakhiChatApp() {
     NavHost(navController, startDestination = Welcome) {
         composable<Welcome> {
             WelcomeScreen(
-                onNavigateToPlay = {
-                    navController.navigate(Play)
-                },
-                onNavigateToInstructions = {
-                    navController.navigate(Instructions)
+                onGetStarted = {
+                    navController.navigate(Chat)
                 })
         }
-        composable<Play> { PlayScreen(hiltViewModel<PlayViewModel>()) }
+        composable<Chat> { ChatScreen(hiltViewModel<ChatViewModel>()) }
         composable<Instructions> { InstructionsScreen() }
     }
 }
@@ -58,8 +55,7 @@ fun AshaSakhiChatApp() {
 fun GreetingPreview() {
     AshaTheme {
         WelcomeScreen(
-            onNavigateToPlay = { },
-            onNavigateToInstructions = { }
+            onGetStarted = { },
         )
     }
 }
