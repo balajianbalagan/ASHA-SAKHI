@@ -42,8 +42,17 @@ fun AshaSakhiChatApp() {
         composable<Welcome> {
             WelcomeScreen(
                 onGetStarted = {
-                    navController.navigate(Chat)
+                    navController.navigate(Home)
                 })
+        }
+        composable<Home> {
+            HomeScreen(
+                onNavigateToPatients = { /* TODO */ },
+                onNavigateToTraining = { /* TODO */ },
+                onNavigateToRiskAnalysis = { /* TODO */ },
+                onNavigateToChat = { navController.navigate(Chat) },
+                onNavigateToMap = { /* TODO */ }
+            )
         }
         composable<Chat> { ChatScreen(hiltViewModel<ChatViewModel>()) }
         composable<Instructions> { InstructionsScreen() }
