@@ -1,16 +1,36 @@
 package com.littleb01s.ashasakhichat.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,7 +45,7 @@ object Home
 
 data class DashboardButton(
     val text: String,
-    val icon: ImageVector,
+    val drawableResId: Int,
     val onClick: () -> Unit
 )
 
@@ -38,12 +58,19 @@ fun HomeScreen(
     onNavigateToChat: () -> Unit,
     onNavigateToMap: () -> Unit
 ) {
-    val buttonColor = Color(0xFF0BB066)
+    val buttonColor = Color(0xFF84D5B1)
     val textColor = Color(0xFF432C81)
+    val dashboardButtons = listOf(
+        DashboardButton(stringResource(R.string.your_patients), R.drawable.your_patients_icon, onNavigateToPatients),
+        DashboardButton(stringResource(R.string.asha_training), R.drawable.asha_training_icon, onNavigateToTraining),
+        DashboardButton(stringResource(R.string.risk_analysis), R.drawable.risk_analysis_icon, onNavigateToRiskAnalysis),
+        DashboardButton(stringResource(R.string.ai_sakhi_chat), R.drawable.ai_sakhi_chat_icon, onNavigateToChat),
+        DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap)
+    )
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         text = stringResource(R.string.welcome_greeting, "Pragati"),
@@ -61,7 +88,7 @@ fun HomeScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                     titleContentColor = textColor
                 )
@@ -73,25 +100,36 @@ fun HomeScreen(
                 tonalElevation = 8.dp
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, stringResource(R.string.home)) },
+                    icon = { Icon(Icons.Default.Home, stringResource(R.string.home), Modifier.size(24.dp),Color(red = 253, green = 90, blue = 86)) },
                     label = { Text(stringResource(R.string.home)) },
                     selected = true,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, stringResource(R.string.patients)) },
+                    icon = {
+                        Icon(painterResource(id = R.drawable.baseline_pregnant_woman_24),
+                            contentDescription = stringResource(R.string.patients),
+                            tint = Color(red = 253, green = 90, blue = 86),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
                     label = { Text(stringResource(R.string.patients)) },
                     selected = false,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, stringResource(R.string.chat)) },
+                    icon = {
+                        Icon(painterResource(id = R.drawable.ai_sakhi_chat_icon),
+                            contentDescription = stringResource(R.string.chat),
+                            tint = Color(red = 253, green = 90, blue = 86),
+                            modifier = Modifier.size(24.dp))
+                    },
                     label = { Text(stringResource(R.string.chat)) },
                     selected = false,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, stringResource(R.string.settings)) },
+                    icon = { Icon(Icons.Default.Settings, stringResource(R.string.settings), Modifier.size(24.dp),Color(red = 253, green = 90, blue = 86)) },
                     label = { Text(stringResource(R.string.settings)) },
                     selected = false,
                     onClick = { }
@@ -99,25 +137,19 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val dashboardButtons = listOf(
-                DashboardButton(stringResource(R.string.your_patients), Icons.Filled.Home, onNavigateToPatients),
-                DashboardButton(stringResource(R.string.asha_training), Icons.Filled.Home, onNavigateToTraining),
-                DashboardButton(stringResource(R.string.risk_analysis), Icons.Filled.Home, onNavigateToRiskAnalysis),
-                DashboardButton(stringResource(R.string.ai_sakhi_chat), Icons.Filled.Home, onNavigateToChat),
-                DashboardButton(stringResource(R.string.regional_map), Icons.Filled.Home, onNavigateToMap)
-            )
 
-            dashboardButtons.forEach { button ->
+
+            items(dashboardButtons) { button ->
                 DashboardButtonItem(
                     text = button.text,
-                    icon = button.icon,
+                    drawableResId = button.drawableResId,
                     onClick = button.onClick,
                     buttonColor = buttonColor,
                     textColor = textColor
@@ -130,7 +162,7 @@ fun HomeScreen(
 @Composable
 fun DashboardButtonItem(
     text: String,
-    icon: ImageVector,
+    drawableResId: Int,
     onClick: () -> Unit,
     buttonColor: Color,
     textColor: Color
@@ -139,7 +171,7 @@ fun DashboardButtonItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp),
+            .height(100.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonColor
@@ -154,12 +186,12 @@ fun DashboardButtonItem(
                 text = text,
                 color = textColor,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Bold
             )
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = textColor
+            Image(
+                painter = painterResource(id = drawableResId),
+                contentDescription = text,
+                modifier = Modifier.size(90.dp)
             )
         }
     }
