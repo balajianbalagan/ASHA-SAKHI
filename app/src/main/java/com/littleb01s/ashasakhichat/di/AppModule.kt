@@ -1,7 +1,9 @@
 package com.littleb01s.ashasakhichat.di
 
 import android.content.Context
+import android.util.Log
 import com.google.mediapipe.tasks.core.BaseOptions
+import com.google.mediapipe.tasks.core.Delegate
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifier
@@ -11,31 +13,71 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.io.File
 
+private const val TAG = "AppModule"
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
     @Provides
     fun provideLlmInference(@ApplicationContext context: Context): LlmInference {
-        return LlmInference.createFromOptions(
-            context,
-            LlmInference.LlmInferenceOptions.builder()
-                .setModelPath("/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin")
+        Log.d(TAG, "Starting LLM initialization...")
+        val modelPath = "/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin"
+        val modelFile = File(modelPath)
+        
+        Log.d(TAG, "Model file details:")
+        Log.d(TAG, "Exists: ${modelFile.exists()}")
+        Log.d(TAG, "Size: ${modelFile.length()} bytes")
+        Log.d(TAG, "Can read: ${modelFile.canRead()}")
+        Log.d(TAG, "Absolute path: ${modelFile.absolutePath}")
+        Log.d(TAG, "Parent exists: ${modelFile.parentFile?.exists()}")
+        Log.d(TAG, "Parent can read: ${modelFile.parentFile?.canRead()}")
+        
+        try {
+            Log.d(TAG, "Creating LLM options...")
+            val options = LlmInference.LlmInferenceOptions.builder()
+                .setModelPath(modelPath)
                 .build()
-        )
+            
+            Log.d(TAG, "Created LLM options successfully")
+            Log.d(TAG, "Creating LLM instance...")
+            val llm = LlmInference.createFromOptions(context, options)
+            Log.d(TAG, "LLM instance created successfully")
+            return llm
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing LLM", e)
+            throw e
+        }
     }
 
     @Provides
     fun provideImageClassifier(@ApplicationContext context: Context): ImageClassifier {
-        val options = ImageClassifierOptions.builder()
-            .setBaseOptions(
-                BaseOptions.builder().setModelAssetPath("efficientnet_lite2.tflite").build()
-            )
-            .setRunningMode(RunningMode.IMAGE)
-            .setScoreThreshold(30.0f)
-            .setMaxResults(10)
-            .build()
-        return ImageClassifier.createFromOptions(context, options)
+        Log.d(TAG, "Starting Image Classifier initialization...")
+        try {
+            Log.d(TAG, "Creating base options with CPU delegate...")
+            val baseOptions = BaseOptions.builder()
+                .setModelAssetPath("efficientnet_lite2.tflite")
+                .setDelegate(Delegate.CPU)  // Explicitly set CPU delegate
+                .build()
+            Log.d(TAG, "Base options created successfully")
+
+            Log.d(TAG, "Creating Image Classifier options...")
+            val options = ImageClassifierOptions.builder()
+                .setBaseOptions(baseOptions)
+                .setRunningMode(RunningMode.IMAGE)
+                .setScoreThreshold(30.0f)
+                .setMaxResults(10)
+                .build()
+            Log.d(TAG, "Image Classifier options created successfully")
+
+            Log.d(TAG, "Creating Image Classifier instance...")
+            val classifier = ImageClassifier.createFromOptions(context, options)
+            Log.d(TAG, "Image Classifier instance created successfully")
+            return classifier
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing Image Classifier", e)
+            throw e
+        }
     }
 }
