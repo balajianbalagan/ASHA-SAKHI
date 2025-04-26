@@ -33,6 +33,9 @@ import com.darrylbayliss.simonsays.ui.theme.SimonSaysTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.ui.unit.LayoutDirection
 import org.intellij.lang.annotations.Language
+import com.littleb01s.ashasakhichat.presentation.navigation.Screen
+import com.littleb01s.ashasakhichat.presentation.screens.*
+import com.littleb01s.ashasakhichat.presentation.HomeContent
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,6 +46,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val configuration = LocalConfiguration.current
             val locale = configuration.locales[0]
+            val navController = rememberNavController()
             
             CompositionLocalProvider(
                 LocalLayoutDirection provides if (locale.language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
@@ -52,70 +56,102 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        val navController = rememberNavController()
                         NavHost(
                             navController = navController,
-                            startDestination = "welcome"
+                            startDestination = Screen.Welcome.route
                         ) {
-                            composable("welcome") {
+                            composable(Screen.Welcome.route) {
                                 WelcomeScreen(
                                     onGetStarted = {
-                                        navController.navigate("login") {
-                                            popUpTo("welcome") { inclusive = true }
+                                        navController.navigate(Screen.Login.route) {
+                                            popUpTo(Screen.Welcome.route) { inclusive = true }
                                         }
                                     }
                                 )
                             }
-                            composable("login") {
+                            composable(Screen.Login.route) {
                                 LoginScreen(
                                     onLoginSuccess = {
-                                        navController.navigate("home") {
-                                            popUpTo("login") { inclusive = true }
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(Screen.Login.route) { inclusive = true }
                                         }
                                     }
                                 )
                             }
-                            composable("home") {
-                                HomeScreen(
-                                    onNavigateToPatients = { /* TODO */ },
-                                    onNavigateToTraining = { /* TODO */ },
-                                    onNavigateToRiskAnalysis = { /* TODO */ },
-                                    onNavigateToChat = { navController.navigate("chat") },
-                                    onNavigateToMap = { /* TODO */ }
+
+                            // Bottom Navigation Screens
+                            composable(Screen.Home.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Home.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    HomeContent(
+                                        onNavigateToTraining = { navController.navigate(Screen.Training.route) },
+                                        onNavigateToRiskAnalysis = { navController.navigate(Screen.RiskAnalysis.route) },
+                                        onNavigateToChat = { navController.navigate(Screen.Chat.route) },
+                                        onNavigateToMap = { navController.navigate(Screen.RegionalMap.route) },
+                                        onNavigateToPatients = { navController.navigate(Screen.Patients.route) }
+                                    )
+                                }
+                            }
+                            composable(Screen.Patients.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Patients.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    PatientsScreen()
+                                }
+                            }
+                            composable(Screen.Notifications.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Notifications.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    NotificationsScreen()
+                                }
+                            }
+                            composable(Screen.Settings.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Settings.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    SettingsScreen()
+                                }
+                            }
+
+                            // Full Screen Routes
+                            composable(Screen.Training.route) {
+                                TrainingScreen(
+                                    onNavigateBack = { navController.navigateUp() }
                                 )
                             }
-                            composable("chat") { 
+                            composable(Screen.RiskAnalysis.route) {
+                                RiskAnalysisScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.Chat.route) { 
                                 ChatScreen(hiltViewModel()) 
+                            }
+                            composable(Screen.RegionalMap.route) {
+                                RegionalMapScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.Profile.route) {
+                                ProfileScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
                             }
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun AshaSakhiChatApp() {
-    val navController = rememberNavController()
-    NavHost(navController, startDestination = Welcome) {
-        composable<Welcome> {
-            WelcomeScreen(
-                onGetStarted = {
-                    navController.navigate(Home)
-                })
-        }
-        composable<Home> {
-            HomeScreen(
-                onNavigateToPatients = { /* TODO */ },
-                onNavigateToTraining = { /* TODO */ },
-                onNavigateToRiskAnalysis = { /* TODO */ },
-                onNavigateToChat = { navController.navigate(Chat) },
-                onNavigateToMap = { /* TODO */ }
-            )
-        }
-        composable<Chat> { ChatScreen(hiltViewModel()) }
-        composable<Instructions> { InstructionsScreen() }
     }
 }
 
