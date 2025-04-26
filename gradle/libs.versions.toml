@@ -16,6 +16,8 @@ navigationSafeArgsGradlePlugin = "2.8.9"
 kotlinxSerializationJson = "1.6.3"
 hilt = "2.48"
 accompanist-permissions = "0.35.0-alpha"
+retrofit = "2.9.0"
+okhttp = "4.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +44,12 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 android-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 android-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+
+# Retrofit
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+okhttp-core = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

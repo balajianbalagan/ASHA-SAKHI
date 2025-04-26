@@ -80,6 +80,12 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
+    // Retrofit
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.core)
+    implementation(libs.okhttp.logging)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

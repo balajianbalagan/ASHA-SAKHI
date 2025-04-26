@@ -60,8 +60,17 @@ class MainActivity : ComponentActivity() {
                             composable("welcome") {
                                 WelcomeScreen(
                                     onGetStarted = {
-                                        navController.navigate("home") {
+                                        navController.navigate("login") {
                                             popUpTo("welcome") { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable("login") {
+                                LoginScreen(
+                                    onLoginSuccess = {
+                                        navController.navigate("home") {
+                                            popUpTo("login") { inclusive = true }
                                         }
                                     }
                                 )
