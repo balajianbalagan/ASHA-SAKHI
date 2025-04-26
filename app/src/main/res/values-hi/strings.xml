@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">आशा सखी</string>
+    <string name="welcome_title">आशा\nसखी</string>
+    <string name="welcome_subtitle">सुरक्षित मातृत्व के लिए आपकी AI-Powered सखी!</string>
+    <string name="get_started">आरंभ करें</string>
+    <string name="welcome_greeting">नमस्ते, %1$s!</string>
+    <string name="profile">प्रोफ़ाइल</string>
+    <string name="chat">चैट</string>
+    <string name="patients">मरीज़</string>
+    <string name="training">प्रशिक्षण</string>
+    <string name="risk_analysis">जोखिम विश्लेषण</string>
+    <string name="map">नक्शा</string>
+    <string name="share">शेयर करें</string>
+    <string name="copy">कॉपी करें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="type_message">अपना संदेश यहाँ टाइप करें...</string>
+    <string name="send">भेजें</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="language">भाषा</string>
+    <string name="english">English</string>
+    <string name="hindi">हिंदी</string>
+    <string name="select_language_en">Select Language</string>
+    <string name="select_language_hi">भाषा चुनें</string>
+    <string name="select_language_mr">भाषा निवडा</string>
+    <string name="select_language_gu">ભાષા પસંદ કરો</string>
+    <string name="select_language_bn">ভাষা নির্বাচন করুন</string>
+    <!-- Home Screen -->
+    <string name="home">होम</string>
+    <string name="your_patients">आपके मरीज़</string>
+    <string name="asha_training">आशा प्रशिक्षण</string>
+    <string name="ai_sakhi_chat">AI सखी चैट</string>
+    <string name="regional_map">क्षेत्रीय नक्शा</string>
+    <!-- Chat Screen -->
+    <string name="chat_bot_title">आशा सखी बॉट</string>
+    <string name="share_via">इसके माध्यम से शेयर करें</string>
+    <string name="chat_bot_logo">आशा सखी लोगो</string>
+    <string name="loading">लोड हो रहा है...</string>
+    <string name="error_message">त्रुटि हुई। कृपया पुनः प्रयास करें।</string>
+</resources> 

@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.littleb01s.R
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import kotlinx.serialization.Serializable
 
@@ -44,7 +46,7 @@ fun HomeScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Namaste, Pragati!",
+                        text = stringResource(R.string.welcome_greeting, "Pragati"),
                         color = textColor,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
@@ -54,7 +56,7 @@ fun HomeScreen(
                     IconButton(onClick = { /* TODO: Profile action */ }) {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
+                            contentDescription = stringResource(R.string.profile),
                             tint = textColor
                         )
                     }
@@ -71,26 +73,26 @@ fun HomeScreen(
                 tonalElevation = 8.dp
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, "Home") },
-                    label = { Text("Home") },
+                    icon = { Icon(Icons.Default.Home, stringResource(R.string.home)) },
+                    label = { Text(stringResource(R.string.home)) },
                     selected = true,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, "Patients") },
-                    label = { Text("Patients") },
+                    icon = { Icon(Icons.Filled.Home, stringResource(R.string.patients)) },
+                    label = { Text(stringResource(R.string.patients)) },
                     selected = false,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Filled.Home, "Chat") },
-                    label = { Text("Chat") },
+                    icon = { Icon(Icons.Filled.Home, stringResource(R.string.chat)) },
+                    label = { Text(stringResource(R.string.chat)) },
                     selected = false,
                     onClick = { }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, "Settings") },
-                    label = { Text("Settings") },
+                    icon = { Icon(Icons.Default.Settings, stringResource(R.string.settings)) },
+                    label = { Text(stringResource(R.string.settings)) },
                     selected = false,
                     onClick = { }
                 )
@@ -105,11 +107,11 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             val dashboardButtons = listOf(
-                DashboardButton("Your Patients", Icons.Filled.Home, onNavigateToPatients),
-                DashboardButton("ASHA Training", Icons.Filled.Home, onNavigateToTraining),
-                DashboardButton("Risk Analysis", Icons.Filled.Home, onNavigateToRiskAnalysis),
-                DashboardButton("AI Sakhi Chat", Icons.Filled.Home, onNavigateToChat),
-                DashboardButton("Regional Map", Icons.Filled.Home, onNavigateToMap)
+                DashboardButton(stringResource(R.string.your_patients), Icons.Filled.Home, onNavigateToPatients),
+                DashboardButton(stringResource(R.string.asha_training), Icons.Filled.Home, onNavigateToTraining),
+                DashboardButton(stringResource(R.string.risk_analysis), Icons.Filled.Home, onNavigateToRiskAnalysis),
+                DashboardButton(stringResource(R.string.ai_sakhi_chat), Icons.Filled.Home, onNavigateToChat),
+                DashboardButton(stringResource(R.string.regional_map), Icons.Filled.Home, onNavigateToMap)
             )
 
             dashboardButtons.forEach { button ->

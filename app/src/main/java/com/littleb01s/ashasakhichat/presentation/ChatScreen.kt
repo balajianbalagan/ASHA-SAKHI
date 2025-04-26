@@ -18,9 +18,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.sharp.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,6 +36,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -158,12 +162,12 @@ fun ChatHeader() {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.chat_bot_icon),
-                contentDescription = "ASHA Sakhi Logo",
+                contentDescription = stringResource(R.string.chat_bot_logo),
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "ASHA Sakhi Bot",
+                text = stringResource(R.string.chat_bot_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = Color.White
             )
@@ -171,7 +175,7 @@ fun ChatHeader() {
         IconButton(onClick = { /* TODO: Implement settings */ }) {
             Icon(
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Settings",
+                contentDescription = stringResource(R.string.settings),
                 tint = Color.White
             )
         }
@@ -195,11 +199,36 @@ fun DateHeader(date: String) {
 }
 
 @Composable
+private fun ShareMessage(text: String) {
+    val context = LocalContext.current
+    val shareViaText = stringResource(R.string.share_via)
+    
+    IconButton(
+        onClick = {
+            val sendIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
+            context.startActivity(Intent.createChooser(sendIntent, shareViaText))
+        },
+        modifier = Modifier.size(24.dp)
+    ) {
+        Icon(
+            Icons.Default.Share,
+            "Share message",
+            tint = Color.Black
+        )
+    }
+}
+
+@Composable
 fun ChatItem(
     message: Message,
     onRetry: () -> Unit,
     onShare: (String) -> Unit
 ) {
+    val shareViaText = stringResource(R.string.share_via)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,9 +241,9 @@ fun ChatItem(
             if (!message.isFromMe) {
                 Image(
                     painter = painterResource(id = R.drawable.chat_bot_icon),
-                    contentDescription = "ASHA Sakhi Logo",
+                    contentDescription = stringResource(R.string.chat_bot_logo),
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(36.dp)
                         .padding(end = 8.dp)
                 )
             }
@@ -266,25 +295,25 @@ fun ChatItem(
                                     tint = Color.Black
                                 )
                             }
-                            IconButton(
-                                onClick = { onShare(message.text) },
-                                modifier = Modifier.size(24.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Share,
-                                    "Share message",
-                                    tint = Color.Black
-                                )
-                            }
+                            ShareMessage(message.text)
                             if (message.isError) {
-                                IconButton(
-                                    onClick = onRetry,
-                                    modifier = Modifier.size(24.dp)
+                                Row(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        Icons.Default.Refresh,
-                                        "Retry message",
-                                        tint = Color.Black
+                                    IconButton(
+                                        onClick = onRetry,
+                                        modifier = Modifier.size(24.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Refresh,
+                                            contentDescription = stringResource(R.string.retry),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                    Text(
+                                        text = stringResource(R.string.retry),
+                                        style = MaterialTheme.typography.bodySmall
                                     )
                                 }
                             }
@@ -307,21 +336,11 @@ fun ChatItem(
 
 @Composable
 fun LoadingAnimation() {
-    var dots by remember { mutableStateOf("") }
-    
-    LaunchedEffect(Unit) {
-        while (true) {
-            dots = when (dots.length) {
-                0 -> "."
-                1 -> ".."
-                2 -> "..."
-                else -> ""
-            }
-            kotlinx.coroutines.delay(500)
-        }
-    }
-    
-    Text(text = "ASHA Sakhi is typing$dots")
+    Text(
+        text = stringResource(R.string.loading),
+        color = Color.Black,
+        style = MaterialTheme.typography.bodyMedium
+    )
 }
 
 @Composable
@@ -358,9 +377,8 @@ fun ChatBox(
             },
             placeholder = {
                 Text(
-                    text = "Ask ASHA Sakhi...",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    text = stringResource(R.string.type_message),
+                    style = MaterialTheme.typography.bodyMedium
                 )
             },
             interactionSource = interactionSource,
