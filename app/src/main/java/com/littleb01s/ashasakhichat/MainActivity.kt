@@ -22,20 +22,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.darrylbayliss.simonsays.domain.PlayViewModel
-import com.darrylbayliss.simonsays.presentation.Instructions
-import com.darrylbayliss.simonsays.presentation.InstructionsScreen
-import com.darrylbayliss.simonsays.presentation.Play
-import com.darrylbayliss.simonsays.presentation.PlayScreen
-import com.darrylbayliss.simonsays.presentation.Welcome
-import com.darrylbayliss.simonsays.presentation.WelcomeScreen
-import com.darrylbayliss.simonsays.ui.theme.SimonSaysTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.ui.unit.LayoutDirection
+import com.littleb01s.ashasakhichat.presentation.ChatScreen
 import org.intellij.lang.annotations.Language
 import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import com.littleb01s.ashasakhichat.presentation.screens.*
 import com.littleb01s.ashasakhichat.presentation.HomeContent
+import com.littleb01s.ashasakhichat.presentation.LoginScreen
+import com.littleb01s.ashasakhichat.presentation.MainScaffold
+import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
+import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
