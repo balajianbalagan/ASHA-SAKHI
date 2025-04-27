@@ -210,6 +210,7 @@ fun PregnancyRiskAssessmentScreen(
                     }
                 },
                 modifier = Modifier
+
                     .fillMaxWidth()
                     .height(56.dp),
                 enabled = !isLoading
