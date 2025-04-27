@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 
@@ -36,21 +37,73 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
+    val loginState by viewModel.loginState.collectAsStateWithLifecycle()
+    
+    // State for dialog
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogMessage by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    // Handle login state
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginState.Success -> {
+                dialogMessage = (loginState as LoginState.Success).message
+                isError = false
+                showDialog = true
+                // Navigate after showing success message
+                onLoginSuccess()
+            }
+            is LoginState.Error -> {
+                dialogMessage = (loginState as LoginState.Error).message
+                isError = true
+                showDialog = true
+            }
+            else -> {}
+        }
+    }
+
     LoginScreenContent(
-        onLoginClick = onLoginSuccess
+        onLoginClick = { phone, password ->
+            viewModel.login(phone, password)
+        },
+        isLoading = loginState is LoginState.Loading
     )
+
+    // Show dialog
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+                viewModel.resetState()
+            },
+            title = { Text(if (isError) "Error" else "Success") },
+            text = { Text(dialogMessage) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    viewModel.resetState()
+                }) {
+                    Text("OK")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = if (isError) Color.Red else Color.Green,
+            textContentColor = MaterialTheme.colorScheme.onSurface
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LoginScreenContent(
-    onLoginClick: () -> Unit
+    onLoginClick: (String, String) -> Unit,
+    isLoading: Boolean
 ) {
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     
-    // Create focus requesters for the input fields
     val passwordFocusRequester = remember { FocusRequester() }
 
     Column(
@@ -63,7 +116,6 @@ private fun LoginScreenContent(
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         
-        // Welcome Text
         Text(
             text = stringResource(R.string.welcome_back),
             style = MaterialTheme.typography.headlineLarge.copy(
@@ -80,7 +132,6 @@ private fun LoginScreenContent(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Avatar Image
         Box(
             modifier = Modifier
                 .size(200.dp)
@@ -96,7 +147,6 @@ private fun LoginScreenContent(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Phone Number TextField
         OutlinedTextField(
             value = phoneNumber,
             onValueChange = { phoneNumber = it },
@@ -116,7 +166,6 @@ private fun LoginScreenContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password TextField
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -128,7 +177,7 @@ private fun LoginScreenContent(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = { onLoginClick() }
+                onDone = { onLoginClick(phoneNumber, password) }
             ),
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
@@ -148,21 +197,28 @@ private fun LoginScreenContent(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Login Button
         Button(
-            onClick = onLoginClick,
+            onClick = { onLoginClick(phoneNumber, password) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0078D4))
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0078D4)),
+            enabled = !isLoading
         ) {
-            Text(
-                stringResource(R.string.login),
-                fontSize = 22.sp,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Text(
+                    stringResource(R.string.login),
+                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            }
         }
     }
 }
@@ -172,7 +228,8 @@ private fun LoginScreenContent(
 private fun LoginScreenPreview() {
     AshaTheme {
         LoginScreenContent(
-            onLoginClick = {}
+            onLoginClick = { _, _ -> },
+            isLoading = false
         )
     }
 }
@@ -182,7 +239,8 @@ private fun LoginScreenPreview() {
 private fun LoginScreenDarkPreview() {
     AshaTheme(darkTheme = true) {
         LoginScreenContent(
-            onLoginClick = {}
+            onLoginClick = { _, _ -> },
+            isLoading = false
         )
     }
 } 
