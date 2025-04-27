@@ -32,6 +32,7 @@ import com.littleb01s.ashasakhichat.presentation.HomeContent
 import com.littleb01s.ashasakhichat.presentation.LoginScreen
 import com.littleb01s.ashasakhichat.presentation.MainScaffold
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
+import com.littleb01s.ashasakhichat.presentation.screens.riskanalysis.PregnancyRiskAssessmentScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 
 @AndroidEntryPoint
@@ -128,6 +129,12 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Screen.RiskAnalysis.route) {
                                 RiskAnalysisScreen(
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onNavigateToPregnancyRisk = { navController.navigate(Screen.PregnancyRiskAssessment.route) }
+                                )
+                            }
+                            composable(Screen.PregnancyRiskAssessment.route) {
+                                PregnancyRiskAssessmentScreen(
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
@@ -141,7 +148,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Screen.Profile.route) {
                                 ProfileScreen(
-                                    onNavigateBack = { navController.navigateUp() }
+                                    onNavigateBack = { navController.navigate(Screen.PregnancyRiskAssessment.route) }
                                 )
                             }
                         }
