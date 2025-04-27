@@ -86,8 +86,13 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
 
-    // https://mvnrepository.com/artifact/com.microsoft.onnxruntime/onnxruntime-android
-    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.16.3")
+    // ONNX Runtime
+    implementation(libs.onnxruntime.android)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
