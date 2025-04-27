@@ -13,10 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
+import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 
 @Composable
 fun RiskAnalysisScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToPregnancyRisk: () -> Unit
 ) {
     DetailScaffold(
         title = stringResource(R.string.risk_analysis),
@@ -49,8 +51,29 @@ fun RiskAnalysisScreen(
                 }
             }
 
-            // Sample risk categories
-            repeat(5) { index ->
+            // Risk assessment categories
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onNavigateToPregnancyRisk
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Pregnancy Risk Assessment",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Assess pregnancy-related risks based on vital signs and medical history",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            // Other risk categories (placeholder for now)
+            repeat(4) { index ->
                 Card(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -60,17 +83,16 @@ fun RiskAnalysisScreen(
                     ) {
                         Text(
                             text = when(index) {
-                                0 -> "Pregnancy Risk Assessment"
-                                1 -> "Nutritional Risk Evaluation"
-                                2 -> "Medical History Analysis"
-                                3 -> "Environmental Risk Factors"
+                                0 -> "Nutritional Risk Evaluation"
+                                1 -> "Medical History Analysis"
+                                2 -> "Environmental Risk Factors"
                                 else -> "Social Support Assessment"
                             },
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Tap to start assessment",
+                            text = "Coming soon",
                             fontSize = 14.sp
                         )
                     }

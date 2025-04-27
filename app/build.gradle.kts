@@ -86,6 +86,9 @@ dependencies {
     implementation(libs.okhttp.core)
     implementation(libs.okhttp.logging)
 
+    // https://mvnrepository.com/artifact/com.microsoft.onnxruntime/onnxruntime-android
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.16.3")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

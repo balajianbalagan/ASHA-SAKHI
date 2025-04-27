@@ -14,6 +14,7 @@
     <string name="patients">Patients</string>
     <string name="training">Training</string>
     <string name="risk_analysis">Risk Analysis</string>
+    <string name="pregnancy_risk_analysis">Pregnancy Risk Analysis</string>
     <string name="map">Map</string>
     <string name="share">Share</string>
     <string name="copy">Copy</string>
