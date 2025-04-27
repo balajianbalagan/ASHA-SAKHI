@@ -7,6 +7,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -14,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 
@@ -23,16 +26,18 @@ fun MainScaffold(
     currentRoute: String,
     onNavigate: (String) -> Unit,
     onNavigateToProfile: () -> Unit,
+    viewModel: MainViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
     val textColor = Color(0xFF432C81)
+    val userName by viewModel.userName.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.welcome_greeting, "Pragati"),
+                        text = stringResource(R.string.welcome_greeting, userName),
                         color = textColor,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold

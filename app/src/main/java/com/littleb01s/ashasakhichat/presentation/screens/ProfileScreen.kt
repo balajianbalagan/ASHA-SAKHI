@@ -5,22 +5,55 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
+import com.littleb01s.ashasakhichat.presentation.ProfileViewModel
 
 @Composable
 fun ProfileScreen(
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onSignOut: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val userProfile by viewModel.userProfile.collectAsState()
+    val showSignOutDialog by viewModel.showSignOutDialog.collectAsState()
+
+    if (showSignOutDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideSignOutDialog() },
+            title = { Text("Success") },
+            text = { Text("You have been successfully signed out.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.hideSignOutDialog()
+                        onSignOut()
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+            textContentColor = MaterialTheme.colorScheme.onSurface
+        )
+    }
+
     DetailScaffold(
         title = stringResource(R.string.profile),
         onNavigateBack = onNavigateBack
@@ -40,7 +73,7 @@ fun ProfileScreen(
                 modifier = Modifier.size(100.dp)
             )
             Text(
-                text = "Pragati",
+                text = "${userProfile.firstName} ${userProfile.lastName}",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -89,6 +122,23 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Edit Profile")
+            }
+
+            // Sign Out Button
+            Button(
+                onClick = { viewModel.signOut() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ExitToApp,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Sign Out")
             }
         }
     }

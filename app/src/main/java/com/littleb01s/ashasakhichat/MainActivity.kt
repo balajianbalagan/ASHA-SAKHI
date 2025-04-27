@@ -31,6 +31,7 @@ import com.littleb01s.ashasakhichat.presentation.screens.*
 import com.littleb01s.ashasakhichat.presentation.HomeContent
 import com.littleb01s.ashasakhichat.presentation.LoginScreen
 import com.littleb01s.ashasakhichat.presentation.MainScaffold
+import com.littleb01s.ashasakhichat.presentation.MainViewModel
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
 import com.littleb01s.ashasakhichat.presentation.screens.riskanalysis.PregnancyRiskAssessmentScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
@@ -45,6 +46,14 @@ class MainActivity : ComponentActivity() {
             val configuration = LocalConfiguration.current
             val locale = configuration.locales[0]
             val navController = rememberNavController()
+            val mainViewModel: MainViewModel = hiltViewModel()
+            
+            // Determine start destination based on login status
+            val startDestination = if (mainViewModel.isUserLoggedIn()) {
+                Screen.Home.route
+            } else {
+                Screen.Welcome.route
+            }
             
             CompositionLocalProvider(
                 LocalLayoutDirection provides if (locale.language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
@@ -56,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(
                             navController = navController,
-                            startDestination = Screen.Welcome.route
+                            startDestination = startDestination
                         ) {
                             composable(Screen.Welcome.route) {
                                 WelcomeScreen(
@@ -154,7 +163,13 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Screen.Profile.route) {
                                 ProfileScreen(
-                                    onNavigateBack = { navController.navigate(Screen.PregnancyRiskAssessment.route) }
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onSignOut = {
+                                        // Navigate to Welcome screen and clear backstack
+                                        navController.navigate(Screen.Welcome.route) {
+                                            popUpTo(0) { inclusive = true }
+                                        }
+                                    }
                                 )
                             }
                         }
