@@ -41,6 +41,10 @@
     <string name="chat_bot_logo">आशा सखी लोगो</string>
     <string name="loading">लोड हो रहा है...</string>
     <string name="error_message">त्रुटि हुई। कृपया पुनः प्रयास करें।</string>
-    <string name="notifications">सूचनाएं</string>
     <string name="pregnancy_risk_analysis">गर्भावस्था जोखिम विश्लेषण</string>
+    <string name="language_settings">भाषा सेटिंग्स</string>
+    <string name="apply_changes">परिवर्तन लागू करें</string>
+    <string name="settings_updated">भाषा सेटिंग्स सफलतापूर्वक अपडेट की गईं!</string>
+    <string name="dismiss">ख़ारिज करें</string>
+    <string name="notifications">सूचनाएं</string>
 </resources> 

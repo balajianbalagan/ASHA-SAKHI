@@ -5,17 +5,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -28,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import kotlinx.serialization.Serializable
@@ -42,7 +39,10 @@ import androidx.compose.animation.with
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
 import android.content.res.Configuration
-import android.content.SharedPreferences
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 
 @Serializable
 object Welcome
@@ -104,6 +104,14 @@ fun WelcomeScreen(
         }
     }
 
+    val customBlue = Color(0xFF0174B3)
+    val customGreen = Color(0xFF1BBF69)
+    val customOrange = Color(0xFFFF5151)
+    
+    val gradient = Brush.horizontalGradient(
+        colors = listOf(customBlue, customGreen)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,7 +120,7 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         // Logo Section
         Column(
@@ -129,21 +137,37 @@ fun WelcomeScreen(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            Text(
-                text = "ASHA सखी",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 32.sp
-                ),
-                textAlign = TextAlign.Center
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "ASHA ",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 64.sp
+                    ),
+                    textAlign = TextAlign.Center,
+                    color = customGreen
+                )
+                Text(
+                    text = "सखी",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 64.sp
+                    ),
+                    textAlign = TextAlign.Center,
+                    color = customOrange
+                )
+            }
             
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
                 text = "आपका AI-Powered सखी for\nSafer Motherhood!",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 18.sp
+                    fontSize = 24.sp
                 ),
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
@@ -167,7 +191,7 @@ fun WelcomeScreen(
                     text = stringResource(languageTitles[index].stringResId),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 8.dp),
-                    color = MaterialTheme.colorScheme.primary
+                    color = customBlue
                 )
             }
 
@@ -178,18 +202,33 @@ fun WelcomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = when (selectedLanguage) {
-                            "en" -> stringResource(R.string.english)
-                            "hi" -> stringResource(R.string.hindi)
-                            else -> stringResource(R.string.english)
-                        },
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = customBlue
                     )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = when (selectedLanguage) {
+                                "en" -> stringResource(R.string.english)
+                                "hi" -> stringResource(R.string.hindi)
+                                else -> stringResource(R.string.english)
+                            },
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = customBlue
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Select Language",
+                            tint = customBlue
+                        )
+                    }
                 }
                 DropdownMenu(
                     expanded = expanded,
@@ -199,14 +238,24 @@ fun WelcomeScreen(
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.english)) },
+                        text = { 
+                            Text(
+                                text = stringResource(R.string.english),
+                                color = customBlue
+                            ) 
+                        },
                         onClick = {
                             selectedLanguage = "en"
                             expanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.hindi)) },
+                        text = { 
+                            Text(
+                                text = stringResource(R.string.hindi),
+                                color = customBlue
+                            ) 
+                        },
                         onClick = {
                             selectedLanguage = "hi"
                             expanded = false
@@ -214,24 +263,34 @@ fun WelcomeScreen(
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(16.dp))
             
             // Get Started Button
-            Button(
-                onClick = onGetStarted,
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                onClick = onGetStarted,
             ) {
-                Text(
-                    text = stringResource(R.string.get_started),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.Bold
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(gradient),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.get_started),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = Color.White
                     )
-                )
+                }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

@@ -117,7 +117,13 @@ class MainActivity : ComponentActivity() {
                                     onNavigate = { route -> navController.navigate(route) },
                                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                                 ) {
-                                    SettingsScreen()
+                                    SettingsScreen(
+                                        onNavigateToHome = {
+                                            navController.navigate(Screen.Home.route) {
+                                                popUpTo(Screen.Home.route) { inclusive = true }
+                                            }
+                                        }
+                                    )
                                 }
                             }
 
