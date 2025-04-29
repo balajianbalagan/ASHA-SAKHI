@@ -8,6 +8,7 @@ import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifier
 import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifier.ImageClassifierOptions
+import com.littleb01s.ashasakhichat.domain.TranslationService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -79,5 +80,11 @@ class AppModule {
             Log.e(TAG, "Error initializing Image Classifier", e)
             throw e
         }
+    }
+    
+    @Provides
+    fun provideTranslationService(@ApplicationContext context: Context): TranslationService {
+        Log.d(TAG, "Creating TranslationService...")
+        return TranslationService(context)
     }
 }

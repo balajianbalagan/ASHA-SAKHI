@@ -87,8 +87,7 @@ fun WelcomeScreen(
         listOf(
             LanguageTitle(R.string.select_language_en, "en"),
             LanguageTitle(R.string.select_language_hi, "hi"),
-            LanguageTitle(R.string.select_language_mr, "mr"),
-            LanguageTitle(R.string.select_language_gu, "gu"),
+            LanguageTitle(R.string.select_language_ta, "ta"),
             LanguageTitle(R.string.select_language_bn, "bn")
         )
     }
@@ -258,6 +257,30 @@ fun WelcomeScreen(
                         },
                         onClick = {
                             selectedLanguage = "hi"
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { 
+                            Text(
+                                text = stringResource(R.string.tamil),
+                                color = customBlue
+                            ) 
+                        },
+                        onClick = {
+                            selectedLanguage = "ta"
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { 
+                            Text(
+                                text = stringResource(R.string.bengali),
+                                color = customBlue
+                            ) 
+                        },
+                        onClick = {
+                            selectedLanguage = "bn"
                             expanded = false
                         }
                     )

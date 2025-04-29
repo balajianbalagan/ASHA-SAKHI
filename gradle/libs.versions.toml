@@ -20,6 +20,7 @@ retrofit = "2.9.0"
 okhttp = "4.11.0"
 room = "2.6.1"
 onnxruntime = "1.16.3"
+translate = "17.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +61,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 
 # ONNX Runtime
 onnxruntime-android = { group = "com.microsoft.onnxruntime", name = "onnxruntime-android", version.ref = "onnxruntime" }
+translate = { group = "com.google.mlkit", name = "translate", version.ref = "translate" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -93,6 +93,9 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+    
+    // ML Kit Translation
+    implementation("com.google.mlkit:translate:17.0.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
