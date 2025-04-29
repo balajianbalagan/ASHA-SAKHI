@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.littleb01s.ashasakhichat.domain.SendMessageToAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.StartAshaSakhiChat
+import com.littleb01s.ashasakhichat.domain.TranslationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ private val awaitingMessageFromAsha = Message(
 class ChatViewModel @Inject constructor(
     private val startAshaSakhiChat: StartAshaSakhiChat,
     private val sendMessageToAsha: SendMessageToAshaSakhiChat,
+    private val translationService: TranslationService
 ) : ViewModel() {
     val messages: StateFlow<List<Message>>
         get() = _messages
@@ -48,18 +50,25 @@ class ChatViewModel @Inject constructor(
 
             try {
                 val message = startAshaSakhiChat()
+                val translatedText = translationService.translate(message.text)
+                val formattedText = formatResponse(translatedText)
                 _messages.update { messages ->
                     val mutableList = messages.toMutableList()
                     mutableList.removeLast()
-                    mutableList += message.copy(timestamp = LocalDateTime.now())
+                    mutableList += message.copy(
+                        text = formattedText,
+                        timestamp = LocalDateTime.now()
+                    )
                     mutableList
                 }
             } catch (e: Exception) {
+                val errorMessage = "Sorry, I'm having trouble connecting right now. Please try again."
+                val translatedErrorMessage = translationService.translate(errorMessage)
                 _messages.update { messages ->
                     val mutableList = messages.toMutableList()
                     mutableList.removeLast()
                     mutableList += Message(
-                        text = "Sorry, I'm having trouble connecting right now. Please try again.",
+                        text = translatedErrorMessage,
                         isFromMe = false,
                         isError = true,
                         timestamp = LocalDateTime.now()
@@ -91,18 +100,25 @@ class ChatViewModel @Inject constructor(
 
             try {
                 val message = sendMessageToAsha(message = newMessage)
+                val translatedText = translationService.translate(message.text)
+                val formattedText = formatResponse(translatedText)
                 _messages.update { messages ->
                     val mutableList = messages.toMutableList()
                     mutableList.removeLast()
-                    mutableList += message.copy(timestamp = LocalDateTime.now())
+                    mutableList += message.copy(
+                        text = formattedText,
+                        timestamp = LocalDateTime.now()
+                    )
                     mutableList
                 }
             } catch (e: Exception) {
+                val errorMessage = "I apologize, but I'm having trouble processing your message. Please try again."
+                val translatedErrorMessage = translationService.translate(errorMessage)
                 _messages.update { messages ->
                     val mutableList = messages.toMutableList()
                     mutableList.removeLast()
                     mutableList += Message(
-                        text = "I apologize, but I'm having trouble processing your message. Please try again.",
+                        text = translatedErrorMessage,
                         isFromMe = false,
                         isError = true,
                         timestamp = LocalDateTime.now()
@@ -120,7 +136,7 @@ class ChatViewModel @Inject constructor(
         sendMessage(lastUserMessage.text)
     }
 
-    fun sendPhoto(imageBitmap: ImageBitmap) {
+    suspend fun sendPhoto(imageBitmap: ImageBitmap) {
         if (_isProcessing.value) return
         
         _isProcessing.value = true
@@ -134,10 +150,12 @@ class ChatViewModel @Inject constructor(
 
         _messages.update {
             list
-        }
+        }   
 
+        val processingMessage = "Processing your image..."
+        val translatedProcessingMessage = translationService.translate(processingMessage)
         val newMessageFromAsha = Message(
-            text = "Processing your image...",
+            text = translatedProcessingMessage,
             isFromMe = false,
             isLoading = true
         )
@@ -149,6 +167,72 @@ class ChatViewModel @Inject constructor(
         }
         
         _isProcessing.value = false
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        translationService.close()
+    }
+    
+    /**
+     * Formats the response to make it more concise and readable
+     * - Adds markdown formatting for better readability
+     * - Truncates long responses with a "Show more" option
+     * - Formats lists and important information
+     */
+    private fun formatResponse(text: String): String {
+        // If the text is already in markdown format, return it as is
+        if (text.contains("**") || text.contains("*") || text.contains("#") || 
+            text.contains("- ") || text.contains("1. ") || text.contains("```")) {
+            return text
+        }
+        
+        // For very short responses, return as is
+        if (text.length < 100) {
+            return text
+        }
+        
+        // For longer responses, format them with markdown
+        val lines = text.split("\n")
+        val formattedLines = mutableListOf<String>()
+        
+        // Check if the text contains a list-like structure
+        val hasListStructure = lines.any { it.trim().startsWith("-") || it.trim().matches(Regex("^\\d+\\..*")) }
+        
+        if (hasListStructure) {
+            // Format as a list
+            lines.forEach { line ->
+                val trimmedLine = line.trim()
+                if (trimmedLine.startsWith("-") || trimmedLine.matches(Regex("^\\d+\\..*"))) {
+                    formattedLines.add(trimmedLine)
+                } else if (trimmedLine.isNotEmpty()) {
+                    formattedLines.add(trimmedLine)
+                }
+            }
+        } else {
+            // Format as paragraphs with headers
+            var isFirstParagraph = true
+            lines.forEach { line ->
+                val trimmedLine = line.trim()
+                if (trimmedLine.isNotEmpty()) {
+                    if (isFirstParagraph) {
+                        formattedLines.add("**$trimmedLine**")
+                        isFirstParagraph = false
+                    } else {
+                        formattedLines.add(trimmedLine)
+                    }
+                }
+            }
+        }
+        
+        // If the formatted text is too long, truncate it
+        val formattedText = formattedLines.joinToString("\n")
+        if (formattedText.length > 500) {
+            val truncatedText = formattedText.substring(0, 500) + "..."
+            return "$truncatedText\n\n*[Show more]()*"
+        }
+        
+        return formattedText
     }
 }
 

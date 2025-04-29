@@ -39,6 +39,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
+import com.littleb01s.ashasakhichat.presentation.components.MarkdownRenderer
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -270,10 +273,18 @@ fun ChatItem(
                         if (message.isLoading) {
                             LoadingAnimation()
                         } else {
-                            Text(
-                                text = message.text,
-                                color = if (message.isFromMe) Color.White else Color.Black
-                            )
+                            // Use MarkdownRenderer for non-user messages
+                            if (!message.isFromMe) {
+                                MarkdownRenderer(
+                                    text = message.text,
+                                    textColor = Color.Black
+                                )
+                            } else {
+                                Text(
+                                    text = message.text,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                     
@@ -353,6 +364,7 @@ fun ChatBox(
     var chatBoxValue by remember { mutableStateOf(TextFieldValue("")) }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val context = LocalContext.current
 
     if (isPressed) {
         onTextFieldClicked()
@@ -389,7 +401,7 @@ fun ChatBox(
                 disabledContainerColor = Color.Transparent
             ),
             textStyle = MaterialTheme.typography.bodyLarge,
-            singleLine = true
+            singleLine = true,
         )
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(

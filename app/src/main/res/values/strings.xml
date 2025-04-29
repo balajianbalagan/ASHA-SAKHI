@@ -25,6 +25,8 @@
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="hindi">हिंदी</string>
+    <string name="tamil">தமிழ்</string>
+    <string name="bengali">বাংলা</string>
     <!-- Home Screen -->
     <string name="home">Home</string>
     <string name="your_patients">Your Patients</string>
@@ -39,8 +41,7 @@
     <string name="error_message">Error occurred. Please try again.</string>
     <string name="select_language_en">Select Language</string>
     <string name="select_language_hi">भाषा चुनें</string>
-    <string name="select_language_mr">भाषा निवडा</string>
-    <string name="select_language_gu">ભાષા પસંદ કરો</string>
+    <string name="select_language_ta">மொழியைத் தேர்ந்தெடுக்கவும்</string>
     <string name="select_language_bn">ভাষা নির্বাচন করুন</string>
     <string name="notifications">Notifications</string>
     <string name="language_settings">Language Settings</string>
