@@ -13,7 +13,20 @@ class ProfileViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
-    private val _userProfile = MutableStateFlow(UserProfile("", ""))
+    private val _userProfile = MutableStateFlow(
+        UserProfile(
+            firstName = "",
+            lastName = "",
+            profileId = 0,
+            workerId = 0,
+            state = "",
+            city = "",
+            languagePreference = "",
+            specialization = "",
+            createdAt = "",
+            updatedAt = ""
+        )
+    )
     val userProfile: StateFlow<UserProfile> = _userProfile
 
     private val _showSignOutDialog = MutableStateFlow(false)

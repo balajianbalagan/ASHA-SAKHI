@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
@@ -78,51 +76,38 @@ fun ProfileScreen(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "ASHA Worker ID: ASH123456",
+                text = "ASHA Worker ID: ${userProfile.workerId}",
                 fontSize = 16.sp
             )
 
-            // Profile sections
+            // Personal Information
             ProfileSection(
                 title = "Personal Information",
                 items = listOf(
-                    "Phone: +91 98765 43210",
-                    "Email: pragati@asha.org",
-                    "Location: Mumbai, Maharashtra"
+                    "Profile ID: ${userProfile.profileId}",
+                    "Worker ID: ${userProfile.workerId}",
+                    "Specialization: ${userProfile.specialization}",
+                    "Language Preference: ${userProfile.languagePreference}"
                 )
             )
 
+            // Location Information
             ProfileSection(
-                title = "Work Statistics",
+                title = "Location Details",
                 items = listOf(
-                    "Active Patients: 45",
-                    "Years of Service: 5",
-                    "Area Coverage: 3 km²"
+                    "State: ${userProfile.state}",
+                    "City: ${userProfile.city}"
                 )
             )
 
+            // Account Information
             ProfileSection(
-                title = "Certifications",
+                title = "Account Information",
                 items = listOf(
-                    "ASHA Basic Training",
-                    "Maternal Care Specialist",
-                    "Digital Health Training"
+                    "Created: ${userProfile.createdAt}",
+                    "Last Updated: ${userProfile.updatedAt}"
                 )
             )
-
-            // Edit Profile Button
-            Button(
-                onClick = { /* TODO: Edit profile */ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Edit Profile")
-            }
 
             // Sign Out Button
             Button(

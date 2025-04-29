@@ -12,5 +12,13 @@ data class LoginData(
 
 data class UserProfile(
     val firstName: String,
-    val lastName: String
+    val lastName: String,
+    val profileId: Int,
+    val workerId: Int,
+    val state: String,
+    val city: String,
+    val languagePreference: String,
+    val specialization: String,
+    val createdAt: String,
+    val updatedAt: String
 ) 
