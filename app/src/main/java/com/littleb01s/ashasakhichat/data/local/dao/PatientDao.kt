@@ -29,6 +29,9 @@ interface PatientDao {
     @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE needsUpload = 1")
     fun getPatientsToUpload(): Flow<List<Patient>>
 
+    @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE needsUpload = 1")
+    suspend fun getPatientsToUploadImmediate(): List<Patient>
+
     @Query("UPDATE TBL_PROFILE_PATIENT SET needsUpload = 0, lastUploadedAt = :timestamp, serverId = :serverId WHERE patientId = :patientId")
     suspend fun markPatientAsUploaded(patientId: Int, serverId: Int, timestamp: Date)
 

@@ -36,7 +36,8 @@ data class Patient(
     val lastUploadedAt: Date? = null,  // When this record was last uploaded to server
     val lastDownloadedAt: Date? = null,  // When this record was last updated from server
     val serverUpdatedAt: Date? = null,  // Last update timestamp from server
-    
+
+    val lmp: Date?= null,
     // Local tracking
     val createdAt: Date = Date(),
     val updatedAt: Date = Date(),

@@ -1,6 +1,7 @@
 package com.littleb01s.ashasakhichat.di
 import com.littleb01s.ashasakhichat.data.api.ApiConstants
 import com.littleb01s.ashasakhichat.data.api.AuthService
+import com.littleb01s.ashasakhichat.data.api.PatientService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,5 +40,11 @@ object NetworkModule {
     @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePatientService(retrofit: Retrofit): PatientService {
+        return retrofit.create(PatientService::class.java)
     }
 } 

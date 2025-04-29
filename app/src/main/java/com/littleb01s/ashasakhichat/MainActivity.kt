@@ -19,10 +19,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.navArgument
 import androidx.compose.ui.unit.LayoutDirection
 import com.littleb01s.ashasakhichat.presentation.ChatScreen
 import org.intellij.lang.annotations.Language
@@ -35,6 +36,7 @@ import com.littleb01s.ashasakhichat.presentation.MainViewModel
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
 import com.littleb01s.ashasakhichat.presentation.screens.riskanalysis.PregnancyRiskAssessmentScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -108,8 +110,30 @@ class MainActivity : ComponentActivity() {
                                     onNavigate = { route -> navController.navigate(route) },
                                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                                 ) {
-                                    PatientsScreen()
+                                    PatientsScreen(
+                                        onPatientClick = { patient ->
+                                            navController.navigate(Screen.PatientDetails.createRoute(patient.patientId))
+                                        },
+                                        onAddNewPatient = {
+                                            navController.navigate(Screen.AddPatient.route)
+                                        }
+                                    )
                                 }
+                            }
+                            composable(Screen.AddPatient.route) {
+                                AddPatientScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(
+                                route = Screen.PatientDetails.route,
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) {
+                                PatientDetailsScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
                             }
                             composable(Screen.Notifications.route) {
                                 MainScaffold(

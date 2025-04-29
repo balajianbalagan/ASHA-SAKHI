@@ -2,7 +2,7 @@ package com.littleb01s.ashasakhichat.di
 
 import android.content.Context
 import com.littleb01s.ashasakhichat.data.local.AshaSakhiDatabase
-import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
+import com.littleb01s.ashasakhichat.data.local.dao.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +24,24 @@ object DatabaseModule {
     @Singleton
     fun providePatientDao(database: AshaSakhiDatabase): PatientDao {
         return database.patientDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideCheckupDao(database: AshaSakhiDatabase): CheckupDao {
+        return database.checkupDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppointmentDao(database: AshaSakhiDatabase): AppointmentDao {
+        return database.appointmentDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentDao(database: AshaSakhiDatabase): DocumentDao {
+        return database.documentDao()
     }
     
     // We'll add more providers here as needed (DAOs, Repositories, etc.)
