@@ -48,4 +48,6 @@
     <string name="apply_changes">Apply Changes</string>
     <string name="settings_updated">Language settings updated successfully!</string>
     <string name="dismiss">Dismiss</string>
-</resources>
+    <!-- Chat Bot Static Messages -->
+    <string name="chat_welcome_message">**Welcome to ASHA Sakhi!** 👋\n\nI\'m your AI healthcare companion for safer motherhood. I\'m here to provide information, answer questions, and support you throughout your pregnancy journey.\n\nHow can I assist you today?</string>
+</resources> 
