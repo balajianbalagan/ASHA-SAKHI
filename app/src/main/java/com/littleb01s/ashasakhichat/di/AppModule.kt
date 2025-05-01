@@ -22,6 +22,9 @@ private const val TAG = "AppModule"
 @InstallIn(SingletonComponent::class)
 class AppModule {
     @Provides
+    fun provideContext(@ApplicationContext context: Context): Context = context
+
+    @Provides
     fun provideLlmInference(@ApplicationContext context: Context): LlmInference {
         Log.d(TAG, "Starting LLM initialization...")
         val modelPath = "/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin"
