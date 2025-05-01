@@ -134,6 +134,7 @@ class MainActivity : ComponentActivity() {
                                 val patientId = it.arguments?.getInt("patientId") ?: return@composable
                                 PatientDetailsScreen(
                                     patientId = patientId,
+                                    navController = navController,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
@@ -171,11 +172,21 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.RiskAnalysis.route) {
                                 RiskAnalysisScreen(
                                     onNavigateBack = { navController.navigateUp() },
-                                    onNavigateToPregnancyRisk = { navController.navigate(Screen.PregnancyRiskAssessment.route) }
+                                    onNavigateToPregnancyRisk = {
+                                        navController.navigate(Screen.PregnancyRiskAssessment.route)
+                                    },
+                                    patientId = null
                                 )
                             }
-                            composable(Screen.PregnancyRiskAssessment.route) {
+                            composable(
+                                route = "${Screen.PregnancyRiskAssessment.route}/{patientId}",
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId")
                                 PregnancyRiskAssessmentScreen(
+                                    patientId = patientId,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
@@ -196,6 +207,33 @@ class MainActivity : ComponentActivity() {
                                             popUpTo(0) { inclusive = true }
                                         }
                                     }
+                                )
+                            }
+
+                            // Add Medical History and Diet Suggestions routes
+                            composable(
+                                route = "${Screen.MedicalHistory.route}/{patientId}",
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                MedicalHistoryScreen(
+                                    patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+
+                            composable(
+                                route = "${Screen.DietSuggestions.route}/{patientId}",
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                DietSuggestionsScreen(
+                                    patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() }
                                 )
                             }
                         }
