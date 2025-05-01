@@ -8,13 +8,17 @@ import com.google.mediapipe.tasks.components.containers.ClassificationResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.google.mediapipe.tasks.genai.llminference.ProgressListener
+import com.google.common.util.concurrent.ListenableFuture
+import javax.inject.Singleton
 
+@Singleton
 class MediapipeLLMDataSource @Inject constructor(
     private val llmInference: LlmInference,
     private val imageClassifier: ImageClassifier
 ) {
     private val systemPrompt = """
-        You are a healthcare agent.
+        You are a healthcare assistant for pregnant women. Provide only factual medical information and nutrition plans. Never build conversations or hallucinate. If unsure, say so. Always recommend consulting doctors for serious concerns.
     """.trimIndent()
 
     suspend fun start(): String {
@@ -23,7 +27,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 MediapipeLLMDataSource::class.java.simpleName,
                 "Initializing ASHA Sakhi chat"
             )
-            llmInference.generateResponse("$systemPrompt\n\nStart a friendly conversation with the user, introducing yourself as their AI healthcare companion for safer motherhood. Keep it brief but welcoming.")
+            llmInference.generateResponse("$systemPrompt\n\nI am ready to assist with your healthcare queries. Please ask your specific question.")
         }
     }
 
@@ -42,4 +46,8 @@ class MediapipeLLMDataSource @Inject constructor(
 
     fun classifyImage(image: MPImage): ClassificationResult =
         imageClassifier.classify(image).classificationResult()
+
+    fun generateResponseAsync(prompt: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
+        return llmInference.generateResponseAsync(prompt,progressListener)
+    }
 }

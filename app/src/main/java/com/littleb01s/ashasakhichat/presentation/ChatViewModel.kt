@@ -1,5 +1,7 @@
 package com.littleb01s.ashasakhichat.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +16,12 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.mediapipe.tasks.genai.llminference.ProgressListener
+import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Executors
 
 private val awaitingMessageFromAsha = Message(
     text = "ASHA Sakhi is typing...",
@@ -25,7 +33,8 @@ private val awaitingMessageFromAsha = Message(
 class ChatViewModel @Inject constructor(
     private val startAshaSakhiChat: StartAshaSakhiChat,
     private val sendMessageToAsha: SendMessageToAshaSakhiChat,
-    private val translationService: TranslationService
+    private val translationService: TranslationService,
+    private val llmDataSource: MediapipeLLMDataSource
 ) : ViewModel() {
     val messages: StateFlow<List<Message>>
         get() = _messages
@@ -39,6 +48,7 @@ class ChatViewModel @Inject constructor(
 
     private val _isProcessing: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun startChat() {
         viewModelScope.launch {
             _isProcessing.value = true
@@ -81,59 +91,90 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(text: String) {
-        if (_isProcessing.value) return
-        
-        viewModelScope.launch {
-            _isProcessing.value = true
-            val newMessage = Message(
-                text = text,
-                isFromMe = true,
-                timestamp = LocalDateTime.now()
-            )
+    fun sendMessage(message: String) {
+        if (message.isBlank()) return
 
-            _messages.update { messages ->
-                val mutableList = messages.toMutableList()
-                mutableList += listOf(newMessage, awaitingMessageFromAsha)
-                mutableList
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            _isProcessing.value = true
+            
+            // Add user message
+            val updatedMessages = _messages.value.toMutableList()
+            updatedMessages.add(Message(
+                text = message,
+                isFromMe = true
+            ))
+            _messages.value = updatedMessages
+
+            // Add loading message
+            val loadingMessage = Message(
+                text = "",
+                isFromMe = false,
+                isLoading = true
+            )
+            updatedMessages.add(loadingMessage)
+            _messages.value = updatedMessages
 
             try {
-                val message = sendMessageToAsha(message = newMessage)
-                val translatedText = translationService.translate(message.text)
-                val formattedText = formatResponse(translatedText)
-                _messages.update { messages ->
-                    val mutableList = messages.toMutableList()
-                    mutableList.removeLast()
-                    mutableList += message.copy(
-                        text = formattedText,
-                        timestamp = LocalDateTime.now()
-                    )
-                    mutableList
-                }
+                val asyncInference = llmDataSource.generateResponseAsync(message, object : ProgressListener<String> {
+                    override fun run(partialResult: String?, done: Boolean) {
+                        viewModelScope.launch {
+                            val currentMessages = _messages.value.toMutableList()
+                            if (currentMessages.isNotEmpty() && currentMessages.last().isLoading) {
+                                // Remove the loading message
+                                currentMessages.removeAt(currentMessages.lastIndex)
+                                // Add the initial response message
+                                currentMessages.add(Message(
+                                    text = partialResult.toString(),
+                                    isFromMe = false
+                                ))
+                            } else {
+                                // Update the last message with the new partial result
+                                val lastMessage = currentMessages.last()
+                                currentMessages[currentMessages.lastIndex] = lastMessage.copy(
+                                    text = lastMessage.text + partialResult
+                                )
+                            }
+                            _messages.value = currentMessages
+
+                            if (done) {
+                                _isProcessing.value = false
+                            }
+                        }
+                    }
+                })
+
+                // Handle completion
+                asyncInference.addListener({
+                    viewModelScope.launch {
+                        _isProcessing.value = false
+                    }
+                }, Executors.newSingleThreadExecutor())
             } catch (e: Exception) {
-                val errorMessage = "I apologize, but I'm having trouble processing your message. Please try again."
-                val translatedErrorMessage = translationService.translate(errorMessage)
-                _messages.update { messages ->
-                    val mutableList = messages.toMutableList()
-                    mutableList.removeLast()
-                    mutableList += Message(
-                        text = translatedErrorMessage,
+                viewModelScope.launch {
+                    val errorMessages = _messages.value.toMutableList()
+                    if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
+                        errorMessages.removeAt(errorMessages.lastIndex)
+                    }
+                    errorMessages.add(Message(
+                        text = e.message ?: "An error occurred",
                         isFromMe = false,
-                        isError = true,
-                        timestamp = LocalDateTime.now()
-                    )
-                    mutableList
+                        isError = true
+                    ))
+                    _messages.value = errorMessages
+                    _isProcessing.value = false
                 }
-            } finally {
-                _isProcessing.value = false
             }
         }
     }
 
     fun retryLastMessage() {
-        val lastUserMessage = _messages.value.lastOrNull { it.isFromMe } ?: return
-        sendMessage(lastUserMessage.text)
+        val messages = _messages.value
+        if (messages.isNotEmpty()) {
+            val lastUserMessage = messages.lastOrNull { it.isFromMe }
+            if (lastUserMessage != null) {
+                sendMessage(lastUserMessage.text)
+            }
+        }
     }
 
     suspend fun sendPhoto(imageBitmap: ImageBitmap) {
@@ -233,6 +274,16 @@ class ChatViewModel @Inject constructor(
         }
         
         return formattedText
+    }
+
+    private fun getCurrentDate(): String {
+        return java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+            .format(java.util.Date())
+    }
+
+    private fun getCurrentTime(): String {
+        return java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+            .format(java.util.Date())
     }
 }
 
