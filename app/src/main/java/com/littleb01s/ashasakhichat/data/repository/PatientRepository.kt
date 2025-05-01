@@ -205,29 +205,29 @@ class PatientRepository @Inject constructor(
     }
 
     private suspend fun saveLocally(patientData: PatientData) {
-        val patient = Patient(
-            patientId = 0, // Will be auto-generated
-            state = patientData.state,
-            city = patientData.city,
-            languagePreference = patientData.languagePreference,
-            firstName = patientData.firstName,
-            lastName = patientData.lastName,
-            dateOfBirth = patientData.dateOfBirth,
-            deliveryDate = patientData.deliveryDate,
-            mobileNumber = patientData.mobileNumber,
-            employmentStatus = patientData.employmentStatus,
-            religion = patientData.religion,
-            education = patientData.education,
-            caste = patientData.caste,
-            bloodGroup = patientData.bloodGroup,
-            previousIllness = patientData.previousIllness,
-            needsUpload = true, // Mark for future sync
-            needsDownload = false,
-            lastDownloadedAt = null,
+            val patient = Patient(
+                patientId = 0, // Will be auto-generated
+                state = patientData.state,
+                city = patientData.city,
+                languagePreference = patientData.languagePreference,
+                firstName = patientData.firstName,
+                lastName = patientData.lastName,
+                dateOfBirth = patientData.dateOfBirth,
+                deliveryDate = patientData.deliveryDate,
+                mobileNumber = patientData.mobileNumber,
+                employmentStatus = patientData.employmentStatus,
+                religion = patientData.religion,
+                education = patientData.education,
+                caste = patientData.caste,
+                bloodGroup = patientData.bloodGroup,
+                previousIllness = patientData.previousIllness,
+                needsUpload = true, // Mark for future sync
+                needsDownload = false,
+                lastDownloadedAt = null,
             serverId = null, // Will be updated after sync
             lmp = patientData.lmp
-        )
-        patientDao.insertPatient(patient)
+            )
+            patientDao.insertPatient(patient)
     }
 
     // Sync operations

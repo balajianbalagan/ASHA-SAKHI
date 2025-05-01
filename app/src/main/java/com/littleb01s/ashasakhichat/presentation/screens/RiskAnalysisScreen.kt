@@ -18,7 +18,8 @@ import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 @Composable
 fun RiskAnalysisScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToPregnancyRisk: () -> Unit
+    onNavigateToPregnancyRisk: () -> Unit,
+    patientId: Int? = null
 ) {
     DetailScaffold(
         title = stringResource(R.string.risk_analysis),
@@ -100,4 +101,4 @@ fun RiskAnalysisScreen(
             }
         }
     }
-} 
+}   

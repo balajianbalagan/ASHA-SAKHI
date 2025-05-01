@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PregnancyRiskAssessmentScreen(
+    patientId: Int? = null,
     onNavigateBack: () -> Unit,
     viewModel: PregnancyRiskViewModel = hiltViewModel()
 ) {
@@ -48,6 +49,23 @@ fun PregnancyRiskAssessmentScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Display Patient ID if available
+            patientId?.let { id ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(
+                        text = "Patient ID: $id",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
             // Risk Level Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -210,7 +228,6 @@ fun PregnancyRiskAssessmentScreen(
                     }
                 },
                 modifier = Modifier
-
                     .fillMaxWidth()
                     .height(56.dp),
                 enabled = !isLoading
