@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 import com.google.common.util.concurrent.ListenableFuture
+import okhttp3.internal.notify
 import javax.inject.Singleton
 
 @Singleton
@@ -18,7 +19,7 @@ class MediapipeLLMDataSource @Inject constructor(
     private val imageClassifier: ImageClassifier
 ) {
     private val systemPrompt = """
-        You are a healthcare assistant for pregnant women. Provide only factual medical information and nutrition plans. Never build conversations or hallucinate. If unsure, say so. Always recommend consulting doctors for serious concerns.
+        You are a healthcare assistant for pregnant women. Provide only factual medical information and nutrition plans. Never build conversations or hallucinate. If unsure, say so. Always recommend consulting doctors for serious concerns. Be specific and limit to three paragraphs
     """.trimIndent()
 
     suspend fun start(): String {
@@ -27,7 +28,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 MediapipeLLMDataSource::class.java.simpleName,
                 "Initializing ASHA Sakhi chat"
             )
-            llmInference.generateResponse("$systemPrompt\n\nI am ready to assist with your healthcare queries. Please ask your specific question.")
+            llmInference.generateResponse("$systemPrompt\n\nI am ready to assist with your healthcare queries. Please ask your specific question. Limit strictly to 200 words")
         }
     }
 
@@ -50,4 +51,5 @@ class MediapipeLLMDataSource @Inject constructor(
     fun generateResponseAsync(prompt: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
         return llmInference.generateResponseAsync(prompt,progressListener)
     }
+
 }
