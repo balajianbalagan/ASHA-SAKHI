@@ -70,7 +70,6 @@ fun ChatScreen(viewModel: ChatViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding()
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
@@ -128,7 +127,6 @@ fun ChatScreen(viewModel: ChatViewModel) {
 
             ChatBox(
                 modifier = Modifier
-                    .imePadding()
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 onTextFieldClicked = {
@@ -269,7 +267,7 @@ fun ChatItem(
                     .padding(16.dp)
             ) {
                 Column {
-                    if (message.text.isNotEmpty()) {
+                    if (message.text.isNotEmpty() || message.isLoading) {
                         if (message.isLoading) {
                             LoadingAnimation()
                         } else {
@@ -403,7 +401,6 @@ fun ChatBox(
             textStyle = MaterialTheme.typography.bodyLarge,
             singleLine = true,
         )
-        Spacer(modifier = Modifier.width(8.dp))
         IconButton(
             onClick = {
                 if (chatBoxValue.text.isNotBlank()) {
