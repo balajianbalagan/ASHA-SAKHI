@@ -1,5 +1,7 @@
 package com.littleb01s.ashasakhichat.presentation.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,6 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -15,13 +21,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 // Define colors at the top level to match PatientDetailsScreen
 private val CustomBlue = Color(0xFF0174B3)
@@ -166,68 +179,208 @@ fun PatientsScreen(
 
 @Composable
 fun PatientCard(patient: Patient, onClick: () -> Unit) {
+    val context = LocalContext.current
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
-        shape = MaterialTheme.shapes.medium
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Left section with patient info
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = "${patient.firstName} ${patient.lastName ?: ""}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = CustomBlue
-                )
-                if (patient.needsUpload) {
-                    Surface(
-                        color = CustomOrange.copy(alpha = 0.2f),
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${patient.firstName} ${patient.lastName ?: ""}",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CustomBlue,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    
+                    if (patient.needsUpload) {
+                        Surface(
+                            color = CustomOrange.copy(alpha = 0.2f),
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Icon(
                                 Icons.Default.Refresh,
                                 contentDescription = "Pending Sync",
                                 tint = CustomOrange,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Text(
-                                "Pending Sync",
-                                color = CustomOrange,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Medium
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .padding(2.dp)
                             )
                         }
                     }
                 }
+
+                // Patient details in a compact grid
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Left column
+                    Column(modifier = Modifier.weight(1f)) {
+                        PatientInfoRow(
+                            icon = Icons.Filled.DateRange,
+                            mainText = "Age",
+                            text = "${calculateAge(patient.dateOfBirth)}y",
+                            color = Color.Gray
+                        )
+                        PatientInfoRow(
+                            icon = Icons.Default.LocationOn,
+                            text = patient.city ?: "-",
+                            mainText = "Place",
+                            color = Color.Gray
+                        )
+                    }
+                    
+                    // Right column
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        PatientInfoRow(
+                            icon = Icons.Filled.Person,
+                            mainText = "Trimester",
+                            text = calculateTrimester(patient.lmp),
+                            color = CustomGreen
+                        )
+                        PatientInfoRow(
+                            icon = Icons.Default.DateRange,
+                            mainText = "EDD",
+                            text = formatDate(patient.deliveryDate ?: calculateEDD(patient.lmp)),
+                            color = CustomBlue
+                        )
+                    }
+                }
             }
-            
-            Text(
-                text = "Mobile: ${patient.mobileNumber}",
-                color = Color.Gray
-            )
-            Text(
-                text = "City: ${patient.city ?: "-"}",
-                color = Color.Gray
-            )
+
+            // Call button
+            IconButton(
+                onClick = { handlePhoneCall(context, patient.mobileNumber) },
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .size(36.dp)
+                    .background(
+                        color = CustomGreen.copy(alpha = 0.1f),
+                        shape = MaterialTheme.shapes.small
+                    )
+            ) {
+                Icon(
+                    Icons.Default.Phone,
+                    contentDescription = "Call Patient",
+                    tint = CustomGreen,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun PatientInfoRow(
+    icon: ImageVector,
+    mainText: String,
+    text: String,
+    color: Color
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(vertical = 2.dp)
+    ) {
+        Text(
+            text = mainText,
+            fontSize = 14.sp,
+            color = color,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(14.dp)
+        )
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            color = color,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+private fun handlePhoneCall(context: android.content.Context, phoneNumber: String) {
+    try {
+        val intent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        // Handle exception (could show a toast or snackbar)
+        e.printStackTrace()
+    }
+}
+
+private fun calculateAge(dateOfBirth: Date): Int {
+    val today = Calendar.getInstance()
+    val birthDate = Calendar.getInstance().apply { time = dateOfBirth }
+    var age = today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR)
+    if (today.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {
+        age--
+    }
+    return age
+}
+
+private fun calculateTrimester(lmp: Date?): String {
+    if (lmp == null) return "-"
+    val today = Calendar.getInstance().timeInMillis
+    val lmpTime = lmp.time
+    val weeksDiff = TimeUnit.MILLISECONDS.toDays(today - lmpTime) / 7
+
+    return when {
+        weeksDiff < 0 -> "-"
+        weeksDiff <= 13 -> "1st Tri"
+        weeksDiff <= 26 -> "2nd Tri"
+        weeksDiff <= 40 -> "3rd Tri"
+        else -> "Post"
+    }
+}
+
+private fun calculateEDD(lmp: Date?): Date {
+    if (lmp == null) return Date()
+    return Calendar.getInstance().apply {
+        time = lmp
+        add(Calendar.WEEK_OF_YEAR, 40)
+    }.time
+}
+
+private fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("MMM d", Locale.getDefault())
+    return formatter.format(date)
 } 
