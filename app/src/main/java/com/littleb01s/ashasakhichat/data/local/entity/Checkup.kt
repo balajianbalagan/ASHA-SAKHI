@@ -18,6 +18,7 @@ data class Checkup(
     val bmi: Float? = null,
     val haemoglobin: String? = null,
     val checkupData: String? = null,
+    val checkupType: String? = null,
     val pregnancyStage: String? = null,
     val checkupStatus: Int? = null,
     // Sync fields
