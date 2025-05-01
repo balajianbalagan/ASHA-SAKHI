@@ -117,6 +117,12 @@ class ChatViewModel @Inject constructor(
                 // Cancel any existing inference and timeout
                 currentAsyncInference.get()?.cancel(true)
                 timeoutJob?.cancel()
+                
+                // Reset the LLM inference if there was a previous one
+                if (currentAsyncInference.get() != null) {
+                    llmDataSource.resetLLMInference()
+                }
+                
                 _isProcessing.value = true
                 lastMessageTime.set(System.currentTimeMillis())
                 
@@ -144,6 +150,7 @@ class ChatViewModel @Inject constructor(
                         if (System.currentTimeMillis() - lastMessageTime.get() > TIMEOUT_MS) {
                             // Cancel the async inference if it exists
                             currentAsyncInference.get()?.cancel(true)
+                            llmDataSource.resetLLMInference()
                             _isProcessing.value = false
                             
                             // Add timeout error message
@@ -222,6 +229,7 @@ class ChatViewModel @Inject constructor(
                     timeoutJob?.cancel()
                     currentAsyncInference.set(null)
                     isWaitingForCompletion = false
+                    llmDataSource.resetLLMInference()
                 }
             }
         }
