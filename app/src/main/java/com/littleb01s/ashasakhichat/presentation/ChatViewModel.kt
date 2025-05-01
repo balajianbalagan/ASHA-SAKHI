@@ -21,7 +21,13 @@ import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 private val awaitingMessageFromAsha = Message(
     text = "ASHA Sakhi is typing...",
@@ -47,6 +53,12 @@ class ChatViewModel @Inject constructor(
     )
 
     private val _isProcessing: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    private val lastMessageTime = AtomicLong(0)
+    private val TIMEOUT_MS = 5000L // 5 seconds timeout
+    private val currentAsyncInference = AtomicReference<ListenableFuture<String>?>(null)
+    private var timeoutJob: Job? = null
+    private var isWaitingForCompletion = false
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun startChat() {
@@ -95,29 +107,66 @@ class ChatViewModel @Inject constructor(
         if (message.isBlank()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            _isProcessing.value = true
-            
-            // Add user message
-            val updatedMessages = _messages.value.toMutableList()
-            updatedMessages.add(Message(
-                text = message,
-                isFromMe = true
-            ))
-            _messages.value = updatedMessages
+            // Wait for any previous inference to complete
+            if (isWaitingForCompletion) {
+                return@launch
+            }
 
-            // Add loading message
-            val loadingMessage = Message(
-                text = "",
-                isFromMe = false,
-                isLoading = true
-            )
-            updatedMessages.add(loadingMessage)
-            _messages.value = updatedMessages
-
+            isWaitingForCompletion = true
             try {
+                // Cancel any existing inference and timeout
+                currentAsyncInference.get()?.cancel(true)
+                timeoutJob?.cancel()
+                _isProcessing.value = true
+                lastMessageTime.set(System.currentTimeMillis())
+                
+                // Add user message
+                val updatedMessages = _messages.value.toMutableList()
+                updatedMessages.add(Message(
+                    text = message,
+                    isFromMe = true
+                ))
+                _messages.value = updatedMessages
+
+                // Add loading message
+                val loadingMessage = Message(
+                    text = "",
+                    isFromMe = false,
+                    isLoading = true
+                )
+                updatedMessages.add(loadingMessage)
+                _messages.value = updatedMessages
+
+                // Start timeout check
+                timeoutJob = launch {
+                    while (true) {
+                        delay(1000) // Check every second
+                        if (System.currentTimeMillis() - lastMessageTime.get() > TIMEOUT_MS) {
+                            // Cancel the async inference if it exists
+                            currentAsyncInference.get()?.cancel(true)
+                            _isProcessing.value = false
+                            
+                            // Add timeout error message
+                            val errorMessages = _messages.value.toMutableList()
+                            if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
+                                errorMessages.removeAt(errorMessages.lastIndex)
+                            }
+                            errorMessages.add(Message(
+                                text = "Response timeout. Please try again.",
+                                isFromMe = false,
+                                isError = true
+                            ))
+                            _messages.value = errorMessages
+                            isWaitingForCompletion = false
+                            break
+                        }
+                    }
+                }
+
                 val asyncInference = llmDataSource.generateResponseAsync(message, object : ProgressListener<String> {
                     override fun run(partialResult: String?, done: Boolean) {
                         viewModelScope.launch {
+                            lastMessageTime.set(System.currentTimeMillis())
                             val currentMessages = _messages.value.toMutableList()
                             if (currentMessages.isNotEmpty() && currentMessages.last().isLoading) {
                                 // Remove the loading message
@@ -138,15 +187,23 @@ class ChatViewModel @Inject constructor(
 
                             if (done) {
                                 _isProcessing.value = false
+                                timeoutJob?.cancel()
+                                isWaitingForCompletion = false
                             }
                         }
                     }
                 })
 
+                // Store the current async inference
+                currentAsyncInference.set(asyncInference)
+
                 // Handle completion
                 asyncInference.addListener({
                     viewModelScope.launch {
                         _isProcessing.value = false
+                        timeoutJob?.cancel()
+                        currentAsyncInference.set(null)
+                        isWaitingForCompletion = false
                     }
                 }, Executors.newSingleThreadExecutor())
             } catch (e: Exception) {
@@ -162,6 +219,9 @@ class ChatViewModel @Inject constructor(
                     ))
                     _messages.value = errorMessages
                     _isProcessing.value = false
+                    timeoutJob?.cancel()
+                    currentAsyncInference.set(null)
+                    isWaitingForCompletion = false
                 }
             }
         }
