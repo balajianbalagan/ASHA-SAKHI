@@ -82,4 +82,7 @@ interface PatientDao {
         OR lastDownloadedAt IS NULL
     """)
     fun getPatientsWithPossibleConflicts(): Flow<List<Patient>>
+
+    @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE firstName = :firstName AND (lastName = :lastName OR (:lastName IS NULL AND lastName IS NULL)) ORDER BY patientId DESC LIMIT 1")
+    suspend fun getPatientByName(firstName: String, lastName: String?): Patient?
 } 

@@ -97,6 +97,12 @@ data class VitalsData(
     val checkupStatus: Int?
 )
 
+data class AddPatientResponse(
+    val message: String,
+    val patientData: PatientResponse
+)
+
 data class SavePatientResponse(
-    val data: PatientResponse
-) 
+    val data: AddPatientResponse
+)
+

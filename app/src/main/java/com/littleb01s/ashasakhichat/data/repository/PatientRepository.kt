@@ -129,7 +129,7 @@ class PatientRepository @Inject constructor(
             val response = patientService.savePatient(request)
             if (response.isSuccessful) {
                 // Update local database with response data
-                response.body()?.data?.let { patientResponse ->
+                response.body()?.let { patientResponse ->
                     // Similar conversion and saving as in fetchAndCachePatients
                     // but mark as synced
                 }
@@ -138,6 +138,85 @@ class PatientRepository @Inject constructor(
             // If API fails, save locally and mark for future sync
             // TODO: Implement local-only saving with sync flags
         }
+    }
+
+    // New function to add a new patient
+    suspend fun addNewPatient(
+        patientData: PatientData,
+        workerId: Int
+    ): Boolean {  // Return true if synced with server, false if local only
+        val request = SavePatientRequest(
+            patientId = null, // For new patients, we don't have an ID yet
+            workerId = workerId,
+            patientData = patientData,
+            vitals = null
+        )
+
+        try {
+            val response = patientService.savePatient(request)
+            if (response.isSuccessful) {
+                // Update local database with response data
+                response.body()?.data?.let { patientResponse ->
+                    val patient = Patient(
+                        patientId = patientResponse.patientData.patientId,
+                        state = patientResponse.patientData.state,
+                        city = patientResponse.patientData.city,
+                        languagePreference = patientResponse.patientData.languagePreference,
+                        firstName = patientResponse.patientData.firstName,
+                        lastName = patientResponse.patientData.lastName,
+                        dateOfBirth = parseIsoDate(patientResponse.patientData.dateOfBirth) ?: Date(),
+                        deliveryDate = parseIsoDate(patientResponse.patientData.deliveryDate),
+                        mobileNumber = patientResponse.patientData.mobileNumber,
+                        employmentStatus = patientResponse.patientData.employmentStatus,
+                        religion = patientResponse.patientData.religion,
+                        education = patientResponse.patientData.education,
+                        caste = patientResponse.patientData.caste,
+                        bloodGroup = patientResponse.patientData.bloodGroup,
+                        previousIllness = patientResponse.patientData.previousIllness,
+                        needsUpload = false,
+                        needsDownload = false,
+                        lastDownloadedAt = Date(),
+                        serverId = patientResponse.patientData.patientId
+                    )
+                    patientDao.insertPatient(patient)
+                }
+                return true // Successfully synced with server
+            } else {
+                // Server request failed, save locally
+                saveLocally(patientData)
+                return false // Local save only
+            }
+        } catch (e: Exception) {
+            // Network/server error, save locally
+            saveLocally(patientData)
+            return false // Local save only
+        }
+    }
+
+    private suspend fun saveLocally(patientData: PatientData) {
+        val patient = Patient(
+            patientId = 0, // Will be auto-generated
+            state = patientData.state,
+            city = patientData.city,
+            languagePreference = patientData.languagePreference,
+            firstName = patientData.firstName,
+            lastName = patientData.lastName,
+            dateOfBirth = patientData.dateOfBirth,
+            deliveryDate = patientData.deliveryDate,
+            mobileNumber = patientData.mobileNumber,
+            employmentStatus = patientData.employmentStatus,
+            religion = patientData.religion,
+            education = patientData.education,
+            caste = patientData.caste,
+            bloodGroup = patientData.bloodGroup,
+            previousIllness = patientData.previousIllness,
+            needsUpload = true, // Mark for future sync
+            needsDownload = false,
+            lastDownloadedAt = null,
+            serverId = null, // Will be updated after sync
+            lmp = patientData.lmp
+        )
+        patientDao.insertPatient(patient)
     }
 
     // Sync operations
@@ -172,7 +251,7 @@ class PatientRepository @Inject constructor(
                     // Update local patient with server ID and mark as synced
                     patientDao.updatePatient(patient.copy(
                         needsUpload = false,
-                        serverId = response.body()?.data?.patientId ?: patient.serverId
+                        serverId = response.body()?.data?.patientData?.patientId ?: patient.serverId
                     ))
                 } else {
                     throw Exception("Failed to sync patient: ${response.message()}")

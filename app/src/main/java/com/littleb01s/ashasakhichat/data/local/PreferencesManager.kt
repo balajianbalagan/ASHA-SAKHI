@@ -33,6 +33,10 @@ class PreferencesManager @Inject constructor(
         } else null
     }
 
+    fun getWorkerId(): Int? {
+        return getUserProfile()?.workerId
+    }
+
     fun clearAll() {
         prefs.edit().clear().apply()
     }

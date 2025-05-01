@@ -139,6 +139,8 @@ fun SettingsScreen(
                                 text = when (selectedLanguage) {
                                     "en" -> stringResource(R.string.english)
                                     "hi" -> stringResource(R.string.hindi)
+                                    "ta" -> stringResource(R.string.tamil)
+                                    "bn" -> stringResource(R.string.bengali)
                                     else -> stringResource(R.string.english)
                                 },
                                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -181,6 +183,30 @@ fun SettingsScreen(
                             },
                             onClick = {
                                 selectedLanguage = "hi"
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { 
+                                Text(
+                                    text = stringResource(R.string.tamil),
+                                    color = customBlue
+                                ) 
+                            },
+                            onClick = {
+                                selectedLanguage = "ta"
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { 
+                                Text(
+                                    text = stringResource(R.string.bengali),
+                                    color = customBlue
+                                ) 
+                            },
+                            onClick = {
+                                selectedLanguage = "bn"
                                 expanded = false
                             }
                         )
