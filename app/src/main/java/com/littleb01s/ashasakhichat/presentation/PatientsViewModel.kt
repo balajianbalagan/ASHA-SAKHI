@@ -64,4 +64,10 @@ class PatientsViewModel @Inject constructor(
     suspend fun syncPatients() {
         patientRepository.syncPatients()
     }
+
+    fun getPatientDetails(patientId: Int): Flow<Patient?> {
+        return patientRepository.getPatientWithDetails(patientId).map { patientWithDetails ->
+            patientWithDetails?.patient
+        }
+    }
 } 

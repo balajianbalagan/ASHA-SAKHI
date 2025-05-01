@@ -9,8 +9,11 @@ interface CheckupDao {
     @Query("SELECT * FROM TBL_CHECKUP")
     fun getAllCheckups(): Flow<List<Checkup>>
 
-    @Query("SELECT * FROM TBL_CHECKUP WHERE checkupId = :id")
-    suspend fun getCheckupById(id: Int): Checkup?
+    @Query("SELECT * FROM TBL_CHECKUP WHERE checkupId = :checkupId")
+    suspend fun getCheckupById(checkupId: Int): Checkup?
+
+    @Query("SELECT * FROM TBL_CHECKUP WHERE patientId = :patientId ORDER BY checkupId DESC")
+    fun getCheckupsForPatient(patientId: Int): Flow<List<Checkup>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCheckup(checkup: Checkup): Long
@@ -20,9 +23,6 @@ interface CheckupDao {
 
     @Delete
     suspend fun deleteCheckup(checkup: Checkup)
-
-    @Query("SELECT * FROM TBL_CHECKUP WHERE patientId = :patientId")
-    fun getCheckupsForPatient(patientId: Int): Flow<List<Checkup>>
 
     // Sync-related queries
     @Query("SELECT * FROM TBL_CHECKUP WHERE needsUpload = 1")

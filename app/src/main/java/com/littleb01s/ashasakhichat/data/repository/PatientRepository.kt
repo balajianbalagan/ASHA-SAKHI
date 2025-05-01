@@ -11,6 +11,8 @@ import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -39,9 +41,18 @@ class PatientRepository @Inject constructor(
     // Local database operations
     fun getAllPatients(): Flow<List<Patient>> = patientDao.getAllPatients()
 
-    fun getPatientWithDetails(patientId: Int): Flow<PatientWithDetails> {
-        // TODO: Implement this to return patient with checkups, appointments, and documents
-        TODO()
+    fun getPatientWithDetails(patientId: Int): Flow<PatientWithDetails?> {
+        val patientFlow = patientDao.getPatientById(patientId)
+        val checkupsFlow = checkupDao.getCheckupsForPatient(patientId)
+        
+        return patientFlow.combine(checkupsFlow) { patient, checkups ->
+            patient?.let {
+                PatientWithDetails(
+                    patient = it,
+                    checkups = checkups
+                )
+            }
+        }
     }
 
     // API operations with local caching

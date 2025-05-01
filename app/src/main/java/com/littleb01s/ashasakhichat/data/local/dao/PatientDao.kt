@@ -10,8 +10,8 @@ interface PatientDao {
     @Query("SELECT * FROM TBL_PROFILE_PATIENT")
     fun getAllPatients(): Flow<List<Patient>>
 
-    @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE patientId = :id")
-    suspend fun getPatientById(id: Int): Patient?
+    @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE patientId = :patientId")
+    fun getPatientById(patientId: Int): Flow<Patient?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPatient(patient: Patient): Long
