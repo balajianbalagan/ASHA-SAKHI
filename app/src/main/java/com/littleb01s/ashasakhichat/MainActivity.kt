@@ -42,26 +42,163 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        
+
         setContent {
-            AshaTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.Chat.route
+            val configuration = LocalConfiguration.current
+            val locale = configuration.locales[0]
+            val navController = rememberNavController()
+            val mainViewModel: MainViewModel = hiltViewModel()
+
+            // Determine start destination based on login status
+            val startDestination = if (mainViewModel.isUserLoggedIn()) {
+                Screen.Home.route
+            } else {
+                Screen.Welcome.route
+            }
+
+            CompositionLocalProvider(
+                LocalLayoutDirection provides if (locale.language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+            ) {
+                AshaTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
                     ) {
-                        composable(Screen.Chat.route) {
-                            ChatScreen(hiltViewModel())
+                        NavHost(
+                            navController = navController,
+                            startDestination = startDestination
+                        ) {
+                            composable(Screen.Welcome.route) {
+                                WelcomeScreen(
+                                    onGetStarted = {
+                                        navController.navigate(Screen.Login.route) {
+                                            popUpTo(Screen.Welcome.route) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable(Screen.Login.route) {
+                                LoginScreen(
+                                    onLoginSuccess = {
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(Screen.Login.route) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+
+                            // Bottom Navigation Screens
+                            composable(Screen.Home.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Home.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    HomeContent(
+                                        onNavigateToTraining = { navController.navigate(Screen.Training.route) },
+                                        onNavigateToRiskAnalysis = { navController.navigate(Screen.RiskAnalysis.route) },
+                                        onNavigateToChat = { navController.navigate(Screen.Chat.route) },
+                                        onNavigateToMap = { navController.navigate(Screen.RegionalMap.route) },
+                                        onNavigateToPatients = { navController.navigate(Screen.Patients.route) }
+                                    )
+                                }
+                            }
+                            composable(Screen.Patients.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Patients.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    PatientsScreen(
+                                        onPatientClick = { patient ->
+                                            navController.navigate(Screen.PatientDetails.createRoute(patient.patientId))
+                                        },
+                                        onAddNewPatient = {
+                                            navController.navigate(Screen.AddPatient.route)
+                                        }
+                                    )
+                                }
+                            }
+                            composable(Screen.AddPatient.route) {
+                                AddPatientScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(
+                                route = Screen.PatientDetails.route,
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) {
+                                val patientId = it.arguments?.getInt("patientId") ?: return@composable
+                                PatientDetailsScreen(
+                                    patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.Notifications.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Notifications.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    NotificationsScreen()
+                                }
+                            }
+                            composable(Screen.Settings.route) {
+                                MainScaffold(
+                                    currentRoute = Screen.Settings.route,
+                                    onNavigate = { route -> navController.navigate(route) },
+                                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
+                                ) {
+                                    SettingsScreen(
+                                        onNavigateToHome = {
+                                            navController.navigate(Screen.Home.route) {
+                                                popUpTo(Screen.Home.route) { inclusive = true }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+
+                            // Full Screen Routes
+                            composable(Screen.Training.route) {
+                                TrainingScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.RiskAnalysis.route) {
+                                RiskAnalysisScreen(
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onNavigateToPregnancyRisk = { navController.navigate(Screen.PregnancyRiskAssessment.route) }
+                                )
+                            }
+                            composable(Screen.PregnancyRiskAssessment.route) {
+                                PregnancyRiskAssessmentScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.Chat.route) {
+                                ChatScreen(hiltViewModel())
+                            }
+                            composable(Screen.RegionalMap.route) {
+                                RegionalMapScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.Profile.route) {
+                                ProfileScreen(
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onSignOut = {
+                                        // Navigate to Welcome screen and clear backstack
+                                        navController.navigate(Screen.Welcome.route) {
+                                            popUpTo(0) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
                         }
-                        // ... existing code ...
                     }
                 }
             }
@@ -78,4 +215,3 @@ fun GreetingPreview() {
         )
     }
 }
-
