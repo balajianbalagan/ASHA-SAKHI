@@ -40,7 +40,8 @@ data class PatientResponse(
     val previousIllness: String?,
     val createdAt: String,
     val updatedAt: String,
-    val checkupData: List<CheckupResponse>
+    val checkupData: List<CheckupResponse>,
+    val lmp: String?
 )
 
 data class CheckupResponse(

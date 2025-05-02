@@ -27,6 +27,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.Checkup
 fun MedicalHistoryScreen(
     patientId: Int,
     onNavigateBack: () -> Unit,
+    onAddCheckup: (Int) -> Unit,
     viewModel: MedicalHistoryViewModel = hiltViewModel()
 ) {
     val checkups by viewModel.checkups.collectAsState()
@@ -100,7 +101,7 @@ fun MedicalHistoryScreen(
 
             // FAB for adding new checkup
             FloatingActionButton(
-                onClick = { /* TODO: Implement new checkup */ },
+                onClick = { onAddCheckup(patientId) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),

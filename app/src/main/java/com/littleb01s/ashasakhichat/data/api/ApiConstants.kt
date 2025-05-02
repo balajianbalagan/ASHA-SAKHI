@@ -7,5 +7,5 @@ object ApiConstants {
     const val BASE_URL_PROD = "https://asha-sakhi-admin.onrender.com/"
     
     // Use this to switch between DEV and PROD
-    const val BASE_URL = BASE_URL_DEV_3
+    const val BASE_URL = BASE_URL_DEV
 }

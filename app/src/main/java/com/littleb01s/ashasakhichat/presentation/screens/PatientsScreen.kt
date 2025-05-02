@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
@@ -219,18 +220,29 @@ fun PatientCard(patient: Patient, onClick: () -> Unit) {
                     )
                     
                     if (patient.needsUpload) {
-                        Surface(
-                            color = CustomOrange.copy(alpha = 0.2f),
-                            shape = MaterialTheme.shapes.small,
-                            modifier = Modifier.padding(start = 8.dp)
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(
+                                    color = CustomOrange.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(4.dp)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Text(
+                                text = "Pending Sync",
+                                fontSize = 10.sp,
+                                color = CustomOrange,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(end = 2.dp)
+                            )
                             Icon(
                                 Icons.Default.Refresh,
                                 contentDescription = "Pending Sync",
                                 tint = CustomOrange,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .padding(2.dp)
+                                modifier = Modifier.size(14.dp)
                             )
                         }
                     }
