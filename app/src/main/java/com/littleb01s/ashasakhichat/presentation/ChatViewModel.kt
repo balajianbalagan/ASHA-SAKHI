@@ -138,7 +138,7 @@ class ChatViewModel @Inject constructor(
                 _isProcessing.value = true
                 lastMessageTime.set(System.currentTimeMillis())
                 
-                // Add user message
+                // Add user message - show original message in UI
                 val updatedMessages = _messages.value.toMutableList()
                 updatedMessages.add(Message(
                     text = message,
@@ -170,8 +170,10 @@ class ChatViewModel @Inject constructor(
                             if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
                                 errorMessages.removeAt(errorMessages.lastIndex)
                             }
+                            val errorText = "Response timeout. Please try again."
+                            val translatedError = translationService.translate(errorText)
                             errorMessages.add(Message(
-                                text = "Response timeout. Please try again.",
+                                text = translatedError,
                                 isFromMe = false,
                                 isError = true
                             ))
@@ -182,24 +184,48 @@ class ChatViewModel @Inject constructor(
                     }
                 }
 
-                val asyncInference = llmDataSource.generateResponseAsync(message, object : ProgressListener<String> {
+                // Translate message to English if needed
+                val currentLanguage = translationService.getCurrentLanguage()
+                val messageForLLM = if (currentLanguage != "en") {
+                    // Translate to English for LLM
+                    translationService.translateToEnglish(message)
+                } else {
+                    message
+                }
+                val asyncInference = llmDataSource.generateResponseAsync(messageForLLM, object : ProgressListener<String> {
                     override fun run(partialResult: String?, done: Boolean) {
                         viewModelScope.launch {
                             lastMessageTime.set(System.currentTimeMillis())
                             val currentMessages = _messages.value.toMutableList()
+                            
                             if (currentMessages.isNotEmpty() && currentMessages.last().isLoading) {
                                 // Remove the loading message
                                 currentMessages.removeAt(currentMessages.lastIndex)
+                                
+                                // Translate the partial result if needed
+                                val translatedPartial = if (currentLanguage != "en" && partialResult != null) {
+                                    translationService.translate(partialResult)
+                                } else {
+                                    partialResult ?: ""
+                                }
+                                
                                 // Add the initial response message
                                 currentMessages.add(Message(
-                                    text = partialResult.toString(),
+                                    text = translatedPartial,
                                     isFromMe = false
                                 ))
                             } else {
                                 // Update the last message with the new partial result
                                 val lastMessage = currentMessages.last()
+                                Log.d("ChatViewModel","Updating message: $partialResult")
+                                val translatedPartial = if (currentLanguage != "en" && partialResult != null) {
+                                    translationService.translate(partialResult)
+                                } else {
+                                    partialResult ?: ""
+                                }
+                                
                                 currentMessages[currentMessages.lastIndex] = lastMessage.copy(
-                                    text = lastMessage.text + partialResult
+                                    text = lastMessage.text + " " + translatedPartial
                                 )
                             }
                             _messages.value = currentMessages
@@ -231,8 +257,10 @@ class ChatViewModel @Inject constructor(
                     if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
                         errorMessages.removeAt(errorMessages.lastIndex)
                     }
+                    val errorText = e.message ?: "An error occurred"
+                    val translatedError = translationService.translate(errorText)
                     errorMessages.add(Message(
-                        text = e.message ?: "An error occurred",
+                        text = translatedError,
                         isFromMe = false,
                         isError = true
                     ))
