@@ -31,6 +31,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
+import org.json.JSONObject
 
 private val awaitingMessageFromAsha = Message(
     text = "ASHA Sakhi is typing...",
@@ -385,14 +386,74 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun startSpeechRecognition() {
+    private var lastPartialLength = 0
+
+    override fun onResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition result: $hypothesis")
+        try {
+            val jsonResult = JSONObject(hypothesis)
+            val text = jsonResult.optString("text", "")
+            if (text.isNotEmpty()) {
+                speechRecognitionListener?.onResult(text)
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error parsing result", e)
+        }
+    }
+
+    override fun onFinalResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition final result: $hypothesis")
+        try {
+            val jsonResult = JSONObject(hypothesis)
+            val text = jsonResult.optString("text", "")
+            if (text.isNotEmpty()) {
+                speechRecognitionListener?.onResult(text)
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error parsing final result", e)
+        }
+        stopSpeechRecognition()
+    }
+
+    override fun onPartialResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition partial result: $hypothesis")
+        try {
+            val jsonResult = JSONObject(hypothesis)
+            val partial = jsonResult.optString("partial", "")
+            // Only update if the new partial is longer than the previous one
+            if (partial.length > lastPartialLength) {
+                lastPartialLength = partial.length
+                if (partial.isNotEmpty()) {
+                    speechRecognitionListener?.onResult(partial)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error parsing partial result", e)
+        }
+    }
+
+    override fun onError(exception: Exception) {
+        Log.e("ChatViewModel", "Speech recognition error", exception)
+        lastPartialLength = 0
+        stopSpeechRecognition()
+    }
+
+    override fun onTimeout() {
+        Log.d("ChatViewModel", "Speech recognition timeout")
+        lastPartialLength = 0
+        stopSpeechRecognition()
+    }
+
+    fun startSpeechRecognition() {
+        lastPartialLength = 0
         voskSpeechService.startListening(this)
         _isSpeechRecognitionActive.value = true
     }
 
-    private fun stopSpeechRecognition() {
+    fun stopSpeechRecognition() {
         voskSpeechService.stopListening()
         _isSpeechRecognitionActive.value = false
+        lastPartialLength = 0
     }
 
     fun setSpeechRecognitionListener(listener: SpeechRecognitionListener) {
@@ -401,33 +462,6 @@ class ChatViewModel @Inject constructor(
 
     fun removeSpeechRecognitionListener() {
         speechRecognitionListener = null
-    }
-
-    // RecognitionListener implementation
-    override fun onResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition result: $hypothesis")
-        speechRecognitionListener?.onResult(hypothesis)
-    }
-
-    override fun onFinalResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition final result: $hypothesis")
-        speechRecognitionListener?.onResult(hypothesis)
-        stopSpeechRecognition()
-    }
-
-    override fun onPartialResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition partial result: $hypothesis")
-        speechRecognitionListener?.onResult(hypothesis)
-    }
-
-    override fun onError(exception: Exception) {
-        Log.e("ChatViewModel", "Speech recognition error", exception)
-        stopSpeechRecognition()
-    }
-
-    override fun onTimeout() {
-        Log.d("ChatViewModel", "Speech recognition timeout")
-        stopSpeechRecognition()
     }
 }
 
