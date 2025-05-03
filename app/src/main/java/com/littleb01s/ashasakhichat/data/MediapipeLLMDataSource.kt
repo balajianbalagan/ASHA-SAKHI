@@ -18,7 +18,6 @@ import java.io.File
 @Singleton
 class MediapipeLLMDataSource @Inject constructor(
     private var llmInference: LlmInference,
-    private val imageClassifier: ImageClassifier,
     private val context: Context
 ) {
     private val systemPrompt = """
@@ -79,9 +78,6 @@ class MediapipeLLMDataSource @Inject constructor(
             """.trimIndent())
         }
     }
-
-    fun classifyImage(image: MPImage): ClassificationResult =
-        imageClassifier.classify(image).classificationResult()
 
     fun generateResponseAsync(prompt: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
         return llmInference.generateResponseAsync(prompt, progressListener)

@@ -8,11 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -26,13 +21,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.compose.ui.unit.LayoutDirection
 import com.littleb01s.ashasakhichat.presentation.ChatScreen
-import org.intellij.lang.annotations.Language
 import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import com.littleb01s.ashasakhichat.presentation.screens.*
 import com.littleb01s.ashasakhichat.presentation.HomeContent
 import com.littleb01s.ashasakhichat.presentation.LoginScreen
 import com.littleb01s.ashasakhichat.presentation.MainScaffold
 import com.littleb01s.ashasakhichat.presentation.MainViewModel
+import com.littleb01s.ashasakhichat.presentation.SpeechRecognitionScreen
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
 import com.littleb01s.ashasakhichat.presentation.screens.riskanalysis.PregnancyRiskAssessmentScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
@@ -100,7 +95,8 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToRiskAnalysis = { navController.navigate(Screen.RiskAnalysis.route) },
                                         onNavigateToChat = { navController.navigate(Screen.Chat.route) },
                                         onNavigateToMap = { navController.navigate(Screen.RegionalMap.route) },
-                                        onNavigateToPatients = { navController.navigate(Screen.Patients.route) }
+                                        onNavigateToPatients = { navController.navigate(Screen.Patients.route) },
+                                        onNavigateToSpeecher = { navController.navigate(Screen.SpeechRecognitionScreen.route)}
                                     )
                                 }
                             }
@@ -195,6 +191,11 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(Screen.RegionalMap.route) {
                                 RegionalMapScreen(
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+                            composable(Screen.SpeechRecognitionScreen.route) {
+                                SpeechRecognitionScreen(
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }

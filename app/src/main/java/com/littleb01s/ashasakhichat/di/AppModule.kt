@@ -56,36 +56,6 @@ class AppModule {
     }
 
     @Provides
-    fun provideImageClassifier(@ApplicationContext context: Context): ImageClassifier {
-        Log.d(TAG, "Starting Image Classifier initialization...")
-        try {
-            Log.d(TAG, "Creating base options with CPU delegate...")
-            val baseOptions = BaseOptions.builder()
-                .setModelAssetPath("efficientnet_lite2.tflite")
-                .setDelegate(Delegate.CPU)  // Explicitly set CPU delegate
-                .build()
-            Log.d(TAG, "Base options created successfully")
-
-            Log.d(TAG, "Creating Image Classifier options...")
-            val options = ImageClassifierOptions.builder()
-                .setBaseOptions(baseOptions)
-                .setRunningMode(RunningMode.IMAGE)
-                .setScoreThreshold(30.0f)
-                .setMaxResults(10)
-                .build()
-            Log.d(TAG, "Image Classifier options created successfully")
-
-            Log.d(TAG, "Creating Image Classifier instance...")
-            val classifier = ImageClassifier.createFromOptions(context, options)
-            Log.d(TAG, "Image Classifier instance created successfully")
-            return classifier
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing Image Classifier", e)
-            throw e
-        }
-    }
-    
-    @Provides
     fun provideTranslationService(@ApplicationContext context: Context): TranslationService {
         Log.d(TAG, "Creating TranslationService...")
         return TranslationService(context)

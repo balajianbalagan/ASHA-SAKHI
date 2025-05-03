@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "DietSuggestionsScreen"
 private const val SMS_SENT = "SMS_SENT"
-private const val TIMEOUT_DURATION = 60000L // 60 seconds timeout
+private const val TIMEOUT_DURATION = 120000L // 60 seconds timeout
 
 @Composable
 fun DietSuggestionsScreen(

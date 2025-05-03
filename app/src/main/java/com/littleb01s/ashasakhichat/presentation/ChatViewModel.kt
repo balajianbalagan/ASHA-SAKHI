@@ -1,33 +1,36 @@
 package com.littleb01s.ashasakhichat.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.mediapipe.tasks.genai.llminference.ProgressListener
+import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
 import com.littleb01s.ashasakhichat.domain.SendMessageToAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.StartAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.TranslationService
+import com.littleb01s.ashasakhichat.domain.VoskSpeechService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.vosk.android.RecognitionListener
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.mediapipe.tasks.genai.llminference.ProgressListener
-import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.delay
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
+import javax.inject.Inject
 
 private val awaitingMessageFromAsha = Message(
     text = "ASHA Sakhi is typing...",
@@ -40,13 +43,17 @@ class ChatViewModel @Inject constructor(
     private val startAshaSakhiChat: StartAshaSakhiChat,
     private val sendMessageToAsha: SendMessageToAshaSakhiChat,
     private val translationService: TranslationService,
-    private val llmDataSource: MediapipeLLMDataSource
-) : ViewModel() {
+    private val llmDataSource: MediapipeLLMDataSource,
+    private val voskSpeechService: VoskSpeechService
+) : ViewModel(), RecognitionListener {
     val messages: StateFlow<List<Message>>
         get() = _messages
 
     val isProcessing: StateFlow<Boolean>
         get() = _isProcessing
+
+    val isSpeechRecognitionActive: StateFlow<Boolean>
+        get() = _isSpeechRecognitionActive
 
     private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(
         emptyList()
@@ -54,11 +61,15 @@ class ChatViewModel @Inject constructor(
 
     private val _isProcessing: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    private val _isSpeechRecognitionActive = MutableStateFlow(false)
+
     private val lastMessageTime = AtomicLong(0)
     private val TIMEOUT_MS = 5000L // 5 seconds timeout
     private val currentAsyncInference = AtomicReference<ListenableFuture<String>?>(null)
     private var timeoutJob: Job? = null
     private var isWaitingForCompletion = false
+
+    private var speechRecognitionListener: SpeechRecognitionListener? = null
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun startChat() {
@@ -281,6 +292,7 @@ class ChatViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         translationService.close()
+        voskSpeechService.shutdown()
     }
     
     /**
@@ -345,13 +357,77 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getCurrentDate(): String {
-        return java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
-            .format(java.util.Date())
+        return SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+            .format(Date())
     }
 
     private fun getCurrentTime(): String {
-        return java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
-            .format(java.util.Date())
+        return SimpleDateFormat("hh:mm a", Locale.getDefault())
+            .format(Date())
+    }
+
+    fun initSpeechRecognition(
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        voskSpeechService.initModel(
+            language = translationService.getCurrentLanguage(),
+            onSuccess = onSuccess,
+            onError = onError
+        )
+    }
+
+    fun toggleSpeechRecognition() {
+        if (_isSpeechRecognitionActive.value) {
+            stopSpeechRecognition()
+        } else {
+            startSpeechRecognition()
+        }
+    }
+
+    private fun startSpeechRecognition() {
+        voskSpeechService.startListening(this)
+        _isSpeechRecognitionActive.value = true
+    }
+
+    private fun stopSpeechRecognition() {
+        voskSpeechService.stopListening()
+        _isSpeechRecognitionActive.value = false
+    }
+
+    fun setSpeechRecognitionListener(listener: SpeechRecognitionListener) {
+        speechRecognitionListener = listener
+    }
+
+    fun removeSpeechRecognitionListener() {
+        speechRecognitionListener = null
+    }
+
+    // RecognitionListener implementation
+    override fun onResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition result: $hypothesis")
+        speechRecognitionListener?.onResult(hypothesis)
+    }
+
+    override fun onFinalResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition final result: $hypothesis")
+        speechRecognitionListener?.onResult(hypothesis)
+        stopSpeechRecognition()
+    }
+
+    override fun onPartialResult(hypothesis: String) {
+        Log.d("ChatViewModel", "Speech recognition partial result: $hypothesis")
+        speechRecognitionListener?.onResult(hypothesis)
+    }
+
+    override fun onError(exception: Exception) {
+        Log.e("ChatViewModel", "Speech recognition error", exception)
+        stopSpeechRecognition()
+    }
+
+    override fun onTimeout() {
+        Log.d("ChatViewModel", "Speech recognition timeout")
+        stopSpeechRecognition()
     }
 }
 
