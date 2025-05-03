@@ -187,7 +187,8 @@ class PatientRepository @Inject constructor(
                         needsUpload = false,
                         needsDownload = false,
                         lastDownloadedAt = Date(),
-                        serverId = patientResponse.patientData.patientId
+                        serverId = patientResponse.patientData.patientId,
+                        lmp = parseIsoDate(patientResponse.patientData.lmp)
                     )
                     patientDao.insertPatient(patient)
                 }

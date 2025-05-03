@@ -10,6 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -19,6 +21,13 @@ import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
+
+// Define custom colors to match PatientsScreen
+private val CustomBlue = Color(0xFF0174B3)
+private val CustomGreen = Color(0xFF1BBF69)
+private val CustomOrange = Color(0xFFFF5151)
+private val BackgroundColor = Color(0xFFFFF5EE)
+private val GradientBrush = Brush.horizontalGradient(colors = listOf(CustomBlue, CustomGreen))
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -287,43 +296,62 @@ fun AddPatientScreen(
     if (showErrorDialog) {
         AlertDialog(
             onDismissRequest = { showErrorDialog = false },
-            title = { Text("Error") },
-            text = { Text(errorMessage ?: "An unknown error occurred") },
+            title = { Text("Error", color = CustomOrange) },
+            text = { Text(errorMessage ?: "An unknown error occurred", color = Color.Black) },
             confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
+                TextButton(
+                    onClick = { showErrorDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = CustomBlue)
+                ) {
                     Text("OK")
                 }
-            }
+            },
+            containerColor = Color.White
         )
     }
 
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { showSuccessDialog = false },
-            title = { Text("Success") },
-            text = { Text(successMessage ?: "Patient added successfully") },
+            title = { Text("Success", color = CustomGreen) },
+            text = { Text(successMessage ?: "Patient added successfully", color = Color.Black) },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showSuccessDialog = false
                         onNavigateBack()
-                    }
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = CustomBlue)
                 ) {
                     Text("OK")
                 }
-            }
+            },
+            containerColor = Color.White
         )
     }
 
     Scaffold(
+        containerColor = BackgroundColor,
         topBar = {
             TopAppBar(
-                title = { Text("Add New Patient") },
+                title = { 
+                    Text(
+                        "Add New Patient",
+                        color = CustomBlue
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.Default.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = CustomBlue
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
@@ -341,18 +369,34 @@ fun AddPatientScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Basic Information", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Basic Information", 
+                    style = MaterialTheme.typography.titleMedium,
+                    color = CustomBlue
+                )
                 Button(
                     onClick = { generateRandomData() },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        containerColor = CustomGreen,
+                        contentColor = Color.White
                     ),
                     enabled = !isLoading
                 ) {
                     Text("Generate Random")
                 }
             }
+
+            // Update TextField colors
+            val textFieldColors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = CustomBlue,    
+                focusedLabelColor = CustomBlue,
+                cursorColor = CustomBlue,
+                errorBorderColor = CustomOrange,
+                errorLabelColor = CustomOrange,
+                errorCursorColor = CustomOrange,
+                unfocusedTextColor = Color.Black,
+                focusedTextColor = Color.Black
+            )
 
             OutlinedTextField(
                 value = firstName,
@@ -363,15 +407,17 @@ fun AddPatientScreen(
                 label = { Text("First Name*") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = firstNameError != null,
-                supportingText = { firstNameError?.let { Text(it) } },
-                enabled = !isLoading
+                supportingText = { firstNameError?.let { Text(it, color = CustomOrange) } },
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = lastName,
                 onValueChange = { lastName = it },
                 label = { Text("Last Name") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = mobileNumber,
@@ -386,12 +432,17 @@ fun AddPatientScreen(
                 label = { Text("Mobile Number*") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = mobileNumberError != null,
-                supportingText = { mobileNumberError?.let { Text(it) } },
-                enabled = !isLoading
+                supportingText = { mobileNumberError?.let { Text(it, color = CustomOrange) } },
+                enabled = !isLoading,
+                colors = textFieldColors
             )
 
             // Location Information
-            Text("Location", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Location", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
             OutlinedTextField(
                 value = state,
                 onValueChange = { 
@@ -401,8 +452,9 @@ fun AddPatientScreen(
                 label = { Text("State*") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = stateError != null,
-                supportingText = { stateError?.let { Text(it) } },
-                enabled = !isLoading
+                supportingText = { stateError?.let { Text(it, color = CustomOrange) } },
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = city,
@@ -413,12 +465,17 @@ fun AddPatientScreen(
                 label = { Text("City/Town/Village*") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = cityError != null,
-                supportingText = { cityError?.let { Text(it) } },
-                enabled = !isLoading
+                supportingText = { cityError?.let { Text(it, color = CustomOrange) } },
+                enabled = !isLoading,
+                colors = textFieldColors
             )
 
             // Personal Information
-            Text("Personal Information", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Personal Information", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
             OutlinedTextField(
                 value = if (dateOfBirth.isNotEmpty()) displayDateFormat.format(dateFormat.parse(dateOfBirth)!!) else "",
                 onValueChange = { },
@@ -430,29 +487,36 @@ fun AddPatientScreen(
                         onClick = { showDatePicker = true },
                         enabled = !isLoading
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                        Icon(Icons.Default.DateRange, contentDescription = "Select Date", tint = CustomBlue)
                     }
                 },
                 isError = dateOfBirthError != null,
-                supportingText = { dateOfBirthError?.let { Text(it) } },
-                enabled = !isLoading
+                supportingText = { dateOfBirthError?.let { Text(it, color = CustomOrange) } },
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = bloodGroup,
                 onValueChange = { bloodGroup = it },
                 label = { Text("Blood Group") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
 
             // Language and LMP
-            Text("Additional Information", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Additional Information", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
             OutlinedTextField(
                 value = languagePreference,
                 onValueChange = { languagePreference = it },
                 label = { Text("Language Preference") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = if (lmp.isNotEmpty()) displayDateFormat.format(dateFormat.parse(lmp)!!) else "",
@@ -465,58 +529,68 @@ fun AddPatientScreen(
                         onClick = { showLMPPicker = true },
                         enabled = !isLoading
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                        Icon(Icons.Default.DateRange, contentDescription = "Select Date", tint = CustomBlue)
                     }
                 },
                 isError = lmpError != null,
                 supportingText = { 
                     if (lmpError != null) {
-                        Text(lmpError!!)
+                        Text(lmpError!!, color = CustomOrange)
                     } else if (lmp.isNotEmpty()) {
                         val lmpDate = dateFormat.parse(lmp)!!
                         val deliveryDate = calculateDeliveryDate(lmpDate)
-                        Text("Expected Delivery Date: ${displayDateFormat.format(deliveryDate)}")
+                        Text("Expected Delivery Date: ${displayDateFormat.format(deliveryDate)}", color = CustomBlue)
                     }
                 },
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
 
             // Social Information
-            Text("Social Information", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Social Information", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
             OutlinedTextField(
                 value = education,
                 onValueChange = { education = it },
                 label = { Text("Education") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = employmentStatus,
                 onValueChange = { employmentStatus = it },
                 label = { Text("Employment Status") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = religion,
                 onValueChange = { religion = it },
                 label = { Text("Religion") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = caste,
                 onValueChange = { caste = it },
                 label = { Text("Caste") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
             OutlinedTextField(
                 value = previousIllness,
                 onValueChange = { previousIllness = it },
                 label = { Text("Previous Illness") },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = textFieldColors
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -608,12 +682,18 @@ fun AddPatientScreen(
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CustomGreen,
+                    contentColor = Color.White,
+                    disabledContainerColor = CustomGreen.copy(alpha = 0.5f),
+                    disabledContentColor = Color.White.copy(alpha = 0.5f)
+                )
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = Color.White
                     )
                 } else {
                     Text("Add Patient Details")

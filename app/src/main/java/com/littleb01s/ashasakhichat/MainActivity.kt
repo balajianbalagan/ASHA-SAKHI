@@ -220,7 +220,10 @@ class MainActivity : ComponentActivity() {
                                 val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
                                 MedicalHistoryScreen(
                                     patientId = patientId,
-                                    onNavigateBack = { navController.navigateUp() }
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onAddCheckup = { id -> 
+                                        navController.navigate("${Screen.AddCheckup.route}/$id")
+                                    }
                                 )
                             }
 
@@ -232,6 +235,20 @@ class MainActivity : ComponentActivity() {
                             ) { backStackEntry ->
                                 val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
                                 DietSuggestionsScreen(
+                                    patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+
+                            // Add the AddCheckup screen route
+                            composable(
+                                route = "${Screen.AddCheckup.route}/{patientId}",
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                AddPatientRecordScreen(
                                     patientId = patientId,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
