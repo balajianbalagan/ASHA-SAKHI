@@ -46,6 +46,7 @@
     <string name="settings_updated">ভাষা সেটিংস সফলভাবে আপডেট করা হয়েছে!</string>
     <string name="dismiss">বাতিল</string>
     <string name="chat_welcome_message">**আশা সখিতে স্বাগতম!** 👋\n\nনিরাপদ মাতৃত্বের জন্য আমি আপনার AI স্বাস্থ্যসেবা সহযোগী। আমি আপনার গর্ভাবস্থার যাত্রা জুড়ে তথ্য প্রদান, প্রশ্নের উত্তর এবং সহায়তা করার জন্য এখানে আছি।\n\nআজ আমি আপনাকে কীভাবে সহায়তা করতে পারি?</string>
+    <string name="initializing">initializing</string>
 
     <!-- <string name="logout">লগআউট</string>
     <string name="register">রেজিস্টার</string>
