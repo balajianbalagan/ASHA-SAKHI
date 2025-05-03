@@ -3,9 +3,12 @@
 package com.littleb01s.ashasakhichat.presentation
 
 import android.content.Intent
+import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -62,6 +65,7 @@ private const val StartChatKey = "StartChat"
 @Serializable
 object Chat
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun ChatScreen(viewModel: ChatViewModel) {
     val context = LocalContext.current
@@ -363,18 +367,87 @@ fun ChatBox(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val context = LocalContext.current
+    val viewModel: ChatViewModel = hiltViewModel()
+    var isSpeechRecognitionActive by remember { mutableStateOf(false) }
 
     if (isPressed) {
         onTextFieldClicked()
     }
 
+    // Speech recognition listener
+    DisposableEffect(viewModel) {
+        val listener = object : SpeechRecognitionListener {
+            override fun onResult(text: String) {
+                if (isSpeechRecognitionActive) {
+                    // Just update with the latest partial
+                    chatBoxValue = TextFieldValue(text)
+                } else {
+                    // This is a final result
+                    chatBoxValue = TextFieldValue(text)
+                }
+            }
+        }
+        viewModel.setSpeechRecognitionListener(listener)
+        onDispose {
+            viewModel.removeSpeechRecognitionListener()
+        }
+    }
+
+    // Initialize speech recognition
+    LaunchedEffect(Unit) {
+        viewModel.initSpeechRecognition(
+            onSuccess = { /* Ready to use */ },
+            onError = { error ->
+                Toast.makeText(context, "Error: $error", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Bottom // Changed to Bottom to align with multiline TextField
     ) {
+        // Microphone Button
+        IconButton(
+            onClick = {
+                if (!isSpeechRecognitionActive) {
+                    viewModel.startSpeechRecognition()
+                } else {
+                    viewModel.stopSpeechRecognition()
+                }
+                isSpeechRecognitionActive = !isSpeechRecognitionActive
+            },
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(
+                    if (isSpeechRecognitionActive)
+                        MaterialTheme.colorScheme.error
+                    else
+                        MaterialTheme.colorScheme.secondary
+                )
+        ) {
+            Icon(
+                painter = painterResource(
+                    id = if (isSpeechRecognitionActive)
+                        R.drawable.ic_stop_recording
+                    else
+                        R.drawable.ic_mic
+                ),
+                contentDescription = if (isSpeechRecognitionActive)
+                    stringResource(R.string.stop_recording)
+                else
+                    stringResource(R.string.start_recording),
+                tint = Color.White
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         TextField(
             modifier = Modifier
                 .weight(1f)
+                .heightIn(min = 48.dp, max = 160.dp) // Set maximum height for 5 lines
                 .clip(RoundedCornerShape(24.dp))
                 .border(
                     width = 1.dp,
@@ -387,7 +460,10 @@ fun ChatBox(
             },
             placeholder = {
                 Text(
-                    text = stringResource(R.string.type_message),
+                    text = if (isSpeechRecognitionActive)
+                        stringResource(R.string.listening)
+                    else
+                        stringResource(R.string.type_message),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -399,8 +475,12 @@ fun ChatBox(
                 disabledContainerColor = Color.Transparent
             ),
             textStyle = MaterialTheme.typography.bodyLarge,
-            singleLine = true,
+            maxLines = 5,
+            minLines = 1
         )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
         IconButton(
             onClick = {
                 if (chatBoxValue.text.isNotBlank()) {
@@ -457,6 +537,7 @@ fun WelcomeScreen() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Preview(showBackground = true)
 @Composable
 fun ChatPreview() {
