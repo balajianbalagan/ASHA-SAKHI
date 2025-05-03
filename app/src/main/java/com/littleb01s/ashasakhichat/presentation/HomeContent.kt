@@ -29,7 +29,8 @@ fun HomeContent(
     onNavigateToRiskAnalysis: () -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToMap: () -> Unit,
-    onNavigateToPatients: () -> Unit = {}
+    onNavigateToPatients: () -> Unit = {},
+    onNavigateToSpeecher: () -> Unit = {},
 ) {
     val buttonColor = Color(0xFF84D5B1)
     val textColor = Color(0xFF432C81)
@@ -39,7 +40,8 @@ fun HomeContent(
         DashboardButton(stringResource(R.string.asha_training), R.drawable.asha_training_icon, onNavigateToTraining),
         DashboardButton(stringResource(R.string.risk_analysis), R.drawable.risk_analysis_icon, onNavigateToRiskAnalysis),
         DashboardButton(stringResource(R.string.ai_sakhi_chat), R.drawable.ai_sakhi_chat_icon, onNavigateToChat),
-        DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap)
+        DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap),
+        DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
     )
 
     LazyColumn(

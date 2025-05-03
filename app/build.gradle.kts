@@ -1,3 +1,4 @@
+import java.util.UUID
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -50,6 +51,9 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    sourceSets.named("main") {
+        assets.srcDirs.plus(file("$buildDir/generated/assets"))
+    }
 }
 
 dependencies {
@@ -93,10 +97,12 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+    implementation(project(":models"))
 
     // ML Kit Translation
     implementation("com.google.mlkit:translate:17.0.3")
-
+    // VOSK API
+    implementation("com.alphacephei:vosk-android:0.3.47")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -110,5 +116,3 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
-
-

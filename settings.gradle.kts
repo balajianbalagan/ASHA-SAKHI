@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Asha Sakhi Chat"
 include(":app")
+include(":models")

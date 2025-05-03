@@ -50,4 +50,10 @@
     <string name="dismiss">Dismiss</string>
     <!-- Chat Bot Static Messages -->
     <string name="chat_welcome_message">**Welcome to ASHA Sakhi!** 👋\n\nI\'m your AI healthcare companion for safer motherhood. I\'m here to provide information, answer questions, and support you throughout your pregnancy journey.\n\nHow can I assist you today?</string>
+    <!-- Speech Recognition Screen -->
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="listening">Listening...</string>
+    <string name="tap_mic_to_start">Tap the microphone to start</string>
+    <string name="recognized_text_placeholder">Recognized text will appear here</string>
 </resources> 
