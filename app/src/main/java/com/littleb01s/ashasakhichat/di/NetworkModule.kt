@@ -2,6 +2,8 @@ package com.littleb01s.ashasakhichat.di
 import com.littleb01s.ashasakhichat.data.api.ApiConstants
 import com.littleb01s.ashasakhichat.data.api.AuthService
 import com.littleb01s.ashasakhichat.data.api.PatientService
+import com.littleb01s.ashasakhichat.data.api.DietService
+import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,6 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -23,6 +26,9 @@ object NetworkModule {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .readTimeout(5, TimeUnit.MINUTES)
+            .writeTimeout(5, TimeUnit.MINUTES)
+            .connectTimeout(5, TimeUnit.MINUTES)
             .build()
     }
 
@@ -46,5 +52,17 @@ object NetworkModule {
     @Singleton
     fun providePatientService(retrofit: Retrofit): PatientService {
         return retrofit.create(PatientService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDietService(retrofit: Retrofit): DietService {
+        return retrofit.create(DietService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideModelDownloadService(retrofit: Retrofit): ModelDownloadService {
+        return retrofit.create(ModelDownloadService::class.java)
     }
 } 

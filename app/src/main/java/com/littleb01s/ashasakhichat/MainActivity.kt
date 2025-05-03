@@ -1,8 +1,10 @@
 package com.littleb01s.ashasakhichat
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -230,14 +233,17 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(
-                                route = "${Screen.DietSuggestions.route}/{patientId}",
+                                route = "${Screen.DietSuggestions.route}/{patientId}/{phoneNumber}",
                                 arguments = listOf(
-                                    navArgument("patientId") { type = NavType.IntType }
+                                    navArgument("patientId") { type = NavType.IntType },
+                                    navArgument("phoneNumber") { type = NavType.StringType }
                                 )
                             ) { backStackEntry ->
                                 val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: return@composable
                                 DietSuggestionsScreen(
                                     patientId = patientId,
+                                    phoneNumber = phoneNumber,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }

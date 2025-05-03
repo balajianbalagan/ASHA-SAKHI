@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
-import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 
 @Composable
 fun RiskAnalysisScreen(

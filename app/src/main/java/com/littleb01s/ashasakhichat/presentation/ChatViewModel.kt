@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
+import com.littleb01s.ashasakhichat.data.repository.ModelDownloadManager
+import com.littleb01s.ashasakhichat.data.api.ModelDownloadState
 import com.littleb01s.ashasakhichat.domain.SendMessageToAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.StartAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.TranslationService
@@ -19,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.vosk.android.RecognitionListener
@@ -45,8 +48,20 @@ class ChatViewModel @Inject constructor(
     private val sendMessageToAsha: SendMessageToAshaSakhiChat,
     private val translationService: TranslationService,
     private val llmDataSource: MediapipeLLMDataSource,
-    private val voskSpeechService: VoskSpeechService
+    private val voskSpeechService: VoskSpeechService,
+    private val modelDownloadManager: ModelDownloadManager
 ) : ViewModel(), RecognitionListener {
+
+    // Model download states
+    private val _isInitializing = MutableStateFlow(true)
+    val isInitializing: StateFlow<Boolean> = _isInitializing
+
+    private val _showDownloadDialog = MutableStateFlow(false)
+    val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog
+
+    val modelDownloadState = modelDownloadManager.downloadState
+
+    // Chat states
     val messages: StateFlow<List<Message>>
         get() = _messages
 
@@ -56,12 +71,8 @@ class ChatViewModel @Inject constructor(
     val isSpeechRecognitionActive: StateFlow<Boolean>
         get() = _isSpeechRecognitionActive
 
-    private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(
-        emptyList()
-    )
-
+    private val _messages: MutableStateFlow<List<Message>> = MutableStateFlow(emptyList())
     private val _isProcessing: MutableStateFlow<Boolean> = MutableStateFlow(false)
-
     private val _isSpeechRecognitionActive = MutableStateFlow(false)
 
     private val lastMessageTime = AtomicLong(0)
@@ -69,8 +80,54 @@ class ChatViewModel @Inject constructor(
     private val currentAsyncInference = AtomicReference<ListenableFuture<String>?>(null)
     private var timeoutJob: Job? = null
     private var isWaitingForCompletion = false
-
     private var speechRecognitionListener: SpeechRecognitionListener? = null
+    private var lastPartialLength = 0
+
+    init {
+        checkModelAndInitialize()
+    }
+
+    private fun checkModelAndInitialize() {
+        viewModelScope.launch {
+            _isInitializing.value = true
+            _showDownloadDialog.value = true
+            
+            try {
+                modelDownloadManager.ensureModelExists()
+                modelDownloadState.collectLatest { state ->
+                    if (state.isComplete) {
+                        initializeLLM()
+                    }
+                }
+            } catch (e: Exception) {
+                _isInitializing.value = false
+                Log.e("ChatViewModel", "Error initializing model", e)
+            }
+        }
+    }
+
+    private suspend fun initializeLLM() {
+        try {
+            // Reset and initialize LLM
+            llmDataSource.resetLLMInference()
+            
+            // Start chat after LLM is initialized
+            _isInitializing.value = false
+            _showDownloadDialog.value = false
+            startChat()
+        } catch (e: Exception) {
+            _isInitializing.value = false
+            Log.e("ChatViewModel", "Error initializing LLM", e)
+        }
+    }
+
+    fun retryModelDownload() {
+        checkModelAndInitialize()
+    }
+
+    fun dismissDownloadDialog() {
+        _showDownloadDialog.value = false
+    }
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun startChat() {
@@ -217,7 +274,6 @@ class ChatViewModel @Inject constructor(
                             } else {
                                 // Update the last message with the new partial result
                                 val lastMessage = currentMessages.last()
-                                Log.d("ChatViewModel","Updating message: $partialResult")
                                 val translatedPartial = if (currentLanguage != "en" && partialResult != null) {
                                     translationService.translate(partialResult)
                                 } else {
@@ -414,10 +470,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private var lastPartialLength = 0
-
     override fun onResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition result: $hypothesis")
         try {
             val jsonResult = JSONObject(hypothesis)
             val text = jsonResult.optString("text", "")
@@ -430,7 +483,6 @@ class ChatViewModel @Inject constructor(
     }
 
     override fun onFinalResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition final result: $hypothesis")
         try {
             val jsonResult = JSONObject(hypothesis)
             val text = jsonResult.optString("text", "")
@@ -444,7 +496,6 @@ class ChatViewModel @Inject constructor(
     }
 
     override fun onPartialResult(hypothesis: String) {
-        Log.d("ChatViewModel", "Speech recognition partial result: $hypothesis")
         try {
             val jsonResult = JSONObject(hypothesis)
             val partial = jsonResult.optString("partial", "")

@@ -229,7 +229,7 @@ fun PatientDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
-                        onClick = { navController.navigate("${Screen.DietSuggestions.route}/${patientId}") },
+                        onClick = { navController.navigate("${Screen.DietSuggestions.route}/${patientId}/${patient!!.mobileNumber}") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = CustomGreen
