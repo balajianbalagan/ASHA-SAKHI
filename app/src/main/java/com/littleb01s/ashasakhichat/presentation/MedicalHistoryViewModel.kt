@@ -135,4 +135,8 @@ class MedicalHistoryViewModel @Inject constructor(
         val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
         return formatter.format(date)
     }
+
+    suspend fun getCheckupById(checkupId: Int): Checkup? {
+        return checkupDao.getCheckupById(checkupId)
+    }
 } 
