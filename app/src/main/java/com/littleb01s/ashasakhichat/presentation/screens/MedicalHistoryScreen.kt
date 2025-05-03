@@ -1,6 +1,7 @@
 package com.littleb01s.ashasakhichat.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,12 +23,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
 import com.littleb01s.ashasakhichat.presentation.MedicalHistoryViewModel
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
+import androidx.navigation.NavController
 
 @Composable
 fun MedicalHistoryScreen(
     patientId: Int,
     onNavigateBack: () -> Unit,
     onAddCheckup: (Int) -> Unit,
+    navController: NavController,
     viewModel: MedicalHistoryViewModel = hiltViewModel()
 ) {
     val checkups by viewModel.checkups.collectAsState()
@@ -95,7 +98,14 @@ fun MedicalHistoryScreen(
 
                 // Checkup History Cards
                 items(checkups) { checkup ->
-                    CheckupCard(checkup = checkup)
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .clickable { navController.navigate("patient_record_view/${checkup.checkupId}") }
+                    ) {
+                        CheckupCard(checkup = checkup)
+                    }
                 }
             }
 

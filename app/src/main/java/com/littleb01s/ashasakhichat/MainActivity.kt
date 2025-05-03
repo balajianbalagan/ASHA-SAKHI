@@ -224,7 +224,8 @@ class MainActivity : ComponentActivity() {
                                     onNavigateBack = { navController.navigateUp() },
                                     onAddCheckup = { id -> 
                                         navController.navigate("${Screen.AddCheckup.route}/$id")
-                                    }
+                                    },
+                                    navController= navController
                                 )
                             }
 
@@ -251,6 +252,20 @@ class MainActivity : ComponentActivity() {
                                 val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
                                 AddPatientRecordScreen(
                                     patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+
+                            // Add Patient Record View screen route
+                            composable(
+                                route = Screen.PatientRecordView.route,
+                                arguments = listOf(
+                                    navArgument("checkupId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val checkupId = backStackEntry.arguments?.getInt("checkupId") ?: return@composable
+                                PatientRecordViewScreen(
+                                    checkupId = checkupId,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }

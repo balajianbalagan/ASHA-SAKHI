@@ -2,21 +2,23 @@ package com.littleb01s.ashasakhichat.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.AddCheckupViewModel
 import com.littleb01s.ashasakhichat.presentation.CheckupFormState
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
+import com.littleb01s.ashasakhichat.presentation.screens.forms.*
 
 // Define colors at the top level
 private val CustomBlue = Color(0xFF0174B3)
@@ -55,7 +57,49 @@ fun AddPatientRecordScreen(
                                 contentColor = CustomBlue
                             )
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                when (type) {
+                                    "VITALS" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_vitals),
+                                        contentDescription = "Vitals",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "SYMPTOMS" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_symptoms),
+                                        contentDescription = "Symptoms",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "NOTES" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_notes),
+                                        contentDescription = "Notes",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "TEST_RESULTS" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_test_results),
+                                        contentDescription = "Test Results",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "ANC_VISIT" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_anc_visit),
+                                        contentDescription = "ANC Visit",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "VACCINATION" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_vaccination),
+                                        contentDescription = "Vaccination",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    "MEDICAL_REPORT" -> Icon(
+                                        painter = painterResource(id = R.drawable.ic_medical_report),
+                                        contentDescription = "Medical Report",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             Text(type, color = CustomBlue)
+                            }
                         }
                     }
                 }
@@ -83,15 +127,93 @@ fun AddPatientRecordScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Record Type Selection
-            OutlinedButton(
-                onClick = { showTypeDialog = true },
+            Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { showTypeDialog = true },
+                    modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.White,
                     contentColor = CustomBlue
                 )
             ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        when (formState.checkupType) {
+                            "VITALS" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_vitals),
+                                contentDescription = "Vitals",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "SYMPTOMS" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_symptoms),
+                                contentDescription = "Symptoms",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "NOTES" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_notes),
+                                contentDescription = "Notes",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "TEST_RESULTS" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_test_results),
+                                contentDescription = "Test Results",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "ANC_VISIT" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_anc_visit),
+                                contentDescription = "ANC Visit",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "VACCINATION" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_vaccination),
+                                contentDescription = "Vaccination",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            "MEDICAL_REPORT" -> Icon(
+                                painter = painterResource(id = R.drawable.ic_medical_report),
+                                contentDescription = "Medical Report",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            else -> Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Select Type",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                 Text(formState.checkupType.ifEmpty { "Select Record Type" })
+                    }
+                }
+
+                if (formState.checkupType.isNotEmpty()) {
+                    OutlinedButton(
+                        onClick = {
+                            when (formState.checkupType) {
+                                "VITALS" -> VitalsForm.onActionButtonClick(viewModel, formState)
+                                "SYMPTOMS" -> SymptomsForm.onActionButtonClick(viewModel, formState)
+                                "NOTES" -> NotesForm.onActionButtonClick(viewModel, formState)
+                                "TEST_RESULTS" -> TestResultsForm.onActionButtonClick(viewModel, formState)
+                                "ANC_VISIT" -> ANCVisitForm.onActionButtonClick(viewModel, formState)
+                                "VACCINATION" -> VaccinationForm.onActionButtonClick(viewModel, formState)
+                                "MEDICAL_REPORT" -> MedicalReportForm.onActionButtonClick(viewModel, formState)
+                            }
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = Color.White,
+                            contentColor = CustomBlue
+                        )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_action),
+                            contentDescription = "Form Action",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             }
 
             // Dynamic form fields based on record type
@@ -101,6 +223,8 @@ fun AddPatientRecordScreen(
                 "NOTES" -> NotesForm(viewModel, formState)
                 "TEST_RESULTS" -> TestResultsForm(viewModel, formState)
                 "ANC_VISIT" -> ANCVisitForm(viewModel, formState)
+                "VACCINATION" -> VaccinationForm(viewModel, formState)
+                "MEDICAL_REPORT" -> MedicalReportForm(viewModel, formState)
             }
 
             if (formState.error != null) {
@@ -129,172 +253,5 @@ fun AddPatientRecordScreen(
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(
-            value = state.bloodPressure,
-            onValueChange = { viewModel.updateBloodPressure(it) },
-            label = { Text("Blood Pressure (mmHg)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.oxygen,
-            onValueChange = { viewModel.updateOxygen(it) },
-            label = { Text("Oxygen Level (%)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.weight,
-            onValueChange = { viewModel.updateWeight(it) },
-            label = { Text("Weight (kg)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.temperature,
-            onValueChange = { viewModel.updateTemperature(it) },
-            label = { Text("Temperature (°C)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.sugarLevel,
-            onValueChange = { viewModel.updateSugarLevel(it) },
-            label = { Text("Blood Sugar Level") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.bmi,
-            onValueChange = { viewModel.updateBMI(it) },
-            label = { Text("BMI") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.haemoglobin,
-            onValueChange = { viewModel.updateHaemoglobin(it) },
-            label = { Text("Haemoglobin") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SymptomsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    OutlinedTextField(
-        value = state.checkupData,
-        onValueChange = { viewModel.updateCheckupData(it) },
-        label = { Text("Symptoms Description") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp),
-        maxLines = 5,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = CustomBlue,
-            unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NotesForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    OutlinedTextField(
-        value = state.checkupData,
-        onValueChange = { viewModel.updateCheckupData(it) },
-        label = { Text("Notes") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp),
-        maxLines = 5,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = CustomBlue,
-            unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TestResultsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    OutlinedTextField(
-        value = state.checkupData,
-        onValueChange = { viewModel.updateCheckupData(it) },
-        label = { Text("Test Results") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp),
-        maxLines = 5,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = CustomBlue,
-            unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ANCVisitForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedTextField(
-            value = state.checkupData,
-            onValueChange = { viewModel.updateCheckupData(it) },
-            label = { Text("ANC Visit Notes") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            maxLines = 5,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
-        OutlinedTextField(
-            value = state.pregnancyStage,
-            onValueChange = { viewModel.updatePregnancyStage(it) },
-            label = { Text("Pregnancy Stage") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
-            )
-        )
     }
 } 
