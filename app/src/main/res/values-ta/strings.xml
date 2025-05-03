@@ -51,4 +51,5 @@
     <string name="notifications">அறிவிப்புகள்</string>
     <!-- Chat Bot Static Messages -->
     <string name="chat_welcome_message">**ஆஷா சகியில் வரவேற்கிறோம்!** 👋\n\nநான் பாதுகாப்பான தாய்மைக்கான உங்கள் AI சுகாதார தோழி. கர்ப்ப காலத்தில் தகவல் வழங்க, கேள்விகளுக்கு பதில் அளிக்க, மற்றும் உங்களை ஆதரிக்க நான் இங்கே இருக்கிறேன்.\n\nஇன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?</string>
+    <string name="initializing">initializing</string>
 </resources> 

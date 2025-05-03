@@ -21,6 +21,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import android.Manifest
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.ui.draw.alpha
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

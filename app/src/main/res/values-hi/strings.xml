@@ -51,4 +51,5 @@
     <!-- Chat Bot Static Messages -->
     <string name="chat_welcome_message">**आशा सखी में आपका स्वागत है!** 👋\n\nमैं सुरक्षित मातृत्व के लिए आपकी AI स्वास्थ्य साथी हूं। मैं आपके गर्भावस्था के दौरान जानकारी प्रदान करने, प्रश्नों का उत्तर देने और आपका समर्थन करने के लिए यहां हूं।\n\nमैं आज आपकी कैसे मदद कर सकती हूं?</string>
     <string name="tamil">தமிழ்</string>
+    <string name="initializing">initializing</string>
 </resources>
