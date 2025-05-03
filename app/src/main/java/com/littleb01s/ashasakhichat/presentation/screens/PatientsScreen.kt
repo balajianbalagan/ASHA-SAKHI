@@ -275,7 +275,7 @@ fun PatientCard(patient: Patient, onClick: () -> Unit) {
                         horizontalAlignment = Alignment.End
                     ) {
                         PatientInfoRow(
-                            icon = Icons.Filled.Person,
+                            icon = null,
                             mainText = "Trimester",
                             text = calculateTrimester(patient.lmp),
                             color = CustomGreen
@@ -314,7 +314,7 @@ fun PatientCard(patient: Patient, onClick: () -> Unit) {
 
 @Composable
 private fun PatientInfoRow(
-    icon: ImageVector,
+    icon: ImageVector?,
     mainText: String,
     text: String,
     color: Color
@@ -331,12 +331,14 @@ private fun PatientInfoRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(14.dp)
-        )
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(14.dp)
+            )
+        }
         Text(
             text = text,
             fontSize = 12.sp,
@@ -377,9 +379,9 @@ private fun calculateTrimester(lmp: Date?): String {
 
     return when {
         weeksDiff < 0 -> "-"
-        weeksDiff <= 13 -> "1st Tri"
-        weeksDiff <= 26 -> "2nd Tri"
-        weeksDiff <= 40 -> "3rd Tri"
+        weeksDiff <= 13 -> "1st"
+        weeksDiff <= 26 -> "2nd"
+        weeksDiff <= 40 -> "3rd"
         else -> "Post"
     }
 }

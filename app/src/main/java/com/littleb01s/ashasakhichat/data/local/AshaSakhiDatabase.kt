@@ -17,7 +17,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.*
         Document::class,
         DoctorVerification::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

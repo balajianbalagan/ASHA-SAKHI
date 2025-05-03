@@ -48,7 +48,7 @@ data class CheckupResponse(
     val checkupId: Int,
     val workerId: Int?,
     val patientId: Int,
-    val bloodPressure: Float?,
+    val bloodPressure: String?,
     val oxygen: Float?,
     val weight: Float?,
     val temperature: Float?,

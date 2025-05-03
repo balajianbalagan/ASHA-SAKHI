@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation.screens.forms
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -124,46 +125,76 @@ fun ANCVisitForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
 }
 
 object ANCVisitForm {
+    private val commonComplaints = listOf(
+        "Nausea and vomiting",
+        "Back pain",
+        "Fatigue",
+        "Swelling in feet",
+        "Heartburn",
+        "Frequent urination",
+        "Shortness of breath",
+        "Headaches",
+        "Leg cramps",
+        "Constipation"
+    )
+
+    private val commonAdvice = listOf(
+        "Take prescribed iron supplements",
+        "Maintain regular exercise routine",
+        "Follow balanced diet",
+        "Get adequate rest",
+        "Stay hydrated",
+        "Monitor blood pressure",
+        "Attend all scheduled appointments",
+        "Practice relaxation techniques",
+        "Wear comfortable clothing",
+        "Avoid strenuous activities"
+    )
+
+    fun validateForm(state: CheckupFormState): Boolean {
+        if (state.visitNumber.isEmpty()) {
+            println("Validation Error: Visit number cannot be empty")
+            return false
+        }
+        if (state.findings.isEmpty()) {
+            println("Validation Error: Findings cannot be empty")
+            return false
+        }
+        if (state.interventions.isEmpty()) {
+            println("Validation Error: Interventions cannot be empty")
+            return false
+        }
+        return true
+    }
+
     fun onActionButtonClick(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-        // Generate random visit number (1-8)
-        val visitNumber = Random.nextInt(1, 9)
+        // Generate random visit number (between 1 and 8)
+        val visitNumber = Random.nextInt(1, 9).toString()
         
-        // Generate random pregnancy stage (in weeks)
-        val pregnancyStage = Random.nextInt(8, 40)
+        // Generate random number of complaints (between 2 and 4)
+        val numComplaints = Random.nextInt(2, 5)
+        val selectedComplaints = commonComplaints.shuffled().take(numComplaints)
         
-        // Generate random findings (2-4)
-        val numFindings = Random.nextInt(2, 5)
-        val selectedFindings = commonFindings.shuffled().take(numFindings)
+        // Generate random number of advice items (between 2 and 4)
+        val numAdvice = Random.nextInt(2, 5)
+        val selectedAdvice = commonAdvice.shuffled().take(numAdvice)
         
-        // Generate random interventions (1-3)
-        val numInterventions = Random.nextInt(1, 4)
-        val selectedInterventions = commonInterventions.shuffled().take(numInterventions)
+        // Format the complaints and advice
+        val formattedComplaints = selectedComplaints.joinToString(", ")
+        val formattedAdvice = selectedAdvice.joinToString(", ")
         
-        // Calculate next visit date (2-4 weeks from today)
-        val nextVisitWeeks = Random.nextInt(2, 5)
-        val nextVisitDate = LocalDate.now().plusWeeks(nextVisitWeeks.toLong())
-            .format(DateTimeFormatter.ISO_LOCAL_DATE)
+        // Update the form fields
+        viewModel.updateVisitNumber(visitNumber)
+        viewModel.updateFindings(formattedComplaints)
+        viewModel.updateInterventions(formattedAdvice)
         
-        // Format the ANC visit data
+        // Format the data for display
         val formattedData = """
             Visit Number: $visitNumber
-            Pregnancy Stage: $pregnancyStage weeks
-            
-            Findings:
-            ${selectedFindings.joinToString("\n• ")}
-            
-            Interventions:
-            ${selectedInterventions.joinToString("\n• ")}
-            
-            Next Visit: $nextVisitDate
+            Findings: $formattedComplaints
+            Interventions: $formattedAdvice
         """.trimIndent()
         
-        // Update the form state
         viewModel.updateCheckupData(formattedData)
-        viewModel.updatePregnancyStage(pregnancyStage.toString())
-        viewModel.updateVisitNumber(visitNumber.toString())
-        viewModel.updateFindings(selectedFindings.joinToString("\n"))
-        viewModel.updateInterventions(selectedInterventions.joinToString("\n"))
-        viewModel.updateNextVisitDate(nextVisitDate)
     }
 } 

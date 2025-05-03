@@ -10,7 +10,7 @@ data class Checkup(
     val checkupId: Int = 0,
     val workerId: Int? = null,
     val patientId: Int,
-    val bloodPressure: Float? = null,
+    val bloodPressure: String? = null,
     val oxygen: Float? = null,
     val weight: Float? = null,
     val temperature: Float? = null,

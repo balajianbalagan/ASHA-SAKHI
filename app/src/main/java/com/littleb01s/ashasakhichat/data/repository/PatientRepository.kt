@@ -76,6 +76,7 @@ class PatientRepository @Inject constructor(
                         lastName = patientResponse.lastName,
                         dateOfBirth = parseIsoDate(patientResponse.dateOfBirth) ?: Date(),
                         deliveryDate = parseIsoDate(patientResponse.deliveryDate),
+                        lmp = parseIsoDate(patientResponse.lmp),
                         mobileNumber = patientResponse.mobileNumber,
                         employmentStatus = patientResponse.employmentStatus,
                         religion = patientResponse.religion,

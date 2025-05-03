@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +36,49 @@ fun AddPatientRecordScreen(
 ) {
     val formState by viewModel.formState.collectAsState()
     var showTypeDialog by remember { mutableStateOf(false) }
+
+    var showValidationErrorDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // Validation Error Dialog
+    if (showValidationErrorDialog) {
+        AlertDialog(
+            onDismissRequest = { showValidationErrorDialog = false },
+            title = { Text("Validation Error", color = CustomOrange) },
+            text = { Text("Fill all required fields.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { showValidationErrorDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = CustomOrange)
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
+    // Success Dialog
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { 
+                showSuccessDialog = false
+                onNavigateBack()
+            },
+            title = { Text("Success", color = CustomGreen) },
+            text = { Text("Record saved successfully.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { 
+                        showSuccessDialog = false
+                        onNavigateBack()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = CustomGreen)
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     if (showTypeDialog) {
         AlertDialog(
@@ -235,7 +279,31 @@ fun AddPatientRecordScreen(
             }
 
             Button(
-                onClick = { viewModel.saveCheckup(patientId) },
+                onClick = { 
+                    Log.d("AddCheckupScreen", "Save button clicked")
+                    val isValid = when (formState.checkupType) {
+                        "VITALS" -> VitalsForm.validateForm(formState)
+                        "SYMPTOMS" -> SymptomsForm.validateForm(formState)
+                        "NOTES" -> NotesForm.validateForm(formState)
+                        "TEST_RESULTS" -> TestResultsForm.validateForm(formState)
+                        "ANC_VISIT" -> ANCVisitForm.validateForm(formState)
+                        "VACCINATION" -> VaccinationForm.validateForm(formState)
+                        "MEDICAL_REPORT" -> MedicalReportForm.validateForm(formState)
+                        else -> {
+                            Log.e("AddCheckupScreen", "Invalid checkup type: ${formState.checkupType}")
+                            false
+                        }
+                    }
+                    
+                    if (isValid) {
+                        Log.d("AddCheckupScreen", "Form validation successful, proceeding with save")
+                        viewModel.saveCheckup(patientId)
+                        showSuccessDialog = true
+                    } else {
+                        Log.e("AddCheckupScreen", "Form validation failed")
+                        showValidationErrorDialog = true
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = formState.checkupType.isNotEmpty() && !formState.isLoading,
                 colors = ButtonDefaults.buttonColors(
