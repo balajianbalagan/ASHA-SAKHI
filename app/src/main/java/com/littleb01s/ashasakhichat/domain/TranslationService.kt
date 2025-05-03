@@ -25,6 +25,11 @@ class TranslationService @Inject constructor(
     private var englishTamilTranslator: Translator? = null
     private var englishBengaliTranslator: Translator? = null
     
+    // Translators for converting to English
+    private var hindiEnglishTranslator: Translator? = null
+    private var tamilEnglishTranslator: Translator? = null
+    private var bengaliEnglishTranslator: Translator? = null
+    
     fun getCurrentLanguage(): String {
         return sharedPreferences.getString("selected_language", "en") ?: "en"
     }
@@ -32,9 +37,47 @@ class TranslationService @Inject constructor(
     suspend fun initialize() {
         val currentLanguage = getCurrentLanguage()
         when (currentLanguage) {
-            "hi" -> getEnglishHindiTranslator()
-            "ta" -> getEnglishTamilTranslator()
-            "bn" -> getEnglishBengaliTranslator()
+            "hi" -> {
+                getEnglishHindiTranslator()
+                getHindiEnglishTranslator()
+            }
+            "ta" -> {
+                getEnglishTamilTranslator()
+                getTamilEnglishTranslator()
+            }
+            "bn" -> {
+                getEnglishBengaliTranslator()
+                getBengaliEnglishTranslator()
+            }
+        }
+    }
+
+    suspend fun translateToEnglish(text: String): String {
+        if (getCurrentLanguage() == "en") {
+            return text
+        }
+        
+        return withContext(Dispatchers.IO) {
+            try {
+                when (getCurrentLanguage()) {
+                    "hi" -> {
+                        val translator = getHindiEnglishTranslator()
+                        translateText(translator, text)
+                    }
+                    "ta" -> {
+                        val translator = getTamilEnglishTranslator()
+                        translateText(translator, text)
+                    }
+                    "bn" -> {
+                        val translator = getBengaliEnglishTranslator()
+                        translateText(translator, text)
+                    }
+                    else -> text
+                }
+            } catch (e: Exception) {
+                // If translation fails, return the original text
+                text
+            }
         }
     }
     
@@ -124,6 +167,24 @@ class TranslationService @Inject constructor(
             englishBengaliTranslator = it
         }
     }
+
+    private suspend fun getHindiEnglishTranslator(): Translator {
+        return hindiEnglishTranslator ?: createHindiEnglishTranslator().also {
+            hindiEnglishTranslator = it
+        }
+    }
+
+    private suspend fun getTamilEnglishTranslator(): Translator {
+        return tamilEnglishTranslator ?: createTamilEnglishTranslator().also {
+            tamilEnglishTranslator = it
+        }
+    }
+
+    private suspend fun getBengaliEnglishTranslator(): Translator {
+        return bengaliEnglishTranslator ?: createBengaliEnglishTranslator().also {
+            bengaliEnglishTranslator = it
+        }
+    }
     
     private suspend fun createEnglishHindiTranslator(): Translator {
         val options = TranslatorOptions.Builder()
@@ -190,6 +251,72 @@ class TranslationService @Inject constructor(
         
         return translator
     }
+
+    private suspend fun createHindiEnglishTranslator(): Translator {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(com.google.mlkit.nl.translate.TranslateLanguage.HINDI)
+            .setTargetLanguage(com.google.mlkit.nl.translate.TranslateLanguage.ENGLISH)
+            .build()
+        
+        val translator = Translation.getClient(options)
+        
+        // Download the model if needed
+        suspendCancellableCoroutine<Unit> { continuation ->
+            translator.downloadModelIfNeeded()
+                .addOnSuccessListener {
+                    continuation.resume(Unit)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+        
+        return translator
+    }
+
+    private suspend fun createTamilEnglishTranslator(): Translator {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(com.google.mlkit.nl.translate.TranslateLanguage.TAMIL)
+            .setTargetLanguage(com.google.mlkit.nl.translate.TranslateLanguage.ENGLISH)
+            .build()
+        
+        val translator = Translation.getClient(options)
+        
+        // Download the model if needed
+        suspendCancellableCoroutine<Unit> { continuation ->
+            translator.downloadModelIfNeeded()
+                .addOnSuccessListener {
+                    continuation.resume(Unit)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+        
+        return translator
+    }
+
+    private suspend fun createBengaliEnglishTranslator(): Translator {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(com.google.mlkit.nl.translate.TranslateLanguage.BENGALI)
+            .setTargetLanguage(com.google.mlkit.nl.translate.TranslateLanguage.ENGLISH)
+            .build()
+        
+        val translator = Translation.getClient(options)
+        
+        // Download the model if needed
+        suspendCancellableCoroutine<Unit> { continuation ->
+            translator.downloadModelIfNeeded()
+                .addOnSuccessListener {
+                    continuation.resume(Unit)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+        
+        return translator
+    }
     
     fun close() {
         englishHindiTranslator?.close()
@@ -200,5 +327,14 @@ class TranslationService @Inject constructor(
         
         englishBengaliTranslator?.close()
         englishBengaliTranslator = null
+
+        hindiEnglishTranslator?.close()
+        hindiEnglishTranslator = null
+
+        tamilEnglishTranslator?.close()
+        tamilEnglishTranslator = null
+
+        bengaliEnglishTranslator?.close()
+        bengaliEnglishTranslator = null
     }
 } 

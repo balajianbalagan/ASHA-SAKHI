@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.AddCheckupViewModel
-import com.littleb01s.ashasakhichat.presentation.CheckupFormState
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
 import com.littleb01s.ashasakhichat.presentation.screens.forms.*
 
