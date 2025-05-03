@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.navigation.NavController
+import com.littleb01s.ashasakhichat.presentation.DetailScaffold
 import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,24 +71,15 @@ fun PatientDetailsScreen(
         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
     }
 
-    Scaffold(
-        containerColor = BackgroundColor,
-        topBar = {
-            TopAppBar(
-                title = { Text("Patient Details") },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    DetailScaffold(
+        title = "Patient Details",
+        onNavigateBack = onNavigateBack
+    ) {
         if (patient == null) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(2.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = CustomBlue)
@@ -96,7 +88,7 @@ fun PatientDetailsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(2.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Profile Header Section with gradient background

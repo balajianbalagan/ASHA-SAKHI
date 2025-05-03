@@ -21,6 +21,7 @@ data class Checkup(
     val checkupType: String? = null,
     val pregnancyStage: String? = null,
     val checkupStatus: Int? = null,
+    val checkupTime: Date? = null,
     // Sync fields
     val needsUpload: Boolean = true,
     val needsDownload: Boolean = false,
