@@ -62,46 +62,49 @@ fun SpeechRecognitionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Microphone Button
-        FloatingActionButton(
-            onClick = {
-                when {
-                    !isInitialized -> {
-                        Toast.makeText(context, "Speech recognition is initializing...", Toast.LENGTH_SHORT).show()
-                    }
-                    micPermissionState.status is PermissionStatus.Granted -> {
-                        viewModel.toggleSpeechRecognition()
-                    }
-                    else -> {
-                        micPermissionState.launchPermissionRequest()
-                    }
-                }
-            },
-            shape = CircleShape,
-            containerColor = if (isSpeechRecognitionActive) 
-                MaterialTheme.colorScheme.primary 
-            else 
-                MaterialTheme.colorScheme.secondary,
-            enabled = isInitialized
+        Box(
+            modifier = Modifier.alpha(if (isInitialized) 1f else 0.5f)
         ) {
-            Icon(
-                imageVector = if (isSpeechRecognitionActive) Icons.Default.Clear else Icons.Default.Call,
-                contentDescription = if (isSpeechRecognitionActive) 
-                    stringResource(R.string.stop_recording) 
+            FloatingActionButton(
+                onClick = {
+                    when {
+                        !isInitialized -> {
+                            Toast.makeText(context, "Speech recognition is initializing...", Toast.LENGTH_SHORT).show()
+                        }
+                        micPermissionState.status is PermissionStatus.Granted -> {
+                            viewModel.toggleSpeechRecognition()
+                        }
+                        else -> {
+                            micPermissionState.launchPermissionRequest()
+                        }
+                    }
+                },
+                shape = CircleShape,
+                containerColor = if (isSpeechRecognitionActive) 
+                    MaterialTheme.colorScheme.primary 
                 else 
-                    stringResource(R.string.start_recording),
-                tint = Color.White
-            )
+                    MaterialTheme.colorScheme.secondary
+            ) {
+                Icon(
+                    imageVector = if (isSpeechRecognitionActive) Icons.Default.Clear else Icons.Default.Call,
+                    contentDescription = if (isSpeechRecognitionActive) 
+                        stringResource(R.string.stop_recording) 
+                    else 
+                        stringResource(R.string.start_recording),
+                    tint = Color.White
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
         // Status Text
         Text(
-            text = if (isSpeechRecognitionActive) 
-                stringResource(R.string.listening) 
-            else 
-                stringResource(R.string.tap_mic_to_start),
+            text = when {
+                !isInitialized -> stringResource(R.string.initializing)
+                isSpeechRecognitionActive -> stringResource(R.string.listening)
+                else -> stringResource(R.string.tap_mic_to_start)
+            },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )

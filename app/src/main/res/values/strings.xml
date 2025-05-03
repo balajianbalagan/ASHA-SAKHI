@@ -56,4 +56,5 @@
     <string name="listening">Listening...</string>
     <string name="tap_mic_to_start">Tap the microphone to start</string>
     <string name="recognized_text_placeholder">Recognized text will appear here</string>
+    <string name="initializing">Initializing speech recognition...</string>
 </resources> 
