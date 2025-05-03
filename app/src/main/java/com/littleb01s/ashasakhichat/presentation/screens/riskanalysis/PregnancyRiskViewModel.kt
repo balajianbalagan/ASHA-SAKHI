@@ -3,6 +3,7 @@ package com.littleb01s.ashasakhichat.presentation.screens.riskanalysis
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.littleb01s.ashasakhichat.data.onnx.RiskAssessmentResult
 import com.littleb01s.ashasakhichat.data.onnx.RiskPredictor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +22,16 @@ class PregnancyRiskViewModel @Inject constructor(
     private val _riskLevel = MutableStateFlow<String?>(null)
     val riskLevel = _riskLevel.asStateFlow()
     
+    private val _observations = MutableStateFlow<Map<String, String>>(emptyMap())
+    val observations = _observations.asStateFlow()
+    
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
     
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
-    fun predictRisk(
+    fun assessRisk(
         age: Float,
         systolicBP: Float,
         diastolicBP: Float,
@@ -41,7 +45,7 @@ class PregnancyRiskViewModel @Inject constructor(
             
             try {
                 val result = withContext(Dispatchers.IO) {
-                    riskPredictor.predictRiskLevel(
+                    riskPredictor.assessRisk(
                         age = age,
                         systolicBP = systolicBP,
                         diastolicBP = diastolicBP,
@@ -51,9 +55,10 @@ class PregnancyRiskViewModel @Inject constructor(
                     )
                 }
                 
-                _riskLevel.value = result
+                _riskLevel.value = result.riskLevel
+                _observations.value = result.observations
             } catch (e: Exception) {
-                _error.value = "Error predicting risk: ${e.message}"
+                _error.value = "Error assessing risk: ${e.message}"
             } finally {
                 _isLoading.value = false
             }
