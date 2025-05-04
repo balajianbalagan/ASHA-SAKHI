@@ -28,6 +28,12 @@ data class Patient(
     val bloodGroup: String? = null,
     val previousIllness: String? = null,
     
+    // New fields from backend
+    val latitude: String? = null,
+    val longtitude: String? = null,
+    val profilePhoto: String? = null,
+    val pregnancyStage: String? = null,
+    
     // Sync status fields
     val needsUpload: Boolean = true,  // True if local changes need to be uploaded to server
     val needsDownload: Boolean = false,  // True if server has newer data that needs to be downloaded

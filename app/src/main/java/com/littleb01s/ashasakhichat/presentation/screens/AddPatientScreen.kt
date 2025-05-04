@@ -1,23 +1,44 @@
 package com.littleb01s.ashasakhichat.presentation.screens
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.location.Location
+import android.location.LocationManager
+import android.util.Base64
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.littleb01s.ashasakhichat.data.api.PatientData
 import com.littleb01s.ashasakhichat.data.api.VitalsData
 import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -147,6 +168,59 @@ fun AddPatientScreen(
     var successMessage by remember { mutableStateOf<String?>(null) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+
+    // New state variables for GPS and camera
+    var latitude by remember { mutableStateOf<String?>(null) }
+    var longtitude by remember { mutableStateOf<String?>(null) }
+    var profilePhoto by remember { mutableStateOf<String?>(null) }
+    var pregnancyStage by remember { mutableStateOf<String?>(null) }
+    var showLocationError by remember { mutableStateOf(false) }
+    var showCameraError by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    // Location permission launcher
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Now that we have permission, get the location
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        location?.let {
+                            latitude = it.latitude.toString()
+                            longtitude = it.longitude.toString()
+                        }
+                    }
+            }
+        } else {
+            showLocationError = true
+        }
+    }
+
+    // Camera permission launcher
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            showCameraError = true
+        }
+    }
+
+    // Camera launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        bitmap?.let {
+            profilePhoto = bitmapToBase64(it)
+        }
+    }
 
     // Function to get cities for a state
     fun getCitiesForState(state: String): List<String> {
@@ -593,6 +667,126 @@ fun AddPatientScreen(
                 colors = textFieldColors
             )
 
+            // Location Section
+            Text(
+                "Location Information", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = latitude ?: "",
+                    onValueChange = { },
+                    label = { Text("Latitude") },
+                    modifier = Modifier.weight(1f),
+                    readOnly = true,
+                    enabled = !isLoading,
+                    colors = textFieldColors
+                )
+                
+                IconButton(
+                    onClick = {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            fusedLocationClient.lastLocation
+                                .addOnSuccessListener { location ->
+                                    location?.let {
+                                        latitude = it.latitude.toString()
+                                        longtitude = it.longitude.toString()
+                                    }
+                                }
+                        } else {
+                            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        }
+                    },
+                    enabled = !isLoading
+                ) {
+                    Icon(Icons.Default.LocationOn, contentDescription = "Get Location", tint = CustomBlue)
+                }
+            }
+
+            OutlinedTextField(
+                value = longtitude ?: "",
+                onValueChange = { },
+                label = { Text("Longitude") },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                enabled = !isLoading,
+                colors = textFieldColors
+            )
+
+            // Profile Photo Section
+            Text(
+                "Profile Photo", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (profilePhoto != null) {
+                    val bitmap = Base64.decode(profilePhoto, Base64.DEFAULT)
+                        .let { BitmapFactory.decodeByteArray(it, 0, it.size) }
+                    Image(
+                        bitmap = bitmap.asImageBitmap(),
+                        contentDescription = "Profile Photo",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Button(
+                        onClick = {
+                            if (ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                cameraLauncher.launch(null)
+                            } else {
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CustomBlue,
+                            contentColor = Color.White
+                        ),
+                        enabled = !isLoading
+                    ) {
+                        Icon(Icons.Default.PhotoCamera, contentDescription = "Take Photo")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Take Photo")
+                    }
+                }
+            }
+
+            // Pregnancy Stage Section
+            Text(
+                "Pregnancy Information", 
+                style = MaterialTheme.typography.titleMedium,
+                color = CustomBlue
+            )
+            
+            OutlinedTextField(
+                value = pregnancyStage ?: "",
+                onValueChange = { pregnancyStage = it },
+                label = { Text("Pregnancy Stage") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                colors = textFieldColors
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
@@ -637,7 +831,7 @@ fun AddPatientScreen(
                     val lmpDate = dateFormat.parse(lmp)!!
                     val deliveryDate = calculateDeliveryDate(lmpDate)
 
-                    // Create patient data
+                    // Create patient data with new fields
                     val patientData = PatientData(
                         firstName = firstName,
                         lastName = lastName.takeIf { it.isNotBlank() },
@@ -653,7 +847,11 @@ fun AddPatientScreen(
                         caste = caste.takeIf { it.isNotBlank() },
                         bloodGroup = bloodGroup.takeIf { it.isNotBlank() },
                         previousIllness = previousIllness.takeIf { it.isNotBlank() },
-                        lmp = lmpDate
+                        lmp = lmpDate,
+                        latitude = latitude,
+                        longtitude = longtitude,
+                        profilePhoto = profilePhoto,
+                        pregnancyStage = pregnancyStage
                     )
 
                     // Add patient
@@ -700,5 +898,67 @@ fun AddPatientScreen(
                 }
             }
         }
+
+        // Add error dialogs
+        if (showLocationError) {
+            AlertDialog(
+                onDismissRequest = { showLocationError = false },
+                title = { Text("Location Permission Required", color = CustomOrange) },
+                text = { Text("Please grant location permission to get the patient's location", color = Color.Black) },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showLocationError = false },
+                        colors = ButtonDefaults.textButtonColors(contentColor = CustomBlue)
+                    ) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
+        if (showCameraError) {
+            AlertDialog(
+                onDismissRequest = { showCameraError = false },
+                title = { Text("Camera Permission Required", color = CustomOrange) },
+                text = { Text("Please grant camera permission to take profile photo", color = Color.Black) },
+                confirmButton = {
+                    TextButton(
+                        onClick = { showCameraError = false },
+                        colors = ButtonDefaults.textButtonColors(contentColor = CustomBlue)
+                    ) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+    }
+}
+
+// Function to convert bitmap to base64
+fun bitmapToBase64(bitmap: Bitmap): String {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+    val byteArray = byteArrayOutputStream.toByteArray()
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
+}
+
+// Function to get current location
+private fun getCurrentLocation(
+    context: Context,
+    fusedLocationClient: FusedLocationProviderClient,
+    launcher: ActivityResultLauncher<String>,
+    onLocationReceived: (Location) -> Unit
+) {
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let { onLocationReceived(it) }
+            }
+    } else {
+        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 } 

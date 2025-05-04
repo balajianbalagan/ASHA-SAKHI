@@ -21,7 +21,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.*
         Doctor::class,
         Infant::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
