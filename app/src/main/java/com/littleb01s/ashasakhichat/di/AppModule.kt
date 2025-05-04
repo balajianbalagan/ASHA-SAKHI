@@ -41,7 +41,7 @@ class AppModule {
         try {
             Log.d(TAG, "Creating LLM options...")
             val options = LlmInference.LlmInferenceOptions.builder()
-                .setModelPath(modelPath).setMaxTokens(256)
+                .setModelPath(modelPath)
                 .build()
             
             Log.d(TAG, "Created LLM options successfully")

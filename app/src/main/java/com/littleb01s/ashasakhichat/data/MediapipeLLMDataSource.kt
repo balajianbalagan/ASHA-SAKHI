@@ -11,9 +11,18 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.collect.ImmutableList
 import okhttp3.internal.notify
 import javax.inject.Singleton
 import java.io.File
+import com.littleb01s.ashasakhichat.utils.PDFReader
+import com.google.ai.edge.localagents.rag.memory.DefaultSemanticTextMemory
+import com.google.ai.edge.localagents.rag.memory.SqliteVectorStore
+import com.google.ai.edge.localagents.rag.models.Embedder
+import com.google.ai.edge.localagents.rag.models.GeckoEmbeddingModel
+import com.google.ai.edge.localagents.rag.retrieval.RetrievalConfig
+import java.util.Optional
+import com.google.ai.edge.localagents.rag.retrieval.RetrievalRequest
 
 @Singleton
 class MediapipeLLMDataSource @Inject constructor(
@@ -21,39 +30,109 @@ class MediapipeLLMDataSource @Inject constructor(
     private val context: Context
 ) {
     private val systemPrompt = """
-        You are a healthcare assistant for pregnant women. Provide only factual medical information and nutrition plans. Never build conversations or hallucinate. If unsure, say so. Always recommend consulting doctors for serious concerns. Be specific and limit to three paragraphs
+        You are a healthcare assistant for ASHA workers, trained on official ASHA guidelines. Provide accurate information based on the guidelines. If unsure, say so. Always recommend consulting proper medical authorities for serious concerns. Be specific and limit responses to three paragraphs.
     """.trimIndent()
 
-    fun resetLLMInference() {
+    private val embedder: Embedder<String> = GeckoEmbeddingModel(
+        "/data/local/tmp/llm/Gecko_1024_quant.tflite",
+        Optional.of("/data/local/tmp/llm/sentencepiece.model"),
+        true
+    )
+
+    private val semanticMemory = DefaultSemanticTextMemory(
+        SqliteVectorStore(768), // Gecko embedding model dimension
+        embedder
+    )
+
+    fun memorizeContent(pdfPath: String) {
         try {
-            // Close the current instance
-            llmInference.close()
-            
-            val modelPath = "/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin"
-            val modelFile = File(modelPath)
-            
-            Log.d("MediapipeLLMDataSource", "Model file details:")
-            Log.d("MediapipeLLMDataSource", "Exists: ${modelFile.exists()}")
-            Log.d("MediapipeLLMDataSource", "Size: ${modelFile.length()} bytes")
-            Log.d("MediapipeLLMDataSource", "Can read: ${modelFile.canRead()}")
-            Log.d("MediapipeLLMDataSource", "Absolute path: ${modelFile.absolutePath}")
-            Log.d("MediapipeLLMDataSource", "Parent exists: ${modelFile.parentFile?.exists()}")
-            Log.d("MediapipeLLMDataSource", "Parent can read: ${modelFile.parentFile?.canRead()}")
-            
-            Log.d("MediapipeLLMDataSource", "Creating LLM options...")
-            val options = LlmInference.LlmInferenceOptions.builder()
-                .setModelPath(modelPath)
-                .setMaxTokens(256)
-                .build()
-            
-            Log.d("MediapipeLLMDataSource", "Created LLM options successfully")
-            Log.d("MediapipeLLMDataSource", "Creating LLM instance...")
-            llmInference = LlmInference.createFromOptions(context, options)
-            Log.d("MediapipeLLMDataSource", "LLM instance reset successfully")
+            val chunks = PDFReader.readPDFInChunks(pdfPath)
+            if (chunks.isEmpty()) {
+                Log.e("MediapipeLLMDataSource", "No content chunks extracted from PDF")
+                return
+            }
+
+            // Log the paths for verification
+            Log.d("MediapipeLLMDataSource", "Gecko model path: /data/local/tmp/llm/Gecko_1024_quant.tflite")
+            Log.d("MediapipeLLMDataSource", "Tokenizer model path: /data/local/tmp/llm/sentencepiece.model")
+            Log.d("MediapipeLLMDataSource", "PDF path: $pdfPath")
+            Log.d("MediapipeLLMDataSource", "Number of chunks: ${chunks.size}")
+
+            // Log each chunk's content
+            chunks.forEachIndexed { index, chunk ->
+                Log.d("MediapipeLLMDataSource", "Chunk $index: ${chunk.take(200)}...") // Log first 200 chars of each chunk
+            }
+
+            semanticMemory.recordBatchedMemoryItems(ImmutableList.copyOf(chunks))
+            Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} chunks from PDF")
         } catch (e: Exception) {
-            Log.e("MediapipeLLMDataSource", "Error resetting LLM Inference: ${e.message}")
-            throw e
+            Log.e("MediapipeLLMDataSource", "Error memorizing PDF content: ${e.message}")
+            e.printStackTrace()
         }
+    }
+
+    suspend fun generateResponse(query: String): String {
+        try {
+            Log.d("MediapipeLLMDataSource", "Starting response generation for query: $query")
+            
+            val retrievalRequest = RetrievalRequest.create(
+                query,
+                RetrievalConfig.create(
+                    1, // topK
+                    0.3f, // minSimilarityScore
+                    RetrievalConfig.TaskType.QUESTION_ANSWERING
+                )
+            )
+            
+            Log.d("MediapipeLLMDataSource", "Retrieving relevant context...")
+            val retrievalResponse = semanticMemory.retrieveResults(retrievalRequest).get()
+            val relevantContext = retrievalResponse.entities.map { it.data }
+            
+            // Log the retrieved context
+            Log.d("MediapipeLLMDataSource", "Retrieved ${relevantContext.size} relevant chunks for query: $query")
+            relevantContext.forEachIndexed { index, context ->
+                Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
+            }
+            
+            val contextText = relevantContext.joinToString("\n\n")
+            
+            val prompt = """
+                $systemPrompt
+                
+                Relevant context from ASHA guidelines:
+                $contextText
+                
+                User's query: $query
+                
+                Please provide a detailed response based on the ASHA guidelines context provided above. If the context doesn't contain relevant information, say so.
+            """.trimIndent()
+            
+            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+            
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    Log.d("MediapipeLLMDataSource", "Generating LLM response...")
+                    val result = llmInference.generateResponse(prompt)
+                    Log.d("MediapipeLLMDataSource", "LLM response generated successfully")
+                    result
+                } catch (e: Exception) {
+                    Log.e("MediapipeLLMDataSource", "Error in LLM response generation: ${e.message}")
+                    e.printStackTrace()
+                    throw e
+                }
+            }
+            
+            Log.d("MediapipeLLMDataSource", "Response generation completed successfully")
+            return response
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error in generateResponse: ${e.message}")
+            e.printStackTrace()
+            return "I apologize, but I encountered an error while processing your query. Please try again."
+        }
+    }
+
+    fun resetLLMInference() {
+        // Reset any necessary state
     }
 
     suspend fun start(): String {
@@ -77,9 +156,5 @@ class MediapipeLLMDataSource @Inject constructor(
                 User's query: $message
             """.trimIndent())
         }
-    }
-
-    fun generateResponseAsync(prompt: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
-        return llmInference.generateResponseAsync(prompt, progressListener)
     }
 }

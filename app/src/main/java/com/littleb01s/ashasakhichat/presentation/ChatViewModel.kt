@@ -97,6 +97,7 @@ class ChatViewModel @Inject constructor(
                 modelDownloadState.collectLatest { state ->
                     if (state.isComplete) {
                         initializeLLM()
+                        initializeGuidelineContent()
                     }
                 }
             } catch (e: Exception) {
@@ -118,6 +119,17 @@ class ChatViewModel @Inject constructor(
         } catch (e: Exception) {
             _isInitializing.value = false
             Log.e("ChatViewModel", "Error initializing LLM", e)
+        }
+    }
+
+    private fun initializeGuidelineContent() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                llmDataSource.memorizeContent("/data/local/tmp/llm/guidelines-on-asha.pdf")
+                Log.d("ChatViewModel", "Successfully initialized ASHA guidelines content")
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error initializing guidelines content: ${e.message}")
+            }
         }
     }
 
@@ -176,22 +188,8 @@ class ChatViewModel @Inject constructor(
         if (message.isBlank()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            // Wait for any previous inference to complete
-            if (isWaitingForCompletion) {
-                return@launch
-            }
-
-            isWaitingForCompletion = true
             try {
-                // Cancel any existing inference and timeout
-                currentAsyncInference.get()?.cancel(true)
-                timeoutJob?.cancel()
-                
-                // Reset the LLM inference if there was a previous one
-                if (currentAsyncInference.get() != null) {
-                    llmDataSource.resetLLMInference()
-                }
-                
+                Log.d("ChatViewModel", "Starting message processing for: $message")
                 _isProcessing.value = true
                 lastMessageTime.set(System.currentTimeMillis())
                 
@@ -212,121 +210,64 @@ class ChatViewModel @Inject constructor(
                 updatedMessages.add(loadingMessage)
                 _messages.value = updatedMessages
 
-                // Start timeout check
-                timeoutJob = launch {
-                    while (true) {
-                        delay(1000) // Check every second
-                        if (System.currentTimeMillis() - lastMessageTime.get() > TIMEOUT_MS) {
-                            // Cancel the async inference if it exists
-                            currentAsyncInference.get()?.cancel(true)
-                            llmDataSource.resetLLMInference()
-                            _isProcessing.value = false
-                            
-                            // Add timeout error message
-                            val errorMessages = _messages.value.toMutableList()
-                            if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
-                                errorMessages.removeAt(errorMessages.lastIndex)
-                            }
-                            val errorText = "Response timeout. Please try again."
-                            val translatedError = translationService.translate(errorText)
-                            errorMessages.add(Message(
-                                text = translatedError,
-                                isFromMe = false,
-                                isError = true
-                            ))
-                            _messages.value = errorMessages
-                            isWaitingForCompletion = false
-                            break
-                        }
-                    }
-                }
-
                 // Translate message to English if needed
                 val currentLanguage = translationService.getCurrentLanguage()
+                Log.d("ChatViewModel", "Current language: $currentLanguage")
+                
                 val messageForLLM = if (currentLanguage != "en") {
-                    // Translate to English for LLM
+                    Log.d("ChatViewModel", "Translating message to English")
                     translationService.translateToEnglish(message)
                 } else {
                     message
                 }
-                val asyncInference = llmDataSource.generateResponseAsync(messageForLLM, object : ProgressListener<String> {
-                    override fun run(partialResult: String?, done: Boolean) {
-                        viewModelScope.launch {
-                            lastMessageTime.set(System.currentTimeMillis())
-                            val currentMessages = _messages.value.toMutableList()
-                            
-                            if (currentMessages.isNotEmpty() && currentMessages.last().isLoading) {
-                                // Remove the loading message
-                                currentMessages.removeAt(currentMessages.lastIndex)
-                                
-                                // Translate the partial result if needed
-                                val translatedPartial = if (currentLanguage != "en" && partialResult != null) {
-                                    translationService.translate(partialResult)
-                                } else {
-                                    partialResult ?: ""
-                                }
-                                
-                                // Add the initial response message
-                                currentMessages.add(Message(
-                                    text = translatedPartial,
-                                    isFromMe = false
-                                ))
-                            } else {
-                                // Update the last message with the new partial result
-                                val lastMessage = currentMessages.last()
-                                val translatedPartial = if (currentLanguage != "en" && partialResult != null) {
-                                    translationService.translate(partialResult)
-                                } else {
-                                    partialResult ?: ""
-                                }
-                                
-                                currentMessages[currentMessages.lastIndex] = lastMessage.copy(
-                                    text = lastMessage.text + " " + translatedPartial
-                                )
-                            }
-                            _messages.value = currentMessages
+                Log.d("ChatViewModel", "Message for LLM: $messageForLLM")
 
-                            if (done) {
-                                _isProcessing.value = false
-                                timeoutJob?.cancel()
-                                isWaitingForCompletion = false
-                            }
-                        }
-                    }
-                })
-
-                // Store the current async inference
-                currentAsyncInference.set(asyncInference)
-
-                // Handle completion
-                asyncInference.addListener({
-                    viewModelScope.launch {
-                        _isProcessing.value = false
-                        timeoutJob?.cancel()
-                        currentAsyncInference.set(null)
-                        isWaitingForCompletion = false
-                    }
-                }, Executors.newSingleThreadExecutor())
-            } catch (e: Exception) {
-                viewModelScope.launch {
-                    val errorMessages = _messages.value.toMutableList()
-                    if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
-                        errorMessages.removeAt(errorMessages.lastIndex)
-                    }
-                    val errorText = e.message ?: "An error occurred"
-                    val translatedError = translationService.translate(errorText)
-                    errorMessages.add(Message(
-                        text = translatedError,
-                        isFromMe = false,
-                        isError = true
-                    ))
-                    _messages.value = errorMessages
-                    _isProcessing.value = false
-                    timeoutJob?.cancel()
-                    currentAsyncInference.set(null)
-                    isWaitingForCompletion = false
-                    llmDataSource.resetLLMInference()
+                // Generate response synchronously
+                Log.d("ChatViewModel", "Generating response from LLM")
+                val response = llmDataSource.generateResponse(messageForLLM)
+                Log.d("ChatViewModel", "Received response from LLM")
+                
+                // Translate response if needed
+                val translatedResponse = if (currentLanguage != "en") {
+                    Log.d("ChatViewModel", "Translating response to $currentLanguage")
+                    translationService.translate(response)
+                } else {
+                    response
                 }
+                Log.d("ChatViewModel", "Final translated response: ${translatedResponse.take(100)}...")
+
+                // Update messages with the response
+                val finalMessages = _messages.value.toMutableList()
+                if (finalMessages.isNotEmpty() && finalMessages.last().isLoading) {
+                    finalMessages.removeAt(finalMessages.lastIndex)
+                }
+                finalMessages.add(Message(
+                    text = translatedResponse,
+                    isFromMe = false
+                ))
+                _messages.value = finalMessages
+                Log.d("ChatViewModel", "Message processing completed successfully")
+
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error in sendMessage: ${e.message}")
+                e.printStackTrace()
+                
+                val errorMessages = _messages.value.toMutableList()
+                if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
+                    errorMessages.removeAt(errorMessages.lastIndex)
+                }
+                val errorText = e.message ?: "An error occurred"
+                val translatedError = translationService.translate(errorText)
+                errorMessages.add(Message(
+                    text = translatedError,
+                    isFromMe = false,
+                    isError = true
+                ))
+                _messages.value = errorMessages
+            } finally {
+                _isProcessing.value = false
+                lastMessageTime.set(0)
+                Log.d("ChatViewModel", "Message processing finished")
             }
         }
     }
