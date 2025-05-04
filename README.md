@@ -12,6 +12,36 @@
 
 ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Accredited Social Health Activist) workers in India with AI-powered assistance for maternal healthcare. The app runs entirely on-device, making it perfect for areas with limited internet connectivity.
 
+## 🤖 AI & Technical Features
+
+### On-Device AI Capabilities
+- **Local LLM Integration**: 
+  - Gemma 2B model running locally via MediaPipe
+  - Gecko model for efficient text processing
+  - Vector database integration for semantic search
+
+### Healthcare Intelligence
+- **Risk Analysis Engine**:
+  - XGBoost-based risk assessment system
+  - Real-time pregnancy risk evaluation
+  - Personalized health recommendations
+- **Cloud-Based Diet Analysis**:
+  - Llama and LangChain-powered nutrition recommendations
+  - Personalized diet plans based on health conditions
+  - Integration with local food availability
+
+### Language & Communication
+- **Multilingual Support**:
+  - VoskAPI for speech-to-text conversion
+  - Local translation API for language conversion
+  - Support for multiple Indian languages
+
+### Location & Mapping
+- **Bhuvan Maps Integration**:
+  - Open-source mapping solution
+  - Location-based healthcare facility search
+  - Route optimization for ASHA workers
+
 ## 🌟 Key Features
 
 - **Offline-First Architecture**: Works without internet connectivity using on-device LLM
