@@ -59,6 +59,12 @@ class ChatViewModel @Inject constructor(
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog
 
+    private val _isLLMInitialized = MutableStateFlow(false)
+    val isLLMInitialized: StateFlow<Boolean> = _isLLMInitialized
+
+    private val _hasShownWelcome = MutableStateFlow(false)
+    val hasShownWelcome: StateFlow<Boolean> = _hasShownWelcome
+
     val modelDownloadState = modelDownloadManager.downloadState
 
     // Chat states
@@ -115,9 +121,16 @@ class ChatViewModel @Inject constructor(
             // Start chat after LLM is initialized
             _isInitializing.value = false
             _showDownloadDialog.value = false
-            startChat()
+            _isLLMInitialized.value = true
+            
+            // Only show welcome message if not shown before
+            if (!_hasShownWelcome.value) {
+                startChat()
+                _hasShownWelcome.value = true
+            }
         } catch (e: Exception) {
             _isInitializing.value = false
+            _isLLMInitialized.value = false
             Log.e("ChatViewModel", "Error initializing LLM", e)
         }
     }

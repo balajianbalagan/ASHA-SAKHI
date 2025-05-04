@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.littleb01s.R
+import androidx.hilt.navigation.compose.hiltViewModel
 
 data class DashboardButton(
     val text: String,
@@ -32,31 +35,67 @@ fun HomeContent(
     onNavigateToPatients: () -> Unit = {},
     onNavigateToSpeecher: () -> Unit = {},
 ) {
-    val buttonColor = Color(0xFF84D5B1)
-    val textColor = Color(0xFF432C81)
+    val viewModel: ChatViewModel = hiltViewModel()
+    val isInitializing by viewModel.isInitializing.collectAsState()
+    val isLLMInitialized by viewModel.isLLMInitialized.collectAsState()
+    val showDownloadDialog by viewModel.showDownloadDialog.collectAsState()
+    val modelDownloadState by viewModel.modelDownloadState.collectAsState()
 
-    val dashboardButtons = listOf(
-        DashboardButton(stringResource(R.string.your_patients), R.drawable.your_patients_icon, onNavigateToPatients),
-        DashboardButton(stringResource(R.string.asha_training), R.drawable.asha_training_icon, onNavigateToTraining),
-        DashboardButton(stringResource(R.string.risk_analysis), R.drawable.risk_analysis_icon, onNavigateToRiskAnalysis),
-        DashboardButton(stringResource(R.string.ai_sakhi_chat), R.drawable.ai_sakhi_chat_icon, onNavigateToChat),
-        DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap),
-        DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isInitializing || !isLLMInitialized) {
+            // Show loading screen
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = if (isInitializing) "Initializing ASHA Sakhi..." else "Loading AI Model...",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        } else {
+            // Show dashboard buttons
+            val buttonColor = Color(0xFF84D5B1)
+            val textColor = Color(0xFF432C81)
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(dashboardButtons) { button ->
-            DashboardButtonItem(
-                text = button.text,
-                drawableResId = button.drawableResId,
-                onClick = button.onClick,
-                buttonColor = buttonColor,
-                textColor = textColor
+            val dashboardButtons = listOf(
+                DashboardButton(stringResource(R.string.your_patients), R.drawable.your_patients_icon, onNavigateToPatients),
+                DashboardButton(stringResource(R.string.asha_training), R.drawable.asha_training_icon, onNavigateToTraining),
+                DashboardButton(stringResource(R.string.risk_analysis), R.drawable.risk_analysis_icon, onNavigateToRiskAnalysis),
+                DashboardButton(stringResource(R.string.ai_sakhi_chat), R.drawable.ai_sakhi_chat_icon, onNavigateToChat),
+                DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap),
+                DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(dashboardButtons) { button ->
+                    DashboardButtonItem(
+                        text = button.text,
+                        drawableResId = button.drawableResId,
+                        onClick = button.onClick,
+                        buttonColor = buttonColor,
+                        textColor = textColor
+                    )
+                }
+            }
+        }
+
+        // Show download dialog if needed
+        if (showDownloadDialog) {
+            ModelDownloadDialog(
+                downloadState = modelDownloadState,
+                onDismissRequest = viewModel::dismissDownloadDialog,
+                onRetry = viewModel::retryModelDownload
             )
         }
     }

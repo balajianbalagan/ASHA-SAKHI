@@ -9,8 +9,8 @@ import java.io.IOException
 
 object PDFReader {
     private const val TAG = "PDFReader"
-    private const val CHUNK_SIZE = 500 // Characters per chunk
-    private const val CHUNK_OVERLAP = 100 // Overlap between chunks to maintain context
+    private const val CHUNK_SIZE = 1000 // Characters per chunk
+    private const val CHUNK_OVERLAP = 200 // Overlap between chunks to maintain context
 
     fun readPDFInChunks(filePath: String): List<String> {
         try {

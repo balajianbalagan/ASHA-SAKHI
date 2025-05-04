@@ -71,117 +71,92 @@ object Chat
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val isProcessing by viewModel.isProcessing.collectAsState()
-    val isInitializing by viewModel.isInitializing.collectAsState()
-    val showDownloadDialog by viewModel.showDownloadDialog.collectAsState()
-    val downloadState by viewModel.modelDownloadState.collectAsState()
-
-    // Show download dialog if needed
-    if (showDownloadDialog) {
-        ModelDownloadDialog(
-            downloadState = downloadState,
-            onDismissRequest = viewModel::dismissDownloadDialog,
-            onRetry = viewModel::retryModelDownload
-        )
-    }
+    val messages by viewModel.messages.collectAsState()
+    val hasShownWelcome by viewModel.hasShownWelcome.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (isInitializing) {
-            // Show loading state while initializing
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Initializing AI Chat...",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            // Main chat UI
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-            ) {
-                // Header
-                ChatHeader()
-                
-                val messages by viewModel.messages.collectAsState()
+        // Main chat UI
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            // Header
+            ChatHeader()
+            
+            if (messages.isEmpty() && !hasShownWelcome) {
+                WelcomeScreen()
+            } else {
+                val lazyListState = rememberLazyListState()
+                val coroutineScope = rememberCoroutineScope()
 
-                if (messages.isEmpty()) {
-                    WelcomeScreen()
-                } else {
-                    val lazyListState = rememberLazyListState()
-                    val coroutineScope = rememberCoroutineScope()
+                LaunchedEffect(key1 = messages.size) {
+                    lazyListState.animateScrollToItem(index = messages.lastIndex)
+                }
 
-                    LaunchedEffect(key1 = messages.size) {
-                        lazyListState.animateScrollToItem(index = messages.lastIndex)
-                    }
-
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1.0f)
-                            .padding(horizontal = 16.dp),
-                        state = lazyListState
-                    ) {
-                        var currentDate = ""
-                        val items = messages.toList()
-                        
-                        items.forEachIndexed { index, message ->
-                            if (message.formattedDate != currentDate) {
-                                currentDate = message.formattedDate
-                                item {
-                                    DateHeader(date = currentDate)
-                                }
-                            }
-                            
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1.0f)
+                        .padding(horizontal = 16.dp),
+                    state = lazyListState
+                ) {
+                    var currentDate = ""
+                    val items = messages.toList()
+                    
+                    items.forEachIndexed { index, message ->
+                        if (message.formattedDate != currentDate) {
+                            currentDate = message.formattedDate
                             item {
-                                ChatItem(
-                                    message = message,
-                                    onRetry = { viewModel.retryLastMessage() },
-                                    onShare = { text ->
-                                        val sendIntent = Intent().apply {
-                                            action = Intent.ACTION_SEND
-                                            putExtra(Intent.EXTRA_TEXT, text)
-                                            type = "text/plain"
-                                        }
-                                        context.startActivity(Intent.createChooser(sendIntent, "Share via"))
-                                    }
-                                )
+                                DateHeader(date = currentDate)
                             }
                         }
+                        
+                        item {
+                            ChatItem(
+                                message = message,
+                                onRetry = { viewModel.retryLastMessage() },
+                                onShare = { text ->
+                                    val sendIntent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, text)
+                                        type = "text/plain"
+                                    }
+                                    context.startActivity(Intent.createChooser(sendIntent, "Share via"))
+                                }
+                            )
+                        }
                     }
-
-                    val focusManager = LocalFocusManager.current
-
-                    ChatBox(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        onTextFieldClicked = {
-                            coroutineScope.launch {
-                                lazyListState.scrollToItem(index = messages.lastIndex)
-                            }
-                        },
-                        onSendMessageClicked = { message ->
-                            viewModel.sendMessage(message)
-                        },
-                        isProcessing = isProcessing
-                    )
                 }
+
+                val focusManager = LocalFocusManager.current
+
+                ChatBox(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    onTextFieldClicked = {
+                        coroutineScope.launch {
+                            lazyListState.scrollToItem(index = messages.lastIndex)
+                        }
+                    },
+                    onSendMessageClicked = { message ->
+                        viewModel.sendMessage(message)
+                    },
+                    isProcessing = isProcessing
+                )
             }
         }
     }
 
-    LaunchedEffect(key1 = StartChatKey) {
-        viewModel.startChat()
+    // Only start chat if not shown before
+    LaunchedEffect(key1 = hasShownWelcome) {
+        if (!hasShownWelcome) {
+            viewModel.startChat()
+        }
     }
 }
 
