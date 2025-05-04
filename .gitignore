@@ -31,3 +31,5 @@ google-services.json
 
 # Android Profiling
 *.hprof
+app/src/main/assets/Gecko_1024_quant.tflite
+app/src/main/assets/gemma-2b-it-cpu-int4.bin
