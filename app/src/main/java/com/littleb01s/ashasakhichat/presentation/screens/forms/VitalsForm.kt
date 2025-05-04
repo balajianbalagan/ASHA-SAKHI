@@ -66,7 +66,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.sugarLevel,
             onValueChange = { viewModel.updateSugarLevel(it) },
-            label = { Text("Blood Sugar Level*") },
+            label = { Text("Blood Sugar Level (mmol/L)*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -143,14 +143,15 @@ object VitalsForm {
 
     fun onActionButtonClick(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         // Generate random vital signs within normal ranges
-        val systolic = Random.nextInt(100, 140)
+        val systolic = Random.nextInt(70, 140)
         val diastolic = Random.nextInt(60, 90)
         val bloodPressure = "$systolic/$diastolic"
         
         val oxygen = Random.nextInt(95, 100)
-        val weight = Random.nextInt(45, 100)
+        val weight = Random.nextInt(50, 80)
         val temperature = String.format("%.1f", Random.nextDouble(36.5, 37.5))
-        val sugarLevel = Random.nextInt(70, 140)
+        // Blood sugar in mmol/L, normal range 4-7, but allow values 2-12 for realism
+        val sugarLevel = String.format("%.1f", Random.nextDouble(3.0, 11.0))
         val haemoglobin = String.format("%.1f", Random.nextDouble(11.0, 15.0))
         
         // Calculate BMI based on weight (assuming average height of 1.6m)
@@ -162,7 +163,7 @@ object VitalsForm {
         viewModel.updateOxygen(oxygen.toString())
         viewModel.updateWeight(weight.toString())
         viewModel.updateTemperature(temperature)
-        viewModel.updateSugarLevel(sugarLevel.toString())
+        viewModel.updateSugarLevel(sugarLevel)
         viewModel.updateBMI(bmi)
         viewModel.updateHaemoglobin(haemoglobin)
         
@@ -172,7 +173,7 @@ object VitalsForm {
             Oxygen Level: $oxygen%
             Weight: $weight kg
             Temperature: $temperature°C
-            Blood Sugar: $sugarLevel mg/dL
+            Blood Sugar: $sugarLevel mmol/L
             BMI: $bmi
             Haemoglobin: $haemoglobin g/dL
         """.trimIndent()

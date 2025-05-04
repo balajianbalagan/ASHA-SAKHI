@@ -57,4 +57,7 @@
     <string name="tap_mic_to_start">Tap the microphone to start</string>
     <string name="recognized_text_placeholder">Recognized text will appear here</string>
     <string name="initializing">Initializing speech recognition...</string>
+    <string name="Calendar">Calendar</string>
+    <string name="select_language_mr">भाषा निवडा</string>
+    <string name="select_language_gu">ભાષા પસંદ કરો</string>
 </resources> 

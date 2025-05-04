@@ -141,13 +141,13 @@ class MainActivity : ComponentActivity() {
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
-                            composable(Screen.Notifications.route) {
+                            composable(Screen.Calendar.route) {
                                 MainScaffold(
-                                    currentRoute = Screen.Notifications.route,
+                                    currentRoute = Screen.Calendar.route,
                                     onNavigate = { route -> navController.navigate(route) },
                                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                                 ) {
-                                    NotificationsScreen()
+                                    CalendarScreen()
                                 }
                             }
                             composable(Screen.Settings.route) {
@@ -175,8 +175,8 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.RiskAnalysis.route) {
                                 RiskAnalysisScreen(
                                     onNavigateBack = { navController.navigateUp() },
-                                    onNavigateToPregnancyRisk = {
-                                        navController.navigate(Screen.PregnancyRiskAssessment.route)
+                                    onNavigateToPregnancyRisk = { pId ->
+                                        navController.navigate("${Screen.PregnancyRiskAssessment.route}/$pId")
                                     },
                                     patientId = null
                                 )
@@ -279,6 +279,20 @@ class MainActivity : ComponentActivity() {
                                 val checkupId = backStackEntry.arguments?.getInt("checkupId") ?: return@composable
                                 PatientRecordViewScreen(
                                     checkupId = checkupId,
+                                    onNavigateBack = { navController.navigateUp() }
+                                )
+                            }
+
+                            // Add Appointments screen route
+                            composable(
+                                route = Screen.Appointments.route,
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                AppointmentsScreen(
+                                    patientId = patientId,
                                     onNavigateBack = { navController.navigateUp() }
                                 )
                             }
