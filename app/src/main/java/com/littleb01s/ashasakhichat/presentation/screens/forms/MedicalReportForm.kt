@@ -1,8 +1,10 @@
 package com.littleb01s.ashasakhichat.presentation.screens.forms
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -63,7 +65,7 @@ private val reportInfo = mapOf(
 @Composable
 fun MedicalReportForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
     val reportTypes = listOf("Ultrasound", "Blood Test", "X-Ray", "ECG")
-    var selectedReportType by remember { mutableStateOf(state.checkupData) }
+    var selectedReportType by remember { mutableStateOf(state.reportType) }
     var expanded by remember { mutableStateOf(false) }
     var summary by remember { mutableStateOf("") }
     var fileUrl by remember { mutableStateOf("") }
@@ -96,7 +98,7 @@ fun MedicalReportForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
                         text = { Text(option) },
                         onClick = {
                             selectedReportType = option
-                            viewModel.updateCheckupData(option)
+                            viewModel.updateReportType(option)
                             expanded = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
@@ -106,7 +108,10 @@ fun MedicalReportForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         }
         OutlinedTextField(
             value = summary,
-            onValueChange = { summary = it },
+            onValueChange = { 
+                summary = it
+                viewModel.updateSummary(it)
+            },
             label = { Text("Summary") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -114,19 +119,27 @@ fun MedicalReportForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
                 unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
             )
         )
-        OutlinedTextField(
-            value = fileUrl,
-            onValueChange = { fileUrl = it },
-            label = { Text("File URL") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CustomBlue,
-                unfocusedBorderColor = CustomBlue.copy(alpha = 0.5f)
+        // File picker UI (replace fileUrl text field)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Button(onClick = {
+                // TODO: Launch file picker intent
+                // On file selected: check size, copy to app private storage, update fileUrl
+            }) {
+                Text("Select File")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (fileUrl.isNotBlank()) fileUrl.substringAfterLast('/') else "No file selected",
+                style = MaterialTheme.typography.bodyMedium
             )
-        )
+        }
+        // Max file size: 5MB (enforced in file picker logic)
         OutlinedTextField(
             value = notes,
-            onValueChange = { notes = it },
+            onValueChange = { 
+                notes = it
+                viewModel.updateNotes(it)
+            },
             label = { Text("Notes") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -141,42 +154,40 @@ fun MedicalReportForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
 }
 
 object MedicalReportForm {
+    fun validateForm(state: CheckupFormState): Boolean {
+        if (state.reportType.isEmpty()) {
+            println("Validation Error: Report type cannot be empty")
+            return false
+        }
+        if (state.summary.isEmpty()) {
+            println("Validation Error: Summary cannot be empty")
+            return false
+        }
+        return true
+    }
+
     fun onActionButtonClick(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         // Select a random report type
-        val reportType = reportInfo.keys.random()
-        val reportDetails = reportInfo[reportType]!!
+        val reportTypes = listOf("Ultrasound", "Blood Test", "X-Ray", "ECG")
+        val reportType = reportTypes.random()
         
-        // Generate random number of summary points (2-4)
-        val numPoints = Random.nextInt(2, 5)
-        val selectedSummary = (reportDetails["summary"] as List<String>).shuffled().take(numPoints)
+        // Get corresponding summary and file URL
+        val reportInfo = reportInfo[reportType]!!
+        val summary = (reportInfo["summary"] as List<String>).random()
+        val fileUrl = reportInfo["fileUrl"]!!
         
-        // Generate random notes
-        val notes = listOf(
-            "Follow-up recommended in 3 months",
-            "No immediate intervention required",
-            "Results discussed with patient",
-            "Patient advised to maintain current treatment",
-            "Further tests may be required"
-        ).random()
+        // Update the form fields
+        viewModel.updateReportType(reportType)
+        viewModel.updateSummary(summary)
+        viewModel.updateFileUrl(fileUrl.toString())
         
-        // Format the medical report
-        val formattedReport = """
+        // Format the data for display
+        val formattedData = """
             Report Type: $reportType
-            Date: ${LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)}
-            
-            Summary:
-            ${selectedSummary.joinToString("\n• ")}
-            
-            File URL: ${reportDetails["fileUrl"]}
-            
-            Notes: $notes
+            Summary: $summary
+            File URL: $fileUrl
         """.trimIndent()
         
-        // Update the form state
-        viewModel.updateCheckupData(formattedReport)
-        viewModel.updateReportType(reportType)
-        viewModel.updateSummary(selectedSummary.joinToString("\n"))
-        viewModel.updateFileUrl(reportDetails["fileUrl"] as String)
-        viewModel.updateNotes(notes)
+        viewModel.updateCheckupData(formattedData)
     }
 } 

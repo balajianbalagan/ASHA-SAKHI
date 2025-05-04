@@ -167,6 +167,25 @@ fun PatientRecordViewScreen(
                             modifier = cardModifier
                         )
                     }
+                    "VITALS" -> {
+                        RecordCard(
+                            iconRes = R.drawable.ic_vitals,
+                            title = "Vitals",
+                            content = {
+                                checkup?.let { c ->
+                                    c.bloodPressure?.let { Text("Blood Pressure: $it mmHg") }
+                                    c.oxygen?.let { Text("Oxygen: $it %") }
+                                    c.weight?.let { Text("Weight: $it kg") }
+                                    c.temperature?.let { Text("Temperature: $it °C") }
+                                    c.sugarLevel?.let { Text("Blood Sugar: $it mg/dL") }
+                                    c.bmi?.let { Text("BMI: $it") }
+                                    c.haemoglobin?.let { Text("Hemoglobin: $it g/dL") }
+                                    c.checkupTime?.let { Text("Recorded: ${dateFormat.format(it)}") }
+                                }
+                            },
+                            modifier = cardModifier
+                        )
+                    }
                     else -> {
                         RecordCard(
                             iconRes = R.drawable.ic_placeholder,

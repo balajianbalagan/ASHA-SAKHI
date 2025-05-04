@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation.screens.forms
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -21,7 +22,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.bloodPressure,
             onValueChange = { viewModel.updateBloodPressure(it) },
-            label = { Text("Blood Pressure (mmHg)") },
+            label = { Text("Blood Pressure (mmHg)*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -32,7 +33,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.oxygen,
             onValueChange = { viewModel.updateOxygen(it) },
-            label = { Text("Oxygen Level (%)") },
+            label = { Text("Oxygen Level (%)*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -43,7 +44,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.weight,
             onValueChange = { viewModel.updateWeight(it) },
-            label = { Text("Weight (kg)") },
+            label = { Text("Weight (kg)*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -54,7 +55,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.temperature,
             onValueChange = { viewModel.updateTemperature(it) },
-            label = { Text("Temperature (°C)") },
+            label = { Text("Temperature (°C)*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -65,7 +66,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.sugarLevel,
             onValueChange = { viewModel.updateSugarLevel(it) },
-            label = { Text("Blood Sugar Level") },
+            label = { Text("Blood Sugar Level*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -76,7 +77,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.bmi,
             onValueChange = { viewModel.updateBMI(it) },
-            label = { Text("BMI") },
+            label = { Text("BMI*") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -87,7 +88,7 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         OutlinedTextField(
             value = state.haemoglobin,
             onValueChange = { viewModel.updateHaemoglobin(it) },
-            label = { Text("Haemoglobin") },
+            label = { Text("Haemoglobin*") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = CustomBlue,
@@ -98,6 +99,48 @@ fun VitalsForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
 }
 
 object VitalsForm {
+    fun validateForm(state: CheckupFormState): Boolean {
+        Log.d("VitalsForm", "Validating vitals form")
+        
+        if (state.bloodPressure.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Blood pressure cannot be empty")
+            return false
+        }
+        
+        if (state.oxygen.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Oxygen level cannot be empty")
+            return false
+        }
+        
+        if (state.weight.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Weight cannot be empty")
+            return false
+        }
+        
+        if (state.temperature.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Temperature cannot be empty")
+            return false
+        }
+        
+        if (state.sugarLevel.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Blood sugar level cannot be empty")
+            return false
+        }
+        
+        if (state.bmi.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: BMI cannot be empty")
+            return false
+        }
+        
+        if (state.haemoglobin.isBlank()) {
+            Log.e("VitalsForm", "Validation failed: Haemoglobin cannot be empty")
+            return false
+        }
+        
+        Log.d("VitalsForm", "Validation successful")
+        return true
+    }
+
     fun onActionButtonClick(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         // Generate random vital signs within normal ranges
         val systolic = Random.nextInt(100, 140)
@@ -114,7 +157,7 @@ object VitalsForm {
         val height = 1.6
         val bmi = String.format("%.1f", weight / (height * height))
         
-        // Update all vital signs
+        // Update all vital signs in the form
         viewModel.updateBloodPressure(bloodPressure)
         viewModel.updateOxygen(oxygen.toString())
         viewModel.updateWeight(weight.toString())
@@ -122,5 +165,18 @@ object VitalsForm {
         viewModel.updateSugarLevel(sugarLevel.toString())
         viewModel.updateBMI(bmi)
         viewModel.updateHaemoglobin(haemoglobin)
+        
+        // Format the data for display
+        val formattedData = """
+            Blood Pressure: $bloodPressure mmHg
+            Oxygen Level: $oxygen%
+            Weight: $weight kg
+            Temperature: $temperature°C
+            Blood Sugar: $sugarLevel mg/dL
+            BMI: $bmi
+            Haemoglobin: $haemoglobin g/dL
+        """.trimIndent()
+        
+        viewModel.updateCheckupData(formattedData)
     }
 } 

@@ -10,7 +10,7 @@ data class Checkup(
     val checkupId: Int = 0,
     val workerId: Int? = null,
     val patientId: Int,
-    val bloodPressure: Float? = null,
+    val bloodPressure: String? = null,
     val oxygen: Float? = null,
     val weight: Float? = null,
     val temperature: Float? = null,
@@ -21,6 +21,7 @@ data class Checkup(
     val checkupType: String? = null,
     val pregnancyStage: String? = null,
     val checkupStatus: Int? = null,
+    val checkupTime: Date? = null,
     // Sync fields
     val needsUpload: Boolean = true,
     val needsDownload: Boolean = false,

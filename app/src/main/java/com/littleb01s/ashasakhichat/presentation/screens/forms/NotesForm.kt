@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation.screens.forms
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,30 +17,43 @@ private val CustomOrange = Color(0xFFFF5151)
 // List of common medical notes
 private val commonNotes = listOf(
     "Patient appears to be in good health",
-    "Follow-up appointment recommended in 2 weeks",
-    "Patient advised to maintain current medication regimen",
-    "Dietary changes suggested for better health outcomes",
-    "Patient showing positive response to treatment",
-    "Additional tests may be required for further diagnosis",
-    "Patient needs to increase physical activity",
-    "Sleep pattern needs improvement",
-    "Stress management techniques discussed",
-    "Patient education provided on self-care"
+    "Follow-up appointment recommended",
+    "Medication prescribed as needed",
+    "Patient advised to rest and hydrate",
+    "Vital signs within normal range",
+    "Patient showing signs of improvement",
+    "Dietary recommendations provided",
+    "Exercise routine suggested",
+    "Patient needs regular monitoring",
+    "Symptoms are being managed well"
+)
+
+private val commonAuthors = listOf(
+    "Dr. Smith",
+    "Nurse Johnson",
+    "Dr. Williams",
+    "Nurse Brown",
+    "Dr. Davis",
+    "Nurse Miller",
+    "Dr. Wilson",
+    "Nurse Moore",
+    "Dr. Taylor",
+    "Nurse Anderson"
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-    var note by remember { mutableStateOf(state.checkupData) }
+    var note by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedTextField(
-            value = note ?: "",
-            onValueChange = {
+            value = note,
+            onValueChange = { 
                 note = it
-                viewModel.updateCheckupData(it)
+                viewModel.updateNote(it)
             },
             label = { Text("Note") },
             modifier = Modifier.fillMaxWidth(),
@@ -50,7 +64,10 @@ fun NotesForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
         )
         OutlinedTextField(
             value = author,
-            onValueChange = { author = it },
+            onValueChange = { 
+                author = it
+                viewModel.updateAuthor(it)
+            },
             label = { Text("Author") },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
@@ -65,22 +82,37 @@ fun NotesForm(viewModel: AddCheckupViewModel, state: CheckupFormState) {
 }
 
 object NotesForm {
+    fun validateForm(state: CheckupFormState): Boolean {
+        if (state.note.isEmpty()) {
+            println("Validation Error: Note cannot be empty")
+            return false
+        }
+        return true
+    }
+
     fun onActionButtonClick(viewModel: AddCheckupViewModel, state: CheckupFormState) {
-        // Generate random number of notes (between 1 and 3)
-        val numNotes = Random.nextInt(1, 4)
+        // Generate random note content
+        val noteContent = listOf(
+            "Patient reported feeling better after medication",
+            "Follow-up scheduled for next week",
+            "Patient advised to maintain regular exercise",
+            "Dietary recommendations provided",
+            "Patient showing good progress"
+        ).random()
         
-        // Randomly select notes
-        val selectedNotes = commonNotes.shuffled().take(numNotes)
+        // Generate random author
+        val author = listOf("Dr. Smith", "Nurse Johnson", "Dr. Patel", "Nurse Williams").random()
         
-        // Format the notes with author and timestamp
-        val author = listOf("Dr. Smith", "Nurse Johnson", "Dr. Patel", "Dr. Kumar").random()
-        val timestamp = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-        
-        val formattedNotes = selectedNotes.joinToString("\n\n")
-        val result = "Author: $author\nDate: $timestamp\n\n$formattedNotes"
-        
-        // Update the form state
-        viewModel.updateCheckupData(result)
+        // Update the form fields
+        viewModel.updateNote(noteContent)
         viewModel.updateAuthor(author)
+        
+        // Format the data for display
+        val formattedData = """
+            Note: $noteContent
+            Author: $author
+        """.trimIndent()
+        
+        viewModel.updateCheckupData(formattedData)
     }
 } 

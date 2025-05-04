@@ -4,14 +4,14 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "TBL_DOCUMENTS")
-data class Document(
+@Entity(tableName = "TBL_PROFILE_DOCTOR")
+data class Doctor(
     @PrimaryKey(autoGenerate = true)
-    val documentId: Int = 0,
-    val checkupId: Int,
-    val documentPath: String, // server path/URL
-    val documentName: String? = null,
-    val localPath: String? = null, // local device path
+    val doctorId: Int = 0,
+    val profileId: Int,
+    val hospital: String? = null,
+    val city: String? = null,
+    val specialization: String? = null,
     // Sync fields
     val needsUpload: Boolean = true,
     val needsDownload: Boolean = false,

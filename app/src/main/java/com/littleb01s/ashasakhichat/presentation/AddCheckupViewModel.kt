@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.littleb01s.ashasakhichat.data.local.dao.CheckupDao
@@ -26,8 +27,10 @@ data class CheckupFormState(
     val checkupData: String = "",
     val pregnancyStage: String = "",
     // Symptoms form fields
+    val symptoms: List<String> = listOf(),
     val severity: String = "",
     // Notes form fields
+    val note: String ="",
     val author: String = "",
     // Test Results form fields
     val testName: String = "",
@@ -103,11 +106,18 @@ class AddCheckupViewModel @Inject constructor(
     }
 
     // Symptoms form update methods
+    fun  updateSymptoms(value:List<String>){
+        _formState.value = _formState.value.copy(symptoms = value)
+    }
     fun updateSeverity(value: String) {
         _formState.value = _formState.value.copy(severity = value)
     }
 
     // Notes form update methods
+    fun updateNote(value: String) {
+        _formState.value = _formState.value.copy(note = value)
+    }
+
     fun updateAuthor(value: String) {
         _formState.value = _formState.value.copy(author = value)
     }
@@ -190,6 +200,7 @@ class AddCheckupViewModel @Inject constructor(
                 _formState.value = _formState.value.copy(isLoading = true, error = null)
                 val gson = Gson()
                 val checkupType = _formState.value.checkupType
+                Log.d("AddCheckupViewModel", "Checkup type: $checkupType")
                 val checkupDataJson = when (checkupType) {
                     "SYMPTOMS" -> gson.toJson(
                         SymptomsRecord(
@@ -236,12 +247,14 @@ class AddCheckupViewModel @Inject constructor(
                             notes = _formState.value.notes
                         )
                     )
+                    "VITALS" -> gson.toJson(null)
                     else -> _formState.value.checkupData
                 }
+
                 val checkup = Checkup(
                     patientId = patientId,
                     checkupType = checkupType,
-                    bloodPressure = _formState.value.bloodPressure.toFloatOrNull(),
+                    bloodPressure = _formState.value.bloodPressure.takeIf { it.isNotBlank() },
                     oxygen = _formState.value.oxygen.toFloatOrNull(),
                     weight = _formState.value.weight.toFloatOrNull(),
                     temperature = _formState.value.temperature.toFloatOrNull(),

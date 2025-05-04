@@ -190,7 +190,10 @@ class MainActivity : ComponentActivity() {
                                 val patientId = backStackEntry.arguments?.getInt("patientId")
                                 PregnancyRiskAssessmentScreen(
                                     patientId = patientId,
-                                    onNavigateBack = { navController.navigateUp() }
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onNavigateToAddCheckup = { id: Int ->
+                                        navController.navigate("${Screen.AddCheckup.route}/$id")
+                                    }
                                 )
                             }
                             composable(Screen.Chat.route) {
