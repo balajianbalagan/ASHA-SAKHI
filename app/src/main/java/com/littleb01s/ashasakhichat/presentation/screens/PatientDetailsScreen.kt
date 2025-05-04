@@ -230,23 +230,48 @@ fun PatientDetailsScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = { navController.navigate("${Screen.DietSuggestions.route}/${patientId}/${patient!!.mobileNumber}") },
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CustomGreen
-                        )
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.List,
-                                contentDescription = "Suggest Diet",
-                                modifier = Modifier.size(24.dp)
+                        Button(
+                            onClick = { navController.navigate("${Screen.DietSuggestions.route}/${patientId}/${patient!!.mobileNumber}") },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CustomGreen
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text("Suggest Diet")
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.List,
+                                    contentDescription = "Suggest Diet",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("Suggest Diet")
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { navController.navigate(Screen.Appointments.createRoute(patientId)) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CustomGreen
+                            )
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.CalendarToday,
+                                    contentDescription = "Appointments",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("Appointments")
+                            }
                         }
                     }
                 }

@@ -85,15 +85,15 @@ fun MainScaffold(
                 NavigationBarItem(
                     icon = {
                         Icon(
-                            painterResource(id = R.drawable.baseline_notifications_24),
-                            contentDescription = stringResource(R.string.notifications),
+                            painterResource(id = R.drawable.baseline_calendar_month_24),
+                            contentDescription = stringResource(R.string.Calendar),
                             tint = Color(red = 253, green = 90, blue = 86),
                             modifier = Modifier.size(24.dp)
                         )
                     },
-                    label = { Text(stringResource(R.string.notifications)) },
-                    selected = currentRoute == Screen.Notifications.route,
-                    onClick = { onNavigate(Screen.Notifications.route) }
+                    label = { Text(stringResource(R.string.Calendar)) },
+                    selected = currentRoute == Screen.Calendar.route,
+                    onClick = { onNavigate(Screen.Calendar.route) }
                 )
                 NavigationBarItem(
                     icon = { Icon(Icons.Default.Settings, stringResource(R.string.settings), Modifier.size(24.dp), Color(red = 253, green = 90, blue = 86)) },

@@ -14,7 +14,7 @@ sealed class Screen(val route: String) {
     object RegionalMap : Screen("regional_map")
     object Profile : Screen("profile")
     object Settings : Screen("settings")
-    object Notifications : Screen("notifications")
+    object Calendar : Screen("calendar")
     object PatientDetails : Screen("patient/{patientId}") {
         fun createRoute(patientId: Int) = "patient/$patientId"
     }
@@ -23,5 +23,8 @@ sealed class Screen(val route: String) {
     object SpeechRecognitionScreen : Screen("speech_recognition")
     object PatientRecordView : Screen("patient_record_view/{checkupId}") {
         fun createRoute(checkupId: Int) = "patient_record_view/$checkupId"
+    }
+    object Appointments : Screen("appointments/{patientId}") {
+        fun createRoute(patientId: Int) = "appointments/$patientId"
     }
 } 
