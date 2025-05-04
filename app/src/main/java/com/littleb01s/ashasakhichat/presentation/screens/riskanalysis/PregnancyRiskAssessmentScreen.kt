@@ -24,6 +24,9 @@ import java.util.Date
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import com.littleb01s.ashasakhichat.data.local.dao.RiskAnalysisDao
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 private val CustomBlue = Color(0xFF0174B3)
 private val CustomGreen = Color(0xFF1BBF69)
@@ -43,6 +46,7 @@ fun  PregnancyRiskAssessmentScreen(
             Log.d("PregnancyRiskAssessmentScreen", "Checking for recent vitals for patient $id")
             viewModel.checkRecentVitals(id)
             viewModel.loadPatientData(id)
+            viewModel.loadLatestRiskAnalysis(id)
         }
     }
 
@@ -64,19 +68,19 @@ fun  PregnancyRiskAssessmentScreen(
     val hasRecentVitals by viewModel.hasRecentVitals.collectAsState()
     val formData by viewModel.formData.collectAsState()
     val patientData by viewModel.patientData.collectAsState()
+    val latestRiskAnalysis by viewModel.latestRiskAnalysis.collectAsState()
     
+    // Date formatter for risk analysis timestamp
+    val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()) }
+
     // Update form fields when formData changes
     LaunchedEffect(formData) {
-        formData["age"]?.let { 
-            if (age.isEmpty()) { // Only update if age is empty
-                age = it
-            }
-        }
-        formData["systolicBP"]?.let { systolicBP = it }
-        formData["diastolicBP"]?.let { diastolicBP = it }
-        formData["bloodSugar"]?.let { bloodSugar = it }
-        formData["bodyTemp"]?.let { bodyTemp = it }
-        formData["heartRate"]?.let { heartRate = it }
+        age = formData["age"] ?: ""
+        systolicBP = formData["systolicBP"] ?: ""
+        diastolicBP = formData["diastolicBP"] ?: ""
+        bloodSugar = formData["bloodSugar"] ?: ""
+        bodyTemp = formData["bodyTemp"] ?: ""
+        heartRate = formData["heartRate"] ?: ""
     }
 
     // Create a scroll state that we can programmatically control
@@ -113,7 +117,6 @@ fun  PregnancyRiskAssessmentScreen(
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-
                             patientData?.let { patient ->
                                 Text(
                                     text = "Name: ${patient.firstName} ${patient.lastName ?: ""}",
@@ -126,6 +129,17 @@ fun  PregnancyRiskAssessmentScreen(
                                     style = MaterialTheme.typography.bodySmall,
                                     color = CustomBlue
                                 )
+                                
+                                // Risk Analysis Status
+                                Text(
+                                    text = if (latestRiskAnalysis != null) {
+                                        "Risk Analysis last done on: ${dateFormatter.format(latestRiskAnalysis!!.createdAt)}"
+                                    } else {
+                                        "No Risk Analysis done for this patient"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (latestRiskAnalysis != null) CustomGreen else CustomOrange
+                                )
                             }
                         }
                     }
@@ -135,6 +149,7 @@ fun  PregnancyRiskAssessmentScreen(
                         riskLevel = riskLevel,
                         modifier = Modifier
                             .fillMaxWidth(fraction = 0.90f)
+                            .padding(bottom = 8.dp)
                             .height(200.dp)
                     )
 
@@ -142,11 +157,12 @@ fun  PregnancyRiskAssessmentScreen(
                     if (observations.isNotEmpty()) {
                         Text(
                             text = "Detailed Observations",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
                             color = CustomBlue,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp)
+                                .padding(top = 16.dp)
                         )
                         
                         observations.forEach { (parameter, observation) ->
@@ -402,14 +418,17 @@ fun  PregnancyRiskAssessmentScreen(
                     Button(
                         onClick = {
                             if (validateInputs(age, systolicBP, diastolicBP, bloodSugar, bodyTemp, heartRate)) {
-                                viewModel.assessRisk(
-                                    age = age.toFloat(),
-                                    systolicBP = systolicBP.toFloat(),
-                                    diastolicBP = diastolicBP.toFloat(),
-                                    bloodSugar = bloodSugar.toFloat(),
-                                    bodyTemp = bodyTemp.toFloat(),
-                                    heartRate = heartRate.toFloat()
-                                )
+                                patientData?.let {
+                                    viewModel.assessRisk(
+                                        patientId= it.patientId,
+                                        age = age.toFloat(),
+                                        systolicBP = systolicBP.toFloat(),
+                                        diastolicBP = diastolicBP.toFloat(),
+                                        bloodSugar = bloodSugar.toFloat(),
+                                        bodyTemp = bodyTemp.toFloat(),
+                                        heartRate = heartRate.toFloat()
+                                    )
+                                }
                                 showError = false
                             } else {
                                 showError = true

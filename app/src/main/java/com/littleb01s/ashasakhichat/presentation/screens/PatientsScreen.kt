@@ -1,12 +1,20 @@
 package com.littleb01s.ashasakhichat.presentation.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Bitmap.createBitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -20,15 +28,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.littleb01s.R
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
 import kotlinx.coroutines.launch
@@ -36,6 +50,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
+import android.util.Base64
+import androidx.core.graphics.createBitmap
 
 // Define colors at the top level to match PatientDetailsScreen
 private val CustomBlue = Color(0xFF0174B3)
@@ -181,6 +197,7 @@ fun PatientsScreen(
 @Composable
 fun PatientCard(patient: Patient, onClick: () -> Unit) {
     val context = LocalContext.current
+    val profileImage = getProfileImage(patient.profilePhoto)
     
     Card(
         modifier = Modifier
@@ -199,6 +216,24 @@ fun PatientCard(patient: Patient, onClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Profile Image
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, CustomBlue.copy(alpha = 0.3f), CircleShape)
+                    .padding(2.dp)
+            ) {
+                Image(
+                    bitmap = profileImage,
+                    contentDescription = "Patient Profile",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
+
             // Left section with patient info
             Column(
                 modifier = Modifier.weight(1f),
@@ -397,4 +432,39 @@ private fun calculateEDD(lmp: Date?): Date {
 private fun formatDate(date: Date): String {
     val formatter = SimpleDateFormat("MMM d", Locale.getDefault())
     return formatter.format(date)
-} 
+}
+
+private fun decodeBase64Image(base64String: String?): ImageBitmap? {
+    if (base64String.isNullOrEmpty()) return null
+
+    return try {
+        val imageBytes = Base64.decode(base64String, Base64.DEFAULT)
+        if (imageBytes.isEmpty()) return null
+
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+        bitmap?.asImageBitmap()
+    } catch (e: Exception) {
+        null
+    }
+}
+
+@SuppressLint("UseKtx")
+@Composable
+private fun getProfileImage(profilePhoto: String?): ImageBitmap {
+    val context = LocalContext.current
+    val placeholderBitmap = remember {
+        val drawable = ContextCompat.getDrawable(context, R.drawable.profile_placeholder)
+        val bitmap = drawable?.let {
+            createBitmap(it.intrinsicWidth, it.intrinsicHeight).also { bmp ->
+                val canvas = Canvas(bmp)
+                it.setBounds(0, 0, canvas.width, canvas.height)
+                it.draw(canvas)
+            }
+        }
+        bitmap?.asImageBitmap()
+    }
+
+    return remember(profilePhoto) {
+        decodeBase64Image(profilePhoto) ?: placeholderBitmap!!
+    }
+}

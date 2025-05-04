@@ -175,8 +175,8 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.RiskAnalysis.route) {
                                 RiskAnalysisScreen(
                                     onNavigateBack = { navController.navigateUp() },
-                                    onNavigateToPregnancyRisk = {
-                                        navController.navigate(Screen.PregnancyRiskAssessment.route)
+                                    onNavigateToPregnancyRisk = { pId ->
+                                        navController.navigate("${Screen.PregnancyRiskAssessment.route}/$pId")
                                     },
                                     patientId = null
                                 )

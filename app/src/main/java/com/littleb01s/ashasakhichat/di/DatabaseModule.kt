@@ -43,6 +43,12 @@ object DatabaseModule {
     fun provideDocumentDao(database: AshaSakhiDatabase): DocumentDao {
         return database.documentDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideRiskAnalysisDao(database: AshaSakhiDatabase): RiskAnalysisDao {
+        return database.riskAnalysisDao()
+    }
     
     // We'll add more providers here as needed (DAOs, Repositories, etc.)
 } 
