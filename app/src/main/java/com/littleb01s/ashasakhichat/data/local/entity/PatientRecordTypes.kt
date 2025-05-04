@@ -2,6 +2,17 @@ package com.littleb01s.ashasakhichat.data.local.entity
 
 import java.util.Date
 
+// Centralized checkup types
+enum class CheckupType {
+    VITALS,
+    SYMPTOMS,
+    NOTES,
+    TEST_RESULTS,
+    ANC_VISIT,
+    VACCINATION,
+    MEDICAL_REPORT
+}
+
 sealed interface PatientRecordData
 
 // Symptoms record

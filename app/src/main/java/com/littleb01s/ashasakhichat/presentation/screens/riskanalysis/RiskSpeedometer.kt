@@ -60,19 +60,16 @@ fun RiskSpeedometer(
         else -> 180f        // Default position
     }
     
-    // Also, let's reset the animation completely when the risk level changes
     // Create an animatable for smooth animation with initial value matching the default angle
     val animatedAngle = remember { Animatable(180f) }
     
-    // Reset and animate to the target angle when risk level changes
+    // Always animate from the leftmost (180°) position for a smooth sweep
     LaunchedEffect(riskLevel) {
-        // Reset to default position first
         animatedAngle.snapTo(180f)
-        // Then animate to the target position
         animatedAngle.animateTo(
             targetValue = needleAngle,
             animationSpec = tween(
-                durationMillis = 1000,
+                durationMillis = 1200,
                 easing = FastOutSlowInEasing
             )
         )
@@ -81,7 +78,7 @@ fun RiskSpeedometer(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 8.dp)
             .shadow(
                 elevation = 8.dp,
                 shape = RoundedCornerShape(16.dp),
@@ -98,23 +95,16 @@ fun RiskSpeedometer(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Text(
-                text = "Risk Assessment",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.DarkGray
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
             
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
-                contentAlignment = Alignment.Center
+                    .height(240.dp),
+                contentAlignment = Alignment.TopCenter
             ) {
                 Canvas(
                     modifier = Modifier.fillMaxSize()
@@ -321,31 +311,31 @@ fun RiskSpeedometer(
                     )
                     
                     // Create Paint objects for text
+                    val labelTextSize = 24.sp.toPx()
+                    val blackColor = Color.Black.toArgb()
                     val lowPaint = Paint().apply {
-                        color = lowRiskColor.toArgb()
-                        textSize = 20.sp.toPx()
+                        color = blackColor
+                        textSize = labelTextSize
                         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                         isFakeBoldText = true
                         textAlign = Paint.Align.CENTER
-                        setShadowLayer(1f, 0f, 1f, Color.Black.copy(alpha = 0.3f).toArgb())
+                        setShadowLayer(2f, 0f, 2f, Color.Black.copy(alpha = 0.3f).toArgb())
                     }
-                    
                     val midPaint = Paint().apply {
-                        color = midRiskColor.toArgb()
-                        textSize = 20.sp.toPx()
+                        color = blackColor
+                        textSize = labelTextSize
                         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                         isFakeBoldText = true
                         textAlign = Paint.Align.CENTER
-                        setShadowLayer(1f, 0f, 1f, Color.Black.copy(alpha = 0.3f).toArgb())
+                        setShadowLayer(2f, 0f, 2f, Color.Black.copy(alpha = 0.3f).toArgb())
                     }
-                    
                     val highPaint = Paint().apply {
-                        color = highRiskColor.toArgb()
-                        textSize = 20.sp.toPx()
+                        color = blackColor
+                        textSize = labelTextSize
                         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                         isFakeBoldText = true
                         textAlign = Paint.Align.CENTER
-                        setShadowLayer(1f, 0f, 1f, Color.Black.copy(alpha = 0.3f).toArgb())
+                        setShadowLayer(2f, 0f, 2f, Color.Black.copy(alpha = 0.3f).toArgb())
                     }
                     
                     // Draw text
@@ -357,12 +347,29 @@ fun RiskSpeedometer(
                 }
             }
             
-            Spacer(modifier = Modifier.height(8.dp))
-            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Explicit risk text below the gauge
+            val riskText = when (riskLevel?.lowercase()) {
+                "low risk" -> "LOW RISK"
+                "mid risk" -> "MID RISK"
+                "high risk" -> "HIGH RISK"
+                else -> "NOT ASSESSED"
+            }
+            Text(
+                text = riskText,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
             // Display risk level card
             if (riskLevel != null) {
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = riskColor.copy(alpha = 0.15f)
                     ),
@@ -371,7 +378,7 @@ fun RiskSpeedometer(
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(12.dp)
+                            .padding(vertical = 16.dp, horizontal = 8.dp)
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -391,19 +398,19 @@ fun RiskSpeedometer(
                             
                             Text(
                                 text = riskLevel.replaceFirstChar { it.uppercase() },
-                                fontSize = 20.sp,
+                                fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = riskColor
                             )
                         }
                         
-                        Spacer(modifier = Modifier.height(4.dp))
-                        
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = riskDescription,
-                            fontSize = 14.sp,
+                            fontSize = 16.sp,
                             color = Color.DarkGray,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

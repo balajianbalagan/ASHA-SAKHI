@@ -3,6 +3,7 @@ package com.littleb01s.ashasakhichat.data.local.dao
 import androidx.room.*
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 @Dao
 interface CheckupDao {
@@ -14,6 +15,12 @@ interface CheckupDao {
 
     @Query("SELECT * FROM TBL_CHECKUP WHERE patientId = :patientId ORDER BY checkupId DESC")
     fun getCheckupsForPatient(patientId: Int): Flow<List<Checkup>>
+
+    @Query("SELECT * FROM TBL_CHECKUP WHERE patientId = :patientId AND checkupType = :checkupType ORDER BY checkupId DESC")
+    fun getCheckupsForPatientByType(patientId: Int, checkupType: String): Flow<List<Checkup>>
+
+    @Query("SELECT * FROM TBL_CHECKUP WHERE patientId = :patientId AND checkupType = :checkupType ORDER BY createdAt DESC LIMIT 1")
+    suspend fun getLatestCheckupByType(patientId: Int, checkupType: String): Checkup?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCheckup(checkup: Checkup): Long

@@ -103,6 +103,9 @@ dependencies {
     implementation("com.google.mlkit:translate:17.0.3")
     // VOSK API
     implementation("com.alphacephei:vosk-android:0.3.47")
+
+
+    implementation("com.github.anastr:speedviewlib:1.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

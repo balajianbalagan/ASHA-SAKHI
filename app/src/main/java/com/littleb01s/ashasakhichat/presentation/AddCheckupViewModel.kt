@@ -1,5 +1,6 @@
 package com.littleb01s.ashasakhichat.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.littleb01s.ashasakhichat.data.local.dao.CheckupDao
@@ -199,6 +200,7 @@ class AddCheckupViewModel @Inject constructor(
                 _formState.value = _formState.value.copy(isLoading = true, error = null)
                 val gson = Gson()
                 val checkupType = _formState.value.checkupType
+                Log.d("AddCheckupViewModel", "Checkup type: $checkupType")
                 val checkupDataJson = when (checkupType) {
                     "SYMPTOMS" -> gson.toJson(
                         SymptomsRecord(
@@ -245,8 +247,10 @@ class AddCheckupViewModel @Inject constructor(
                             notes = _formState.value.notes
                         )
                     )
+                    "VITALS" -> gson.toJson(null)
                     else -> _formState.value.checkupData
                 }
+
                 val checkup = Checkup(
                     patientId = patientId,
                     checkupType = checkupType,
