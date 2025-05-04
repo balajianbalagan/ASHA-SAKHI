@@ -2,11 +2,13 @@ package com.littleb01s.ashasakhichat.presentation.screens
 
 import android.content.Context
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,19 +22,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
+import java.io.File
+import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
+import com.littleb01s.ashasakhichat.presentation.SettingsViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SettingsScreen(
-    onNavigateToHome: () -> Unit = {}  // Add navigation parameter with default value
+    onNavigateToHome: () -> Unit = {},
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val customBlue = Color(0xFF0174B3)
     val customGreen = Color(0xFF1BBF69)
     
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
+    val scope = rememberCoroutineScope()
     
     // Get SharedPreferences instance
     val sharedPrefs = remember { 
@@ -45,6 +58,12 @@ fun SettingsScreen(
     }
     
     var showConfirmation by remember { mutableStateOf(false) }
+    var isDownloading by remember { mutableStateOf(false) }
+    var showDownloadError by remember { mutableStateOf(false) }
+    var downloadError by remember { mutableStateOf("") }
+
+    // Map to store progress per file
+    val downloadProgressMap = remember { mutableStateMapOf<String, Int>() }
 
     // Update configuration when language changes
     LaunchedEffect(selectedLanguage) {
@@ -246,6 +265,120 @@ fun SettingsScreen(
                 }
             }
         }
+
+        // Download Section
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF5F5F5)
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Section Header with Icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Download,
+                        contentDescription = stringResource(R.string.download),
+                        tint = customBlue
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.download_models),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = customBlue
+                    )
+                }
+
+                // Download Button
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    onClick = {
+                        if (!isDownloading) {
+                            scope.launch {
+                                isDownloading = true
+                                downloadProgressMap.clear()
+
+                                try {
+                                    viewModel.downloadModels(
+                                        onProgress = { filename, progress ->
+                                            downloadProgressMap[filename] = progress
+                                        },
+                                        onComplete = {
+                                            showConfirmation = true
+                                        },
+                                        onError = { error ->
+                                            downloadError = error
+                                            showDownloadError = true
+                                        }
+                                    )
+                                } finally {
+                                    isDownloading = false
+                                }
+                            }
+                        }
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.horizontalGradient(
+                                    colors = listOf(customBlue, customGreen)
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isDownloading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.download_models),
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
+                if (downloadProgressMap.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    downloadProgressMap.forEach { (filename, progress) ->
+                        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                            Text(
+                                text = "$filename: $progress%",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = customBlue
+                            )
+                            LinearProgressIndicator(
+                                progress = progress / 100f,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = customBlue
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // Show confirmation snackbar
@@ -259,6 +392,20 @@ fun SettingsScreen(
             }
         ) {
             Text(stringResource(R.string.settings_updated))
+        }
+    }
+
+    // Show download error snackbar
+    if (showDownloadError) {
+        Snackbar(
+            modifier = Modifier.padding(16.dp),
+            action = {
+                TextButton(onClick = { showDownloadError = false }) {
+                    Text(stringResource(R.string.dismiss), color = Color.White)
+                }
+            }
+        ) {
+            Text(downloadError)
         }
     }
 }
