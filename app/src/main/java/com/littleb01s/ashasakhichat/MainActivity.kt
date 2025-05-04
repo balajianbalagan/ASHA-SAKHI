@@ -33,6 +33,7 @@ import com.littleb01s.ashasakhichat.presentation.SpeechRecognitionScreen
 import com.littleb01s.ashasakhichat.presentation.WelcomeScreen
 import com.littleb01s.ashasakhichat.presentation.screens.riskanalysis.PregnancyRiskAssessmentScreen
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,6 +42,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Initialize PDFBox resources
+        PDFBoxResourceLoader.init(applicationContext)
 
         setContent {
             val configuration = LocalConfiguration.current

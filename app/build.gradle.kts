@@ -78,7 +78,7 @@ dependencies {
     // Mediapipe Libraries
     implementation(libs.tasks.genai)
     implementation(libs.tasks.vision)
-
+    implementation(libs.localagents.rag)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.accompanist.permissions)
@@ -97,7 +97,12 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+
+    // mediapipe
     kapt(libs.room.compiler)
+    implementation(libs.pdfbox.android)
+    implementation(libs.commons.text)
+
     implementation(project(":models"))
 
     // ML Kit Translation
