@@ -2,12 +2,16 @@
 
 ## Demo Video
 
-[![ASHA Sakhi Chat Demo](https://img.youtube.com/vi/Lpq2BTU-o5M/0.jpg)](https://youtu.be/Lpq2BTU-o5M)
+[![ASHA Sakhi Chat Demo](https://img.youtube.com/vi/V6RRRhF742g/0.jpg)](https://youtu.be/V6RRRhF742g)
 
 <video width="560" height="315" controls>
   <source src="./Asha_sakhi_demo.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
+
+## 📱 Download APK
+
+[Download Latest APK](https://drive.google.com/drive/folders/1_PtBhGqIeZM2L8LLyijDBUZj155woqno?usp=sharing)
 
 ## Overview
 
@@ -30,31 +34,54 @@ ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Ac
 - **Kotlin & Jetpack Compose**: Modern Android development stack
 - **MVVM Architecture**: Clean separation of concerns
 
+## 📚 Related Repositories
+
+- [ASHA Sakhi Admin](https://github.com/ii-pewpewpew-ii/asha-sakhi-admin) - Admin dashboard for managing ASHA workers and content
+- [ASHA Sakhi Nutrition & Healthcare Scheme Recommendation](https://github.com/jayenthsk/Asha_Sakhi_Nutrition_Healthcare_Scheme_Recommendation_System) - RAG-based system for nutrition plans and healthcare scheme recommendations
+
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Android Studio Arctic Fox or newer
-- Android device with minimum 2GB RAM
+- Android device with minimum 4GB RAM
 - Basic understanding of Android development
 
 ### Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/asha-sakhi-chat.git
+   git clone https://github.com/balajianbalagan/asha-sakhi-chat.git
    ```
 
-2. Download the Gemma model:
-   - Visit [Kaggle](https://www.kaggle.com/models/google/gemma)
-   - Sign up and accept the Gemma Terms & Conditions
-   - Download the `gemma-2b-it-cpu` version from the TensorFlow Lite tab
+2. Set up the required model files:
 
-3. Import the model:
-   - Use Device Explorer to copy the model file to:
-   - Path: `/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin`
+   All files should be placed in the following directory on your Android device:
+   ```
+   /storage/emulated/0/Android/data/com.littleb01s.ashasakhichat/files/llm/
+   ```
+   
+   Create the `llm` folder manually if it does not exist.
 
-4. Build and run:
+   Download and rename the following files:
+
+   | File Name                      | Download URL                                                                                                     | Rename As                        |
+   | ------------------------------ | ---------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+   | `Gecko_1024_quant.tflite`      | [Download](https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite)                                             | `Gecko_1024_quant.tflite`        |
+   | `sentencepiece.model`          | [Download](https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model)                                                 | `sentencepiece.model`            |
+   | `asha-kb.pdf`                  | [Download](https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf)                                                         | `asha-kb.pdf`                    |
+   | `gemma-1.1-2b-it-cpu-int4.bin` | [Download](https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin?raw=true) | `gemma-2b-it-cpu-int4.bin`       |
+   | Gecko Model (Optional)         | [Gecko 110M on Hugging Face](https://huggingface.co/litert-community/Gecko-110m-en/tree/main)                    | As required (refer to app usage) |
+
+   Ensure all required files are present in the target directory:
+   ```
+   ├── Gecko_1024_quant.tflite
+   ├── sentencepiece.model
+   ├── asha-kb.pdf
+   ├── gemma-2b-it-cpu-int4.bin
+   ```
+
+3. Build and run:
    - Open the project in Android Studio
    - Connect your device
    - Click Run
