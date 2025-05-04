@@ -40,7 +40,9 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import android.content.Context
+import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
+import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 
@@ -49,7 +51,7 @@ private val awaitingMessageFromAsha = Message(
     isFromMe = false,
     isLoading = true
 )
-
+private const val TAG = "ChatViewModel"
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val startAshaSakhiChat: StartAshaSakhiChat,
@@ -149,7 +151,10 @@ class ChatViewModel @Inject constructor(
                 val llmModelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
                 if (!llmModelFile.exists()) {
                     Log.d("ChatViewModel", "LLM model not found, downloading...")
-                    modelDownloadManager.ensureModelExists()
+                    _isInitializing.value = false
+                    _showDownloadDialog.value = false
+                    _isLLMInitialized.value= true
+                    return@launch
                 }
 
                 // Initialize LLM after all files are downloaded
@@ -192,8 +197,8 @@ class ChatViewModel @Inject constructor(
     private suspend fun initializeLLM() {
         try {
             // Reset and initialize LLM
-            llmDataSource.resetLLMInference()
-            
+            llmDataSource.setLLMInference(context)
+
             // Start chat after LLM is initialized
             _isInitializing.value = false
             _showDownloadDialog.value = false

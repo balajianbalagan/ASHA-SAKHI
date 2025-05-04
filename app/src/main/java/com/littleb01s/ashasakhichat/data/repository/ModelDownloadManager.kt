@@ -22,7 +22,7 @@ class ModelDownloadManager @Inject constructor(
     private val _downloadState = MutableStateFlow(ModelDownloadState())
     val downloadState: StateFlow<ModelDownloadState> = _downloadState
 
-    private val modelUrl = "https://asha-sakhi-cdn.b-cdn.net/gemma-2b-it-cpu-int4.bin"
+    private val modelUrl = "https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin"
 
     suspend fun ensureModelExists() {
         val llmDir = File(context.getExternalFilesDir(null), "llm")

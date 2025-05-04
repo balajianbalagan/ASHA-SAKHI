@@ -2,12 +2,15 @@ package com.littleb01s.ashasakhichat.presentation.screens
 
 import android.content.Context
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,13 +30,15 @@ import com.littleb01s.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
-import java.io.File
-import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
 import com.littleb01s.ashasakhichat.presentation.SettingsViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
+sealed class DownloadState {
+    object Idle : DownloadState()
+    object Downloading : DownloadState()
+    data class Failed(val message: String) : DownloadState()
+    object Completed : DownloadState()
+    object Cancelled : DownloadState()
+}
 
 @Composable
 fun SettingsScreen(
@@ -42,34 +47,33 @@ fun SettingsScreen(
 ) {
     val customBlue = Color(0xFF0174B3)
     val customGreen = Color(0xFF1BBF69)
-    
+
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val scope = rememberCoroutineScope()
-    
+
     // Get SharedPreferences instance
-    val sharedPrefs = remember { 
-        context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE) 
+    val sharedPrefs = remember {
+        context.getSharedPreferences("language_prefs", Context.MODE_PRIVATE)
     }
-    
-    var expanded by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { 
-        mutableStateOf(sharedPrefs.getString("selected_language", configuration.locales[0].language) ?: "en")
-    }
-    
     var showConfirmation by remember { mutableStateOf(false) }
     var isDownloading by remember { mutableStateOf(false) }
     var showDownloadError by remember { mutableStateOf(false) }
     var downloadError by remember { mutableStateOf("") }
 
-    // Map to store progress per file
     val downloadProgressMap = remember { mutableStateMapOf<String, Int>() }
+    val downloadStateMap = remember { mutableStateMapOf<String, DownloadState>() }
+    var currentFile by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedLanguage by remember {
+        mutableStateOf(sharedPrefs.getString("selected_language", configuration.locales[0].language) ?: "en")
+    }
 
     // Update configuration when language changes
     LaunchedEffect(selectedLanguage) {
         // Save to SharedPreferences
         sharedPrefs.edit().putString("selected_language", selectedLanguage).apply()
-        
+
         val locale = Locale(selectedLanguage)
         Locale.setDefault(locale)
         val config = Configuration(configuration)
@@ -85,6 +89,18 @@ fun SettingsScreen(
             onNavigateToHome()
         }
     }
+
+    // Handle the downloading, retry, and cancel logic
+    LaunchedEffect(downloadProgressMap) {
+        downloadStateMap.clear() // Reset the states when the screen is loaded
+    }
+
+    val filesToDownload = listOf(
+        "Gecko_1024_quant.tflite" to "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
+        "sentencepiece.model" to "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
+        "asha-kb.pdf" to "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
+        "gemma-2b-it-cpu-int4.bin" to "https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin"
+    )
 
     Column(
         modifier = Modifier
@@ -182,11 +198,11 @@ fun SettingsScreen(
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Text(
                                     text = stringResource(R.string.english),
                                     color = customBlue
-                                ) 
+                                )
                             },
                             onClick = {
                                 selectedLanguage = "en"
@@ -194,11 +210,11 @@ fun SettingsScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Text(
                                     text = stringResource(R.string.hindi),
                                     color = customBlue
-                                ) 
+                                )
                             },
                             onClick = {
                                 selectedLanguage = "hi"
@@ -206,11 +222,11 @@ fun SettingsScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Text(
                                     text = stringResource(R.string.tamil),
                                     color = customBlue
-                                ) 
+                                )
                             },
                             onClick = {
                                 selectedLanguage = "ta"
@@ -218,11 +234,11 @@ fun SettingsScreen(
                             }
                         )
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Text(
                                     text = stringResource(R.string.bengali),
                                     color = customBlue
-                                ) 
+                                )
                             },
                             onClick = {
                                 selectedLanguage = "bn"
@@ -266,114 +282,117 @@ fun SettingsScreen(
             }
         }
 
-        // Download Section
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFF5F5F5)
-            )
+        // LazyColumn to scroll through download items
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                // Section Header with Icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Download,
-                        contentDescription = stringResource(R.string.download),
-                        tint = customBlue
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.download_models),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = customBlue
-                    )
-                }
+            items(filesToDownload) { (filename, url) ->
+                val downloadState = downloadStateMap[filename] ?: DownloadState.Idle
+                val progress = downloadProgressMap[filename] ?: 0
 
-                // Download Button
-                Surface(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    onClick = {
-                        if (!isDownloading) {
-                            scope.launch {
-                                isDownloading = true
-                                downloadProgressMap.clear()
-
-                                try {
-                                    viewModel.downloadModels(
-                                        onProgress = { filename, progress ->
-                                            downloadProgressMap[filename] = progress
-                                        },
-                                        onComplete = {
-                                            showConfirmation = true
-                                        },
-                                        onError = { error ->
-                                            downloadError = error
-                                            showDownloadError = true
-                                        }
-                                    )
-                                } finally {
-                                    isDownloading = false
-                                }
-                            }
-                        }
-                    }
+                        .padding(bottom = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFF5F5F5)
+                    )
                 ) {
-                    Box(
+                    Column(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(customBlue, customGreen)
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        if (isDownloading) {
-                            CircularProgressIndicator(
-                                color = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
+                        // File Info Header
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        ) {
                             Text(
-                                text = stringResource(R.string.download_models),
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-
-                if (downloadProgressMap.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    downloadProgressMap.forEach { (filename, progress) ->
-                        Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                            Text(
-                                text = "$filename: $progress%",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
+                                text = filename,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
                                 color = customBlue
                             )
+                        }
+
+                        // Progress Indicator
+                        if (downloadState == DownloadState.Downloading) {
                             LinearProgressIndicator(
                                 progress = progress / 100f,
                                 modifier = Modifier.fillMaxWidth(),
                                 color = customBlue
                             )
+                        }
+
+                        // Download or Retry/Cancel Buttons
+                        when (downloadState) {
+                            is DownloadState.Idle -> {
+                                Button(
+                                    onClick = {
+                                        downloadStateMap[filename] = DownloadState.Downloading
+                                        viewModel.downloadModels(
+                                            onProgress = { file, prog -> downloadProgressMap[file] = prog },
+                                            onComplete = { },
+                                            onError = { error ->
+                                                downloadStateMap[filename] = DownloadState.Failed(error)
+                                            },
+                                            onFileStart = { file -> downloadStateMap[file] = DownloadState.Downloading }
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(stringResource(R.string.download))
+                                }
+                            }
+                            is DownloadState.Downloading -> {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text("Downloading $filename: $progress%")
+                                    IconButton(
+                                        onClick = {
+                                            downloadStateMap[filename] = DownloadState.Cancelled
+                                            viewModel.cancelDownload(filename)
+                                        }
+                                    ) {
+                                        Icon(Icons.Filled.Close, contentDescription = "Cancel")
+                                    }
+                                }
+                            }
+                            is DownloadState.Failed -> {
+                                Text("Failed to download: ${downloadState.message}")
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            downloadStateMap[filename] = DownloadState.Downloading
+                                            viewModel.retryDownload(filename,
+                                                onProgress = { file, prog -> downloadProgressMap[file] = prog },
+                                                onError = { error -> downloadStateMap[filename] = DownloadState.Failed(error) },
+                                                onFileStart = { file -> downloadStateMap[file] = DownloadState.Downloading }
+                                            )
+                                        }
+                                    ) {
+                                        Text("Retry")
+                                    }
+                                    IconButton(
+                                        onClick = { downloadStateMap[filename] = DownloadState.Idle }
+                                    ) {
+                                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                                    }
+                                }
+                            }
+                            is DownloadState.Completed -> {
+                                Text("Download Completed")
+                            }
+                            is DownloadState.Cancelled -> {
+                                Text("Download Cancelled")
+                            }
                         }
                     }
                 }
@@ -381,7 +400,6 @@ fun SettingsScreen(
         }
     }
 
-    // Show confirmation snackbar
     if (showConfirmation) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
@@ -395,7 +413,6 @@ fun SettingsScreen(
         }
     }
 
-    // Show download error snackbar
     if (showDownloadError) {
         Snackbar(
             modifier = Modifier.padding(16.dp),

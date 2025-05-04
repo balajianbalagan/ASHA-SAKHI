@@ -25,37 +25,6 @@ class AppModule {
     fun provideContext(@ApplicationContext context: Context): Context = context
 
     @Provides
-    fun provideLlmInference(@ApplicationContext context: Context): LlmInference {
-        Log.d(TAG, "Starting LLM initialization...")
-        val modelPath = "/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin"
-        val modelFile = File(modelPath)
-        
-        Log.d(TAG, "Model file details:")
-        Log.d(TAG, "Exists: ${modelFile.exists()}")
-        Log.d(TAG, "Size: ${modelFile.length()} bytes")
-        Log.d(TAG, "Can read: ${modelFile.canRead()}")
-        Log.d(TAG, "Absolute path: ${modelFile.absolutePath}")
-        Log.d(TAG, "Parent exists: ${modelFile.parentFile?.exists()}")
-        Log.d(TAG, "Parent can read: ${modelFile.parentFile?.canRead()}")
-        
-        try {
-            Log.d(TAG, "Creating LLM options...")
-            val options = LlmInference.LlmInferenceOptions.builder()
-                .setModelPath(modelPath)
-                .build()
-            
-            Log.d(TAG, "Created LLM options successfully")
-            Log.d(TAG, "Creating LLM instance...")
-            val llm = LlmInference.createFromOptions(context, options)
-            Log.d(TAG, "LLM instance created successfully")
-            return llm
-        } catch (e: Exception) {
-            Log.e(TAG, "Error initializing LLM", e)
-            throw e
-        }
-    }
-
-    @Provides
     fun provideTranslationService(@ApplicationContext context: Context): TranslationService {
         Log.d(TAG, "Creating TranslationService...")
         return TranslationService(context)

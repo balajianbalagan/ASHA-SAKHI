@@ -6,16 +6,9 @@ import javax.inject.Inject
 
 
 class MediapipeRepository @Inject constructor(private val mediapipeLLMDataSource: MediapipeLLMDataSource) {
-    suspend fun startChat(): Message {
-        val message = mediapipeLLMDataSource.start()
-        return Message(
-            text = message,
-            isFromMe = false
-        )
-    }
 
     suspend fun sendMessage(message: Message): String {
-        return mediapipeLLMDataSource.sendMessage(message.text)
+        return mediapipeLLMDataSource.generateResponse(message.text)
     }
 
 }

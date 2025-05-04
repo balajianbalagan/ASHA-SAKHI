@@ -2,6 +2,7 @@ package com.littleb01s.ashasakhichat.data
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.res.stringResource
 import com.google.ai.edge.localagents.rag.memory.DefaultSemanticTextMemory
 import com.google.ai.edge.localagents.rag.memory.SqliteVectorStore
 import com.google.ai.edge.localagents.rag.models.Embedder
@@ -12,6 +13,7 @@ import com.google.common.collect.ImmutableList
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
 import com.littleb01s.ashasakhichat.utils.PDFReader
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,9 +24,10 @@ import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private var llmInference : LlmInference? = null
+private const val TAG =  "MediapipeLLMDataSource"
 @Singleton
 class MediapipeLLMDataSource @Inject constructor(
-    private var llmInference: LlmInference,
     private val context: Context,
     private val modelDownloadService: ModelDownloadService
 ) {
@@ -36,6 +39,7 @@ class MediapipeLLMDataSource @Inject constructor(
     private lateinit var semanticMemory: DefaultSemanticTextMemory
     private var isInitialized = false
     private var isContentMemorized = false
+
 
     init {
         // Only download files if they don't exist
@@ -230,7 +234,10 @@ class MediapipeLLMDataSource @Inject constructor(
             val response = withContext(Dispatchers.IO) {
                 try {
                     Log.d("MediapipeLLMDataSource", "Generating LLM response...")
-                    val result = llmInference.generateResponse(prompt)
+                    var result = llmInference?.generateResponse(prompt)
+                    if(result==null) {
+                        result = "Error in model"
+                    }
                     Log.d("MediapipeLLMDataSource", "LLM response generated successfully")
                     result
                 } catch (e: Exception) {
@@ -249,30 +256,54 @@ class MediapipeLLMDataSource @Inject constructor(
         }
     }
 
-    fun resetLLMInference() {
+    fun setLLMInference(@ApplicationContext context: Context)  {
+            Log.d(TAG, "Starting LLM initialization...")
+            val llmDir = File(context.getExternalFilesDir(null), "llm")
+            if (!llmDir.exists()) {
+                llmDir.mkdirs()
+            }
+
+            val modelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
+
+            Log.d(TAG, "Model file details:")
+            Log.d(TAG, "Exists: ${modelFile.exists()}")
+            Log.d(TAG, "Size: ${modelFile.length()} bytes")
+            Log.d(TAG, "Can read: ${modelFile.canRead()}")
+            Log.d(TAG, "Absolute path: ${modelFile.absolutePath}")
+            Log.d(TAG, "Parent exists: ${modelFile.parentFile?.exists()}")
+            Log.d(TAG, "Parent can read: ${modelFile.parentFile?.canRead()}")
+
+            try {
+                Log.d(TAG, "Creating LLM options...")
+                val options = LlmInference.LlmInferenceOptions.builder()
+                    .setModelPath(modelFile.path)
+                    .build()
+
+                Log.d(TAG, "Created LLM options successfully")
+                Log.d(TAG, "Creating LLM instance...")
+                val llm = LlmInference.createFromOptions(context, options)
+                Log.d(TAG, "LLM instance created successfully")
+                llmInference = llm
+            } catch (e: Exception) {
+                Log.e(TAG, "Error initializing LLM", e)
+                throw e
+            }
+        }
         // Reset any necessary state
     }
 
     suspend fun start(): String {
-        return withContext(Dispatchers.IO) {
-            Log.i(
-                MediapipeLLMDataSource::class.java.simpleName,
-                "Initializing ASHA Sakhi chat"
-            )
-            llmInference.generateResponse("$systemPrompt\n\nI am ready to assist with your healthcare queries. Please ask your specific question. Limit to 300 words")
+        if (llmInference != null) {
+            return withContext(Dispatchers.IO) {
+                Log.i(
+                    MediapipeLLMDataSource::class.java.simpleName,
+                    "Initializing ASHA Sakhi chat"
+                )
+
+                llmInference!!.generateResponse("\n\nI am ready to assist with your healthcare queries. Please ask your specific question. Limit to 300 words")
+            }
         }
+        return "I am ASHA Sakhi! Ready to answer your queries!"
     }
 
-    suspend fun sendMessage(message: String): String {
-        return withContext(Dispatchers.IO) {
-            Log.i(
-                MediapipeLLMDataSource::class.java.simpleName,
-                "Processing user query: $message"
-            )
-            llmInference.generateResponse("""
-                $systemPrompt
-                User's query: $message
-            """.trimIndent())
-        }
-    }
-}
+
