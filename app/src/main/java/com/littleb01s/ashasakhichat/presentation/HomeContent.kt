@@ -84,7 +84,7 @@ fun HomeContent(
                 isEnabled = true
             ),
             DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap),
-            DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
+           // DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
         )
 
         LazyColumn(
