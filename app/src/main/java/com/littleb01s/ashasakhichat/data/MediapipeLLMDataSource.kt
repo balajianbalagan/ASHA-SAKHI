@@ -10,9 +10,14 @@ import com.google.ai.edge.localagents.rag.retrieval.RetrievalConfig
 import com.google.ai.edge.localagents.rag.retrieval.RetrievalRequest
 import com.google.common.collect.ImmutableList
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
+import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
 import com.littleb01s.ashasakhichat.utils.PDFReader
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,25 +25,135 @@ import javax.inject.Singleton
 @Singleton
 class MediapipeLLMDataSource @Inject constructor(
     private var llmInference: LlmInference,
-    private val context: Context
+    private val context: Context,
+    private val modelDownloadService: ModelDownloadService
 ) {
     private val systemPrompt = """
         You are a healthcare assistant for ASHA workers, trained on official ASHA guidelines. Provide accurate information based on the guidelines. If unsure, say so. Always recommend consulting proper medical authorities for serious concerns. Be specific and limit responses to three paragraphs.
     """.trimIndent()
 
-    private val embedder: Embedder<String> = GeckoEmbeddingModel(
-        "/data/local/tmp/llm/Gecko_1024_quant.tflite",
-        Optional.of("/data/local/tmp/llm/sentencepiece.model"),
-        true
-    )
+    private lateinit var embedder: Embedder<String>
+    private lateinit var semanticMemory: DefaultSemanticTextMemory
+    private var isInitialized = false
+    private var isContentMemorized = false
 
-    private val semanticMemory = DefaultSemanticTextMemory(
-        SqliteVectorStore(768), // Gecko embedding model dimension
-        embedder
-    )
+    init {
+        // Only download files if they don't exist
+        CoroutineScope(Dispatchers.IO).launch {
+            downloadRequiredFiles()
+        }
+    }
 
-    fun memorizeContent(pdfPath: String) {
+    private suspend fun downloadRequiredFiles() {
         try {
+            // Create llm directory if it doesn't exist
+            val llmDir = File(context.getExternalFilesDir(null), "llm")
+            if (!llmDir.exists()) {
+                llmDir.mkdirs()
+            }
+
+            // Download Gecko model if needed
+            val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
+            if (!geckoModelFile.exists()) {
+                Log.d("MediapipeLLMDataSource", "Gecko model not found, downloading...")
+                downloadFile(
+                    url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
+                    outputFile = geckoModelFile
+                )
+            }
+
+            // Download sentencepiece model if needed
+            val sentencepieceFile = File(llmDir, "sentencepiece.model")
+            if (!sentencepieceFile.exists()) {
+                Log.d("MediapipeLLMDataSource", "Sentencepiece model not found, downloading...")
+                downloadFile(
+                    url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
+                    outputFile = sentencepieceFile
+                )
+            }
+
+            // Initialize models after downloading files
+            initializeModels()
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error downloading files: ${e.message}")
+            throw e
+        }
+    }
+
+    suspend fun initializeModels() {
+        if (isInitialized) return
+
+        try {
+            val llmDir = File(context.getExternalFilesDir(null), "llm")
+            val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
+            val sentencepieceFile = File(llmDir, "sentencepiece.model")
+
+            // Verify files exist
+            if (!geckoModelFile.exists() || !sentencepieceFile.exists()) {
+                throw IllegalStateException("Required model files not found")
+            }
+
+            // Initialize embedder with the verified paths
+            withContext(Dispatchers.Main) {
+                embedder = GeckoEmbeddingModel(
+                    geckoModelFile.path,
+                    Optional.of(sentencepieceFile.path),
+                    true
+                )
+
+                // Initialize semantic memory with a persistent vector store
+                val vectorStore = SqliteVectorStore(768) // Gecko embedding model dimension
+                semanticMemory = DefaultSemanticTextMemory(vectorStore, embedder)
+            }
+
+            isInitialized = true
+            Log.d("MediapipeLLMDataSource", "Successfully initialized models")
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error initializing models: ${e.message}")
+            throw e
+        }
+    }
+
+    private suspend fun downloadFile(url: String, outputFile: File) = withContext(Dispatchers.IO) {
+        try {
+            val response = modelDownloadService.downloadFile(url)
+            if (response.isSuccessful) {
+                response.body()?.let { body ->
+                    // Create parent directories if they don't exist
+                    outputFile.parentFile?.mkdirs()
+                    
+                    // Download the file
+                    val inputStream = body.byteStream()
+                    val outputStream = FileOutputStream(outputFile)
+                    
+                    inputStream.copyTo(outputStream)
+                    outputStream.close()
+                    inputStream.close()
+                    
+                    Log.d("MediapipeLLMDataSource", "Successfully downloaded ${outputFile.name} to ${outputFile.path}")
+                } ?: throw Exception("Response body is null")
+            } else {
+                throw Exception("Failed to download ${outputFile.name}: HTTP ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error downloading ${outputFile.name}: ${e.message}")
+            throw e
+        }
+    }
+
+    suspend fun memorizeContent(pdfPath: String) {
+        if (!isInitialized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized. Call initializeModels() first.")
+            return
+        }
+
+        try {
+            // Check if PDF exists
+            val pdfFile = File(pdfPath)
+            if (!pdfFile.exists()) {
+                throw IllegalStateException("PDF file not found at $pdfPath")
+            }
+
             val chunks = PDFReader.readPDFInChunks(pdfPath)
             if (chunks.isEmpty()) {
                 Log.e("MediapipeLLMDataSource", "No content chunks extracted from PDF")
@@ -46,8 +161,8 @@ class MediapipeLLMDataSource @Inject constructor(
             }
 
             // Log the paths for verification
-            Log.d("MediapipeLLMDataSource", "Gecko model path: /data/local/tmp/llm/Gecko_1024_quant.tflite")
-            Log.d("MediapipeLLMDataSource", "Tokenizer model path: /data/local/tmp/llm/sentencepiece.model")
+            Log.d("MediapipeLLMDataSource", "Gecko model path: ${File(context.getExternalFilesDir("llm"), "Gecko_1024_quant.tflite").path}")
+            Log.d("MediapipeLLMDataSource", "Tokenizer model path: ${File(context.getExternalFilesDir("llm"), "sentencepiece.model").path}")
             Log.d("MediapipeLLMDataSource", "PDF path: $pdfPath")
             Log.d("MediapipeLLMDataSource", "Number of chunks: ${chunks.size}")
 
@@ -56,7 +171,9 @@ class MediapipeLLMDataSource @Inject constructor(
                 Log.d("MediapipeLLMDataSource", "Chunk $index: ${chunk.take(200)}...") // Log first 200 chars of each chunk
             }
 
+            // Memorize the chunks
             semanticMemory.recordBatchedMemoryItems(ImmutableList.copyOf(chunks))
+            isContentMemorized = true
             Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} chunks from PDF")
         } catch (e: Exception) {
             Log.e("MediapipeLLMDataSource", "Error memorizing PDF content: ${e.message}")
@@ -65,14 +182,19 @@ class MediapipeLLMDataSource @Inject constructor(
     }
 
     suspend fun generateResponse(query: String): String {
+        if (!isInitialized || !isContentMemorized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized or content not memorized")
+            return "I apologize, but I'm not ready to answer questions yet. Please try again in a moment."
+        }
+
         try {
             Log.d("MediapipeLLMDataSource", "Starting response generation for query: $query")
             
             val retrievalRequest = RetrievalRequest.create(
                 query,
                 RetrievalConfig.create(
-                    1, // topK
-                    0.8f, // minSimilarityScore
+                    1, // topK - increased to get more context
+                    0.7f, // minSimilarityScore - slightly lowered to get more matches
                     RetrievalConfig.TaskType.RETRIEVAL_QUERY
                 )
             )

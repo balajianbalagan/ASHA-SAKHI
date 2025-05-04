@@ -22,29 +22,27 @@ class ModelDownloadManager @Inject constructor(
     private val _downloadState = MutableStateFlow(ModelDownloadState())
     val downloadState: StateFlow<ModelDownloadState> = _downloadState
 
-    private val modelPath = "/data/local/tmp/llm/gemma-2b-it-cpu-int4.bin"
     private val modelUrl = "https://asha-sakhi-cdn.b-cdn.net/gemma-2b-it-cpu-int4.bin"
 
     suspend fun ensureModelExists() {
-        val modelFile = File(modelPath)
+        val llmDir = File(context.getExternalFilesDir(null), "llm")
+        if (!llmDir.exists()) {
+            llmDir.mkdirs()
+        }
+
+        val modelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
         if (!modelFile.exists()) {
-            downloadModel()
+            downloadModel(modelFile)
         } else {
             _downloadState.value = ModelDownloadState(isComplete = true)
         }
     }
 
-    private suspend fun downloadModel() = withContext(Dispatchers.IO) {
+    private suspend fun downloadModel(outputFile: File) = withContext(Dispatchers.IO) {
         try {
             _downloadState.value = ModelDownloadState(isDownloading = true)
             
-            // Create directory if it doesn't exist
-            val modelDir = File("/data/local/tmp/llm")
-            if (!modelDir.exists()) {
-                modelDir.mkdirs()
-            }
-
-            val response = modelDownloadService.downloadModel(modelUrl)
+            val response = modelDownloadService.downloadFile(modelUrl)
             if (!response.isSuccessful) {
                 throw Exception("Failed to download model: ${response.code()}")
             }
@@ -53,7 +51,7 @@ class ModelDownloadManager @Inject constructor(
             val contentLength = body.contentLength()
             var bytesWritten = 0L
 
-            FileOutputStream(modelPath).use { output ->
+            FileOutputStream(outputFile).use { output ->
                 body.byteStream().use { input ->
                     val buffer = ByteArray(8192)
                     var bytes = input.read(buffer)
@@ -70,10 +68,11 @@ class ModelDownloadManager @Inject constructor(
             }
 
             _downloadState.value = ModelDownloadState(isComplete = true)
-            Log.d("ModelDownloadManager", "Model downloaded successfully")
+            Log.d("ModelDownloadManager", "Model downloaded successfully to ${outputFile.path}")
         } catch (e: Exception) {
             Log.e("ModelDownloadManager", "Error downloading model", e)
             _downloadState.value = ModelDownloadState(error = e.message)
+            throw e
         }
     }
 } 

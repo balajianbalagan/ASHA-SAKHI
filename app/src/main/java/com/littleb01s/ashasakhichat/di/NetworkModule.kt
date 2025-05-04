@@ -44,6 +44,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideModelDownloadService(retrofit: Retrofit): ModelDownloadService {
+        return retrofit.create(ModelDownloadService::class.java)
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
     }
@@ -58,11 +64,5 @@ object NetworkModule {
     @Singleton
     fun provideDietService(retrofit: Retrofit): DietService {
         return retrofit.create(DietService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideModelDownloadService(retrofit: Retrofit): ModelDownloadService {
-        return retrofit.create(ModelDownloadService::class.java)
     }
 } 

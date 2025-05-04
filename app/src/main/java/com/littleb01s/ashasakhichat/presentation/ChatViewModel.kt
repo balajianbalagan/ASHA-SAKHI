@@ -35,6 +35,14 @@ import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import android.content.Context
+import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.withContext
 
 private val awaitingMessageFromAsha = Message(
     text = "ASHA Sakhi is typing...",
@@ -49,7 +57,9 @@ class ChatViewModel @Inject constructor(
     private val translationService: TranslationService,
     private val llmDataSource: MediapipeLLMDataSource,
     private val voskSpeechService: VoskSpeechService,
-    private val modelDownloadManager: ModelDownloadManager
+    @ApplicationContext private val context: Context,
+    private val modelDownloadManager: ModelDownloadManager,
+    private val modelDownloadService: ModelDownloadService
 ) : ViewModel(), RecognitionListener {
 
     // Model download states
@@ -58,6 +68,12 @@ class ChatViewModel @Inject constructor(
 
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog
+
+    private val _isLLMInitialized = MutableStateFlow(false)
+    val isLLMInitialized: StateFlow<Boolean> = _isLLMInitialized
+
+    private val _hasShownWelcome = MutableStateFlow(false)
+    val hasShownWelcome: StateFlow<Boolean> = _hasShownWelcome
 
     val modelDownloadState = modelDownloadManager.downloadState
 
@@ -93,17 +109,83 @@ class ChatViewModel @Inject constructor(
             _showDownloadDialog.value = true
             
             try {
-                modelDownloadManager.ensureModelExists()
-                modelDownloadState.collectLatest { state ->
-                    if (state.isComplete) {
-                        initializeLLM()
-                        initializeGuidelineContent()
-                    }
+                // Create llm directory if it doesn't exist
+                val llmDir = File(context.getExternalFilesDir(null), "llm")
+                if (!llmDir.exists()) {
+                    llmDir.mkdirs()
                 }
+
+                // Download Gecko model if needed
+                val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
+                if (!geckoModelFile.exists()) {
+                    Log.d("ChatViewModel", "Gecko model not found, downloading...")
+                    downloadFile(
+                        url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
+                        outputFile = geckoModelFile
+                    )
+                }
+
+                // Download sentencepiece model if needed
+                val sentencepieceFile = File(llmDir, "sentencepiece.model")
+                if (!sentencepieceFile.exists()) {
+                    Log.d("ChatViewModel", "Sentencepiece model not found, downloading...")
+                    downloadFile(
+                        url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
+                        outputFile = sentencepieceFile
+                    )
+                }
+
+                // Download PDF if needed
+                val pdfFile = File(llmDir, "asha-kb.pdf")
+                if (!pdfFile.exists()) {
+                    Log.d("ChatViewModel", "PDF not found, downloading...")
+                    downloadFile(
+                        url = "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
+                        outputFile = pdfFile
+                    )
+                }
+
+                // Download LLM model if needed
+                val llmModelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
+                if (!llmModelFile.exists()) {
+                    Log.d("ChatViewModel", "LLM model not found, downloading...")
+                    modelDownloadManager.ensureModelExists()
+                }
+
+                // Initialize LLM after all files are downloaded
+                initializeLLM()
+                initializeGuidelineContent()
             } catch (e: Exception) {
                 _isInitializing.value = false
                 Log.e("ChatViewModel", "Error initializing model", e)
             }
+        }
+    }
+
+    private suspend fun downloadFile(url: String, outputFile: File) = withContext(Dispatchers.IO) {
+        try {
+            val response = modelDownloadService.downloadFile(url)
+            if (response.isSuccessful) {
+                response.body()?.let { body ->
+                    // Create parent directories if they don't exist
+                    outputFile.parentFile?.mkdirs()
+                    
+                    // Download the file
+                    val inputStream = body.byteStream()
+                    val outputStream = FileOutputStream(outputFile)
+                    
+                    inputStream.copyTo(outputStream)
+                    outputStream.close()
+                    inputStream.close()
+                    
+                    Log.d("ChatViewModel", "Successfully downloaded ${outputFile.name} to ${outputFile.path}")
+                } ?: throw Exception("Response body is null")
+            } else {
+                throw Exception("Failed to download ${outputFile.name}: HTTP ${response.code()}")
+            }
+        } catch (e: Exception) {
+            Log.e("ChatViewModel", "Error downloading ${outputFile.name}: ${e.message}")
+            throw e
         }
     }
 
@@ -115,9 +197,16 @@ class ChatViewModel @Inject constructor(
             // Start chat after LLM is initialized
             _isInitializing.value = false
             _showDownloadDialog.value = false
-            startChat()
+            _isLLMInitialized.value = true
+            
+            // Only show welcome message if not shown before
+            if (!_hasShownWelcome.value) {
+                startChat()
+                _hasShownWelcome.value = true
+            }
         } catch (e: Exception) {
             _isInitializing.value = false
+            _isLLMInitialized.value = false
             Log.e("ChatViewModel", "Error initializing LLM", e)
         }
     }
@@ -125,7 +214,8 @@ class ChatViewModel @Inject constructor(
     private fun initializeGuidelineContent() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                llmDataSource.memorizeContent("/data/local/tmp/llm/guidelines-on-asha.pdf")
+                val pdfFile = File(context.getExternalFilesDir("llm"), "asha-kb.pdf")
+                llmDataSource.memorizeContent(pdfFile.path)
                 Log.d("ChatViewModel", "Successfully initialized ASHA guidelines content")
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error initializing guidelines content: ${e.message}")
@@ -134,6 +224,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun retryModelDownload() {
+        _showDownloadDialog.value = true
         checkModelAndInitialize()
     }
 
@@ -499,3 +590,4 @@ data class Message(
     val formattedTime: String
         get() = timestamp.format(DateTimeFormatter.ofPattern("hh:mm a"))
 }
+
