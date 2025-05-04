@@ -2,12 +2,7 @@
 
 ## Demo Video
 
-[![ASHA Sakhi Chat Demo](https://img.youtube.com/vi/V6RRRhF742g/0.jpg)](https://youtu.be/V6RRRhF742g)
-
-<video width="560" height="315" controls>
-  <source src="./Asha_sakhi_demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[![ASHA Sakhi Chat Demo](https://cdn3.iconfinder.com/data/icons/social-network-30/512/social-06-1024.png)](https://youtu.be/rSmAmOrN0aw)
 
 ## 📱 Download APK
 
