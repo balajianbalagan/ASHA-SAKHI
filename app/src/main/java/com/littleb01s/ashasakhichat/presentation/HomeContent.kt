@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.components.ModelDownloadDialog
+import androidx.hilt.navigation.compose.hiltViewModel
 
 data class DashboardButton(
     val text: String,
