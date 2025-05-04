@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
+import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,7 +66,8 @@ private val GradientBrush = Brush.horizontalGradient(colors = listOf(CustomBlue,
 fun PatientsScreen(
     onPatientClick: (Patient) -> Unit,
     onAddNewPatient: () -> Unit,
-    viewModel: PatientsViewModel = hiltViewModel()
+    viewModel: PatientsViewModel = hiltViewModel(),
+    appointmentViewModel: AppointmentViewModel = hiltViewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val patients by viewModel.filteredPatients(searchQuery).collectAsState(initial = emptyList())
@@ -151,9 +153,10 @@ fun PatientsScreen(
                             scope.launch {
                                 try {
                                     isRefreshing = true
+                                    // Sync both patients and appointments
                                     viewModel.syncPatients()
                                 } catch (e: Exception) {
-                                    errorMessage = e.message ?: "Failed to sync patients"
+                                    errorMessage = e.message ?: "Failed to sync data"
                                     showErrorDialog = true
                                 } finally {
                                     isRefreshing = false

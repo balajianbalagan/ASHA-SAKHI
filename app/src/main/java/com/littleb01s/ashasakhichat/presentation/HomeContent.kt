@@ -66,7 +66,6 @@ fun HomeContent(
 
         val dashboardButtons = listOf(
             DashboardButton(stringResource(R.string.your_patients), R.drawable.your_patients_icon, onNavigateToPatients),
-            DashboardButton(stringResource(R.string.asha_training), R.drawable.asha_training_icon, onNavigateToTraining),
             DashboardButton(stringResource(R.string.risk_analysis), R.drawable.risk_analysis_icon, onNavigateToRiskAnalysis),
             DashboardButton(
                 stringResource(R.string.ai_sakhi_chat), 

@@ -119,7 +119,8 @@ class MainActivity : ComponentActivity() {
                                         },
                                         onAddNewPatient = {
                                             navController.navigate(Screen.AddPatient.route)
-                                        }
+                                        },
+                                        appointmentViewModel = hiltViewModel()
                                     )
                                 }
                             }
@@ -292,6 +293,21 @@ class MainActivity : ComponentActivity() {
                             ) { backStackEntry ->
                                 val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
                                 AppointmentsScreen(
+                                    patientId = patientId,
+                                    onNavigateBack = { navController.navigateUp() },
+                                    onNavigateToAddAppointment = { 
+                                        navController.navigate(Screen.AddAppointment.createRoute(patientId))
+                                    }
+                                )
+                            }
+                            composable(
+                                route = Screen.AddAppointment.route,
+                                arguments = listOf(
+                                    navArgument("patientId") { type = NavType.IntType }
+                                )
+                            ) { backStackEntry ->
+                                val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                AddAppointmentScreen(
                                     patientId = patientId,
                                     onNavigateBack = { navController.navigateUp() }
                                 )

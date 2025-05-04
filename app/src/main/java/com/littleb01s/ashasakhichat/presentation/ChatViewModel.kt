@@ -121,10 +121,10 @@ class ChatViewModel @Inject constructor(
                 val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
                 if (!geckoModelFile.exists()) {
                     Log.d("ChatViewModel", "Gecko model not found, downloading...")
-                    downloadFile(
-                        url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
-                        outputFile = geckoModelFile
-                    )
+                    // downloadFile(
+                    //     url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
+                    //     outputFile = geckoModelFile
+                    // )
                     _isInitializing.value = false
                     _showDownloadDialog.value = false
                     _isLLMInitialized.value= true
@@ -135,10 +135,10 @@ class ChatViewModel @Inject constructor(
                 val sentencepieceFile = File(llmDir, "sentencepiece.model")
                 if (!sentencepieceFile.exists()) {
                     Log.d("ChatViewModel", "Sentencepiece model not found, downloading...")
-                    downloadFile(
-                        url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
-                        outputFile = sentencepieceFile
-                    )
+                    // downloadFile(
+                    //     url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
+                    //     outputFile = sentencepieceFile
+                    // )
                     _isInitializing.value = false
                     _showDownloadDialog.value = false
                     _isLLMInitialized.value= true
@@ -149,10 +149,10 @@ class ChatViewModel @Inject constructor(
                 val pdfFile = File(llmDir, "asha-kb.pdf")
                 if (!pdfFile.exists()) {
                     Log.d("ChatViewModel", "PDF not found, downloading...")
-                    downloadFile(
-                        url = "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
-                        outputFile = pdfFile
-                    )
+                    // downloadFile(
+                    //     url = "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
+                    //     outputFile = pdfFile
+                    // )
                     _isInitializing.value = false
                     _showDownloadDialog.value = false
                     _isLLMInitialized.value= true

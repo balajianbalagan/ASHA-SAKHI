@@ -27,4 +27,7 @@ sealed class Screen(val route: String) {
     object Appointments : Screen("appointments/{patientId}") {
         fun createRoute(patientId: Int) = "appointments/$patientId"
     }
+    object AddAppointment : Screen("add_appointment/{patientId}") {
+        fun createRoute(patientId: Int) = "add_appointment/$patientId"
+    }
 } 

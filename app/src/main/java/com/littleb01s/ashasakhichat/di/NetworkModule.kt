@@ -4,6 +4,7 @@ import com.littleb01s.ashasakhichat.data.api.AuthService
 import com.littleb01s.ashasakhichat.data.api.PatientService
 import com.littleb01s.ashasakhichat.data.api.DietService
 import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
+import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -64,5 +65,11 @@ object NetworkModule {
     @Singleton
     fun provideDietService(retrofit: Retrofit): DietService {
         return retrofit.create(DietService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppointmentApi(retrofit: Retrofit): AppointmentApi {
+        return retrofit.create(AppointmentApi::class.java)
     }
 } 

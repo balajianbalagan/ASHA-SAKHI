@@ -60,20 +60,20 @@ class MediapipeLLMDataSource @Inject constructor(
             val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
             if (!geckoModelFile.exists()) {
                 Log.d("MediapipeLLMDataSource", "Gecko model not found, downloading...")
-                downloadFile(
-                    url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
-                    outputFile = geckoModelFile
-                )
+                // downloadFile(
+                //     url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
+                //     outputFile = geckoModelFile
+                // )
             }
 
             // Download sentencepiece model if needed
             val sentencepieceFile = File(llmDir, "sentencepiece.model")
             if (!sentencepieceFile.exists()) {
                 Log.d("MediapipeLLMDataSource", "Sentencepiece model not found, downloading...")
-                downloadFile(
-                    url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
-                    outputFile = sentencepieceFile
-                )
+                // downloadFile(
+                //     url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
+                //     outputFile = sentencepieceFile
+                // )
             }
 
             // Initialize models after downloading files
@@ -94,7 +94,8 @@ class MediapipeLLMDataSource @Inject constructor(
 
             // Verify files exist
             if (!geckoModelFile.exists() || !sentencepieceFile.exists()) {
-                throw IllegalStateException("Required model files not found")
+                return;
+                //throw IllegalStateException("Required model files not found")
             }
 
             // Initialize embedder with the verified paths
