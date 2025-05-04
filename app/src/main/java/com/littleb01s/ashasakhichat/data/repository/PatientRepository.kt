@@ -87,7 +87,11 @@ class PatientRepository @Inject constructor(
                         needsUpload = false,
                         needsDownload = false,
                         lastDownloadedAt = Date(),
-                        serverId = patientResponse.patientId
+                        serverId = patientResponse.patientId,
+                        latitude = patientResponse.latitude,
+                        longtitude = patientResponse.longtitude,
+                        profilePhoto = patientResponse.profilePhoto,
+                        pregnancyStage = patientResponse.pregnancyStage
                     )
                     patientDao.insertPatient(patient)
 
@@ -189,7 +193,11 @@ class PatientRepository @Inject constructor(
                         needsDownload = false,
                         lastDownloadedAt = Date(),
                         serverId = patientResponse.patientData.patientId,
-                        lmp = parseIsoDate(patientResponse.patientData.lmp)
+                        lmp = parseIsoDate(patientResponse.patientData.lmp),
+                        latitude = patientResponse.patientData.latitude,
+                        longtitude = patientResponse.patientData.longtitude,
+                        profilePhoto = patientResponse.patientData.profilePhoto,
+                        pregnancyStage = patientResponse.patientData.pregnancyStage
                     )
                     patientDao.insertPatient(patient)
                 }
@@ -227,7 +235,11 @@ class PatientRepository @Inject constructor(
                 needsDownload = false,
                 lastDownloadedAt = null,
             serverId = null, // Will be updated after sync
-            lmp = patientData.lmp
+                lmp = patientData.lmp,
+                latitude = patientData.latitude,
+                longtitude = patientData.longtitude,
+                profilePhoto = patientData.profilePhoto,
+                pregnancyStage = patientData.pregnancyStage
             )
             patientDao.insertPatient(patient)
     }
@@ -257,6 +269,10 @@ class PatientRepository @Inject constructor(
                         previousIllness = patient.previousIllness,
                         languagePreference = patient.languagePreference,
                         lmp = patient.lmp,
+                        latitude = patient.latitude,
+                        longtitude = patient.longtitude,
+                        profilePhoto = patient.profilePhoto,
+                        pregnancyStage = patient.pregnancyStage
                     )
                 )
                 val response = patientService.savePatient(request)

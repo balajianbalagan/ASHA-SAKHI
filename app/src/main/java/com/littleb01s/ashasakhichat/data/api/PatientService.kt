@@ -41,7 +41,11 @@ data class PatientResponse(
     val createdAt: String,
     val updatedAt: String,
     val checkupData: List<CheckupResponse>,
-    val lmp: String?
+    val lmp: String?,
+    val latitude: String?,
+    val longtitude: String?,
+    val profilePhoto: String?,
+    val pregnancyStage: String?
 )
 
 data class CheckupResponse(
@@ -82,7 +86,11 @@ data class PatientData(
     val caste: String?,
     val bloodGroup: String?,
     val previousIllness: String?,
-    val lmp: Date?
+    val lmp: Date?,
+    val latitude: String?,
+    val longtitude: String?,
+    val profilePhoto: String?,
+    val pregnancyStage: String?
 )
 
 data class VitalsData(
