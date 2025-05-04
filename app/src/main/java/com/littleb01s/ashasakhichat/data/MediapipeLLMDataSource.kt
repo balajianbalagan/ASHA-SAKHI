@@ -1,28 +1,21 @@
 package com.littleb01s.ashasakhichat.data
 
-import android.util.Log
 import android.content.Context
-import com.google.mediapipe.tasks.genai.llminference.LlmInference
-import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifier
-import com.google.mediapipe.framework.image.MPImage
-import com.google.mediapipe.tasks.components.containers.ClassificationResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import com.google.mediapipe.tasks.genai.llminference.ProgressListener
-import com.google.common.util.concurrent.ListenableFuture
-import com.google.common.collect.ImmutableList
-import okhttp3.internal.notify
-import javax.inject.Singleton
-import java.io.File
-import com.littleb01s.ashasakhichat.utils.PDFReader
+import android.util.Log
 import com.google.ai.edge.localagents.rag.memory.DefaultSemanticTextMemory
 import com.google.ai.edge.localagents.rag.memory.SqliteVectorStore
 import com.google.ai.edge.localagents.rag.models.Embedder
 import com.google.ai.edge.localagents.rag.models.GeckoEmbeddingModel
 import com.google.ai.edge.localagents.rag.retrieval.RetrievalConfig
-import java.util.Optional
 import com.google.ai.edge.localagents.rag.retrieval.RetrievalRequest
+import com.google.common.collect.ImmutableList
+import com.google.mediapipe.tasks.genai.llminference.LlmInference
+import com.littleb01s.ashasakhichat.utils.PDFReader
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.Optional
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class MediapipeLLMDataSource @Inject constructor(
@@ -79,13 +72,16 @@ class MediapipeLLMDataSource @Inject constructor(
                 query,
                 RetrievalConfig.create(
                     1, // topK
-                    0.3f, // minSimilarityScore
-                    RetrievalConfig.TaskType.QUESTION_ANSWERING
+                    0.8f, // minSimilarityScore
+                    RetrievalConfig.TaskType.RETRIEVAL_QUERY
                 )
             )
             
             Log.d("MediapipeLLMDataSource", "Retrieving relevant context...")
-            val retrievalResponse = semanticMemory.retrieveResults(retrievalRequest).get()
+            val retrievalResponse =
+                withContext(Dispatchers.IO) {
+                    semanticMemory.retrieveResults(retrievalRequest).get()
+                }
             val relevantContext = retrievalResponse.entities.map { it.data }
             
             // Log the retrieved context
