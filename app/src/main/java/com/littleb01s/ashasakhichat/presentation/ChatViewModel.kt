@@ -65,13 +65,13 @@ class ChatViewModel @Inject constructor(
 ) : ViewModel(), RecognitionListener {
 
     // Model download states
-    private val _isInitializing = MutableStateFlow(true)
+    private val _isInitializing = MutableStateFlow(false)
     val isInitializing: StateFlow<Boolean> = _isInitializing
 
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog
 
-    private val _isLLMInitialized = MutableStateFlow(false)
+    private val _isLLMInitialized = MutableStateFlow(true)
     val isLLMInitialized: StateFlow<Boolean> = _isLLMInitialized
 
     private val _hasShownWelcome = MutableStateFlow(false)
@@ -105,7 +105,7 @@ class ChatViewModel @Inject constructor(
         checkModelAndInitialize()
     }
 
-    private fun checkModelAndInitialize() {
+    fun checkModelAndInitialize() {
         viewModelScope.launch {
             _isInitializing.value = true
             _showDownloadDialog.value = true
@@ -125,6 +125,10 @@ class ChatViewModel @Inject constructor(
                         url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
                         outputFile = geckoModelFile
                     )
+                    _isInitializing.value = false
+                    _showDownloadDialog.value = false
+                    _isLLMInitialized.value= true
+                    return@launch
                 }
 
                 // Download sentencepiece model if needed
@@ -135,6 +139,10 @@ class ChatViewModel @Inject constructor(
                         url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
                         outputFile = sentencepieceFile
                     )
+                    _isInitializing.value = false
+                    _showDownloadDialog.value = false
+                    _isLLMInitialized.value= true
+                    return@launch
                 }
 
                 // Download PDF if needed
@@ -145,6 +153,10 @@ class ChatViewModel @Inject constructor(
                         url = "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
                         outputFile = pdfFile
                     )
+                    _isInitializing.value = false
+                    _showDownloadDialog.value = false
+                    _isLLMInitialized.value= true
+                    return@launch
                 }
 
                 // Download LLM model if needed
@@ -162,6 +174,9 @@ class ChatViewModel @Inject constructor(
                 initializeGuidelineContent()
             } catch (e: Exception) {
                 _isInitializing.value = false
+                _showDownloadDialog.value = false
+                _isLLMInitialized.value= true
+                return@launch
                 Log.e("ChatViewModel", "Error initializing model", e)
             }
         }
