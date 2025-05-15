@@ -50,6 +50,7 @@ fun HomeContent(
     val isInitializing by viewModel.isInitializing.collectAsState()
     val isLLMInitialized by viewModel.isLLMInitialized.collectAsState()
     val showDownloadDialog by viewModel.showDownloadDialog.collectAsState()
+    val initializationMessage by viewModel.initializationMessage.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     // Set NavController in ViewModel
@@ -102,13 +103,26 @@ fun HomeContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)),
+                    .background(Color.Black.copy(alpha = 0.7f)),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = Color.White
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(48.dp),
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = initializationMessage,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
+                }
             }
         }
 

@@ -130,6 +130,12 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("ChatViewModel", "Starting chat initialization")
+                _isInitializing.value = true
+                _initializationMessage.value = "Preparing ASHA Sakhi..."
+                
+                // Add a 3-second delay
+                delay(3000)
+                
                 // Check if all required files exist
                 val llmDir = File(context.getExternalFilesDir(null), "llm")
                 if (!llmDir.exists()) {
@@ -155,14 +161,33 @@ class ChatViewModel @Inject constructor(
                     _showDownloadDialog.value = true
                     _isLLMInitialized.value = false
                 } else {
-                    Log.d("ChatViewModel", "All files present, navigating to chat")
-                    _isLLMInitialized.value = true
-                    navController?.navigate(Screen.Chat.route)
+                    Log.d("ChatViewModel", "All files present, initializing LLM")
+                    try {
+                        // Initialize LLM
+                        _initializationMessage.value = "Initializing AI model..."
+                        llmDataSource.setLLMInference(context)
+                        
+                        // Initialize models and memorize content
+                        _initializationMessage.value = "Loading ASHA guidelines..."
+                        llmDataSource.initializeModels()
+                        llmDataSource.memorizeContent(File(llmDir, "asha-kb.pdf").path)
+                        
+                        _isLLMInitialized.value = true
+                        Log.d("ChatViewModel", "LLM initialization successful, navigating to chat")
+                        navController?.navigate(Screen.Chat.route)
+                    } catch (e: Exception) {
+                        Log.e("ChatViewModel", "Error initializing LLM", e)
+                        _isLLMInitialized.value = false
+                        _showDownloadDialog.value = true
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error checking files", e)
                 _isLLMInitialized.value = false
                 _showDownloadDialog.value = true
+            } finally {
+                _isInitializing.value = false
+                _initializationMessage.value = ""
             }
         }
     }
