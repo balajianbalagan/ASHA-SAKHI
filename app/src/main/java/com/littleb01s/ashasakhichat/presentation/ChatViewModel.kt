@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 import com.littleb01s.ashasakhichat.data.MediapipeLLMDataSource
@@ -15,6 +16,7 @@ import com.littleb01s.ashasakhichat.domain.SendMessageToAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.StartAshaSakhiChat
 import com.littleb01s.ashasakhichat.domain.TranslationService
 import com.littleb01s.ashasakhichat.domain.VoskSpeechService
+import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -52,6 +54,7 @@ private val awaitingMessageFromAsha = Message(
     isLoading = true
 )
 private const val TAG = "ChatViewModel"
+
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val startAshaSakhiChat: StartAshaSakhiChat,
@@ -64,18 +67,30 @@ class ChatViewModel @Inject constructor(
     private val modelDownloadService: ModelDownloadService
 ) : ViewModel(), RecognitionListener {
 
-    // Model download states
+    // Model initialization states
     private val _isInitializing = MutableStateFlow(false)
     val isInitializing: StateFlow<Boolean> = _isInitializing
 
     private val _showDownloadDialog = MutableStateFlow(false)
     val showDownloadDialog: StateFlow<Boolean> = _showDownloadDialog
 
-    private val _isLLMInitialized = MutableStateFlow(true)
+    private val _isLLMInitialized = MutableStateFlow(false)
     val isLLMInitialized: StateFlow<Boolean> = _isLLMInitialized
+
+    private val _shouldNavigateToChat = MutableStateFlow(false)
+    val shouldNavigateToChat: StateFlow<Boolean> = _shouldNavigateToChat
+
+    private val _shouldNavigateToSettings = MutableStateFlow(false)
+    val shouldNavigateToSettings: StateFlow<Boolean> = _shouldNavigateToSettings
 
     private val _hasShownWelcome = MutableStateFlow(false)
     val hasShownWelcome: StateFlow<Boolean> = _hasShownWelcome
+
+    private val _initializationProgress = MutableStateFlow(0)
+    val initializationProgress: StateFlow<Int> = _initializationProgress
+
+    private val _initializationMessage = MutableStateFlow("")
+    val initializationMessage: StateFlow<String> = _initializationMessage
 
     val modelDownloadState = modelDownloadManager.downloadState
 
@@ -101,111 +116,54 @@ class ChatViewModel @Inject constructor(
     private var speechRecognitionListener: SpeechRecognitionListener? = null
     private var lastPartialLength = 0
 
+    private var navController: NavController? = null
+
     init {
-        checkModelAndInitialize()
+        // Don't initialize automatically anymore
     }
 
-    fun checkModelAndInitialize() {
+    fun setNavController(navController: NavController) {
+        this.navController = navController
+    }
+
+    fun initializeChat() {
         viewModelScope.launch {
-            _isInitializing.value = true
-            _showDownloadDialog.value = true
-            
             try {
-                // Create llm directory if it doesn't exist
+                Log.d("ChatViewModel", "Starting chat initialization")
+                // Check if all required files exist
                 val llmDir = File(context.getExternalFilesDir(null), "llm")
                 if (!llmDir.exists()) {
                     llmDir.mkdirs()
                 }
 
-                // Download Gecko model if needed
-                val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
-                if (!geckoModelFile.exists()) {
-                    Log.d("ChatViewModel", "Gecko model not found, downloading...")
-                    // downloadFile(
-                    //     url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
-                    //     outputFile = geckoModelFile
-                    // )
-                    _isInitializing.value = false
-                    _showDownloadDialog.value = false
-                    _isLLMInitialized.value= true
-                    return@launch
+                val requiredFiles = listOf(
+                    "Gecko_1024_quant.tflite",
+                    "sentencepiece.model",
+                    "asha-kb.pdf",
+                    "gemma-2b-it-cpu-int4.bin"
+                )
+
+                val missingFiles = requiredFiles.filter { filename ->
+                    val file = File(llmDir, filename)
+                    !file.exists() || file.length() == 0L
                 }
 
-                // Download sentencepiece model if needed
-                val sentencepieceFile = File(llmDir, "sentencepiece.model")
-                if (!sentencepieceFile.exists()) {
-                    Log.d("ChatViewModel", "Sentencepiece model not found, downloading...")
-                    // downloadFile(
-                    //     url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
-                    //     outputFile = sentencepieceFile
-                    // )
-                    _isInitializing.value = false
-                    _showDownloadDialog.value = false
-                    _isLLMInitialized.value= true
-                    return@launch
-                }
+                Log.d("ChatViewModel", "Missing files: $missingFiles")
 
-                // Download PDF if needed
-                val pdfFile = File(llmDir, "asha-kb.pdf")
-                if (!pdfFile.exists()) {
-                    Log.d("ChatViewModel", "PDF not found, downloading...")
-                    // downloadFile(
-                    //     url = "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
-                    //     outputFile = pdfFile
-                    // )
-                    _isInitializing.value = false
-                    _showDownloadDialog.value = false
-                    _isLLMInitialized.value= true
-                    return@launch
+                if (missingFiles.isNotEmpty()) {
+                    Log.d("ChatViewModel", "Files missing, showing download dialog")
+                    _showDownloadDialog.value = true
+                    _isLLMInitialized.value = false
+                } else {
+                    Log.d("ChatViewModel", "All files present, navigating to chat")
+                    _isLLMInitialized.value = true
+                    navController?.navigate(Screen.Chat.route)
                 }
-
-                // Download LLM model if needed
-                val llmModelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
-                if (!llmModelFile.exists()) {
-                    Log.d("ChatViewModel", "LLM model not found, downloading...")
-                    _isInitializing.value = false
-                    _showDownloadDialog.value = false
-                    _isLLMInitialized.value= true
-                    return@launch
-                }
-
-                // Initialize LLM after all files are downloaded
-                initializeLLM()
-                initializeGuidelineContent()
             } catch (e: Exception) {
-                _isInitializing.value = false
-                _showDownloadDialog.value = false
-                _isLLMInitialized.value= true
-                return@launch
-                Log.e("ChatViewModel", "Error initializing model", e)
+                Log.e("ChatViewModel", "Error checking files", e)
+                _isLLMInitialized.value = false
+                _showDownloadDialog.value = true
             }
-        }
-    }
-
-    private suspend fun downloadFile(url: String, outputFile: File) = withContext(Dispatchers.IO) {
-        try {
-            val response = modelDownloadService.downloadFile(url)
-            if (response.isSuccessful) {
-                response.body()?.let { body ->
-                    // Create parent directories if they don't exist
-                    outputFile.parentFile?.mkdirs()
-                    
-                    // Download the file
-                    val inputStream = body.byteStream()
-                    val outputStream = FileOutputStream(outputFile)
-                    
-                    inputStream.copyTo(outputStream)
-                    outputStream.close()
-                    inputStream.close()
-                    
-                    Log.d("ChatViewModel", "Successfully downloaded ${outputFile.name} to ${outputFile.path}")
-                } ?: throw Exception("Response body is null")
-            } else {
-                throw Exception("Failed to download ${outputFile.name}: HTTP ${response.code()}")
-            }
-        } catch (e: Exception) {
-            Log.e("ChatViewModel", "Error downloading ${outputFile.name}: ${e.message}")
-            throw e
         }
     }
 
@@ -213,21 +171,10 @@ class ChatViewModel @Inject constructor(
         try {
             // Reset and initialize LLM
             llmDataSource.setLLMInference(context)
-
-            // Start chat after LLM is initialized
-            _isInitializing.value = false
-            _showDownloadDialog.value = false
             _isLLMInitialized.value = true
-            
-            // Only show welcome message if not shown before
-            if (!_hasShownWelcome.value) {
-                startChat()
-                _hasShownWelcome.value = true
-            }
         } catch (e: Exception) {
-            _isInitializing.value = false
             _isLLMInitialized.value = false
-            Log.e("ChatViewModel", "Error initializing LLM", e)
+            throw e
         }
     }
 
@@ -239,13 +186,13 @@ class ChatViewModel @Inject constructor(
                 Log.d("ChatViewModel", "Successfully initialized ASHA guidelines content")
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error initializing guidelines content: ${e.message}")
+                throw e
             }
         }
     }
 
     fun retryModelDownload() {
         _showDownloadDialog.value = true
-        checkModelAndInitialize()
     }
 
     fun dismissDownloadDialog() {
@@ -593,6 +540,12 @@ class ChatViewModel @Inject constructor(
 
     fun removeSpeechRecognitionListener() {
         speechRecognitionListener = null
+    }
+
+    fun resetNavigation() {
+        Log.d("ChatViewModel", "Resetting navigation states")
+        _shouldNavigateToChat.value = false
+        _shouldNavigateToSettings.value = false
     }
 }
 

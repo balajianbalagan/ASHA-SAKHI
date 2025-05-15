@@ -98,6 +98,7 @@ class MainActivity : ComponentActivity() {
                                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                                 ) {
                                     HomeContent(
+                                        navController = navController,
                                         onNavigateToTraining = { navController.navigate(Screen.Training.route) },
                                         onNavigateToRiskAnalysis = { navController.navigate(Screen.RiskAnalysis.route) },
                                         onNavigateToChat = { navController.navigate(Screen.Chat.route) },

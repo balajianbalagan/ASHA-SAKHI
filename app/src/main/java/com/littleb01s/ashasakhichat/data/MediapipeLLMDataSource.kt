@@ -40,48 +40,8 @@ class MediapipeLLMDataSource @Inject constructor(
     private var isInitialized = false
     private var isContentMemorized = false
 
-
     init {
-        // Only download files if they don't exist
-        CoroutineScope(Dispatchers.IO).launch {
-            downloadRequiredFiles()
-        }
-    }
-
-    private suspend fun downloadRequiredFiles() {
-        try {
-            // Create llm directory if it doesn't exist
-            val llmDir = File(context.getExternalFilesDir(null), "llm")
-            if (!llmDir.exists()) {
-                llmDir.mkdirs()
-            }
-
-            // Download Gecko model if needed
-            val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
-            if (!geckoModelFile.exists()) {
-                Log.d("MediapipeLLMDataSource", "Gecko model not found, downloading...")
-                // downloadFile(
-                //     url = "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
-                //     outputFile = geckoModelFile
-                // )
-            }
-
-            // Download sentencepiece model if needed
-            val sentencepieceFile = File(llmDir, "sentencepiece.model")
-            if (!sentencepieceFile.exists()) {
-                Log.d("MediapipeLLMDataSource", "Sentencepiece model not found, downloading...")
-                // downloadFile(
-                //     url = "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
-                //     outputFile = sentencepieceFile
-                // )
-            }
-
-            // Initialize models after downloading files
-            initializeModels()
-        } catch (e: Exception) {
-            Log.e("MediapipeLLMDataSource", "Error downloading files: ${e.message}")
-            throw e
-        }
+        // Remove automatic initialization
     }
 
     suspend fun initializeModels() {
@@ -94,8 +54,7 @@ class MediapipeLLMDataSource @Inject constructor(
 
             // Verify files exist
             if (!geckoModelFile.exists() || !sentencepieceFile.exists()) {
-                return;
-                //throw IllegalStateException("Required model files not found")
+                throw IllegalStateException("Required model files not found")
             }
 
             // Initialize embedder with the verified paths
@@ -148,8 +107,7 @@ class MediapipeLLMDataSource @Inject constructor(
 
     suspend fun memorizeContent(pdfPath: String) {
         if (!isInitialized) {
-            Log.e("MediapipeLLMDataSource", "Models not initialized. Call initializeModels() first.")
-            return
+            throw IllegalStateException("Models not initialized. Call initializeModels() first.")
         }
 
         try {
@@ -161,19 +119,7 @@ class MediapipeLLMDataSource @Inject constructor(
 
             val chunks = PDFReader.readPDFInChunks(pdfPath)
             if (chunks.isEmpty()) {
-                Log.e("MediapipeLLMDataSource", "No content chunks extracted from PDF")
-                return
-            }
-
-            // Log the paths for verification
-            Log.d("MediapipeLLMDataSource", "Gecko model path: ${File(context.getExternalFilesDir("llm"), "Gecko_1024_quant.tflite").path}")
-            Log.d("MediapipeLLMDataSource", "Tokenizer model path: ${File(context.getExternalFilesDir("llm"), "sentencepiece.model").path}")
-            Log.d("MediapipeLLMDataSource", "PDF path: $pdfPath")
-            Log.d("MediapipeLLMDataSource", "Number of chunks: ${chunks.size}")
-
-            // Log each chunk's content
-            chunks.forEachIndexed { index, chunk ->
-                Log.d("MediapipeLLMDataSource", "Chunk $index: ${chunk.take(200)}...") // Log first 200 chars of each chunk
+                throw IllegalStateException("No content chunks extracted from PDF")
             }
 
             // Memorize the chunks
@@ -182,7 +128,7 @@ class MediapipeLLMDataSource @Inject constructor(
             Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} chunks from PDF")
         } catch (e: Exception) {
             Log.e("MediapipeLLMDataSource", "Error memorizing PDF content: ${e.message}")
-            e.printStackTrace()
+            throw e
         }
     }
 

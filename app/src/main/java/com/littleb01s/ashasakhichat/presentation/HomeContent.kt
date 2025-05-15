@@ -2,13 +2,13 @@ package com.littleb01s.ashasakhichat.presentation
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,11 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.littleb01s.R
-import com.littleb01s.ashasakhichat.presentation.components.ModelDownloadDialog
+import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import kotlinx.coroutines.launch
 
 data class DashboardButton(
@@ -34,28 +37,23 @@ data class DashboardButton(
 
 @Composable
 fun HomeContent(
+    navController: NavController,
     onNavigateToTraining: () -> Unit,
     onNavigateToRiskAnalysis: () -> Unit,
     onNavigateToChat: () -> Unit,
     onNavigateToMap: () -> Unit,
     onNavigateToPatients: () -> Unit = {},
     onNavigateToSpeecher: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val viewModel: ChatViewModel = hiltViewModel()
     val isInitializing by viewModel.isInitializing.collectAsState()
     val isLLMInitialized by viewModel.isLLMInitialized.collectAsState()
     val showDownloadDialog by viewModel.showDownloadDialog.collectAsState()
-    val modelDownloadState by viewModel.modelDownloadState.collectAsState()
-    val isModelAvailable by viewModel.isLLMInitialized.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Check model availability on startup
-    LaunchedEffect(Unit) {
-        if (!isModelAvailable) {
-            Log.d("HomeContent", "Model not available, starting background download")
-            viewModel.checkModelAndInitialize()
-        }
-    }
+    // Set NavController in ViewModel
+    viewModel.setNavController(navController)
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Show dashboard buttons
@@ -71,19 +69,14 @@ fun HomeContent(
                 stringResource(R.string.ai_sakhi_chat), 
                 R.drawable.ai_sakhi_chat_icon, 
                 {
-                    if (isModelAvailable) {
-                        onNavigateToChat()
-                    } else {
-                        Log.d("HomeContent", "Chat button clicked but model not available")
-                        coroutineScope.launch {
-                            viewModel.checkModelAndInitialize()
-                        }
+                    Log.d("HomeContent", "Chat button clicked")
+                    coroutineScope.launch {
+                        viewModel.initializeChat()
                     }
                 },
                 isEnabled = true
             ),
             DashboardButton(stringResource(R.string.regional_map), R.drawable.regional_maps_icon, onNavigateToMap),
-           // DashboardButton(stringResource(R.string.profile), R.drawable.regional_maps_icon, onNavigateToSpeecher)
         )
 
         LazyColumn(
@@ -104,8 +97,71 @@ fun HomeContent(
             }
         }
 
-        // Show download dialog if needed
-         }
+        // Show loading overlay if initializing
+        if (isInitializing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = Color.White
+                )
+            }
+        }
+
+        // Show download dialog
+        if (showDownloadDialog) {
+            Dialog(onDismissRequest = { viewModel.dismissDownloadDialog() }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Required Files Missing",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Some required files are missing. Please download them from the settings screen to use the chat feature.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TextButton(
+                                onClick = { viewModel.dismissDownloadDialog() }
+                            ) {
+                                Text("Cancel")
+                            }
+                            Button(
+                                onClick = {
+                                    viewModel.dismissDownloadDialog()
+                                    navController.navigate(Screen.Settings.route)
+                                }
+                            ) {
+                                Text("Go to Settings")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
