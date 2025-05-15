@@ -41,7 +41,7 @@ class SettingsViewModel @Inject constructor(
     )
 
     private fun getFileDir(): File {
-        return File(context.getExternalFilesDir(null), "llm1").apply { mkdirs() }
+        return File(context.getExternalFilesDir(null), "llm").apply { mkdirs() }
     }
 
     fun checkFileExists(filename: String): Boolean {
