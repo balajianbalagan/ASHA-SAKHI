@@ -171,7 +171,7 @@ class ChatViewModel @Inject constructor(
                     "Gecko_1024_quant.tflite",
                     "sentencepiece.model",
                     "asha-kb.pdf",
-                    "gemma-2b-it-cpu-int4.bin"
+                    "gemma3-1b-it-int4.task"
                 )
 
                 val missingFiles = requiredFiles.filter { filename ->

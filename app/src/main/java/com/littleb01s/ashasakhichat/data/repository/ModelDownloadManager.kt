@@ -22,7 +22,7 @@ class ModelDownloadManager @Inject constructor(
     private val _downloadState = MutableStateFlow(ModelDownloadState())
     val downloadState: StateFlow<ModelDownloadState> = _downloadState
 
-    private val modelUrl = "https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin"
+    private val modelUrl = "https://asha-sakhi-cdn.b-cdn.net/gemma3-1b-it-int4.task"
 
     suspend fun ensureModelExists() {
         val llmDir = File(context.getExternalFilesDir(null), "llm")
@@ -30,7 +30,7 @@ class ModelDownloadManager @Inject constructor(
             llmDir.mkdirs()
         }
 
-        val modelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
+        val modelFile = File(llmDir, "gemma3-1b-it-int4.task")
         if (!modelFile.exists()) {
             downloadModel(modelFile)
         } else {

@@ -93,7 +93,7 @@ class MediapipeLLMDataSource @Inject constructor(
                     inputStream.copyTo(outputStream)
                     outputStream.close()
                     inputStream.close()
-                    
+
                     Log.d("MediapipeLLMDataSource", "Successfully downloaded ${outputFile.name} to ${outputFile.path}")
                 } ?: throw Exception("Response body is null")
             } else {
@@ -210,7 +210,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 llmDir.mkdirs()
             }
 
-            val modelFile = File(llmDir, "gemma-2b-it-cpu-int4.bin")
+            val modelFile = File(llmDir, "gemma3-1b-it-int4.task")
 
             Log.d(TAG, "Model file details:")
             Log.d(TAG, "Exists: ${modelFile.exists()}")

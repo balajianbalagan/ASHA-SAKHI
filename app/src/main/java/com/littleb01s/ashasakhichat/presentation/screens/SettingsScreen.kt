@@ -99,7 +99,7 @@ fun SettingsScreen(
         "Gecko_1024_quant.tflite" to "https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite",
         "sentencepiece.model" to "https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model",
         "asha-kb.pdf" to "https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf",
-        "gemma-2b-it-cpu-int4.bin" to "https://asha-sakhi-cdn.b-cdn.net/gemma-2b-it-cpu-int4.bin"
+        "gemma3-1b-it-int4.task" to "https://asha-sakhi-cdn.b-cdn.net/gemma3-1b-it-int4.task"
     )
 
     Column(

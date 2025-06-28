@@ -95,7 +95,7 @@ ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Ac
    | `Gecko_1024_quant.tflite`      | [Download](https://asha-sakhi-cdn.b-cdn.net/Gecko_1024_quant.tflite)                                             | `Gecko_1024_quant.tflite`        |
    | `sentencepiece.model`          | [Download](https://asha-sakhi-cdn.b-cdn.net/sentencepiece.model)                                                 | `sentencepiece.model`            |
    | `asha-kb.pdf`                  | [Download](https://asha-sakhi-cdn.b-cdn.net/asha-kb.pdf)                                                         | `asha-kb.pdf`                    |
-   | `gemma-1.1-2b-it-cpu-int4.bin` | [Download](https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin?raw=true) | `gemma-2b-it-cpu-int4.bin`       |
+   | `gemma3-1b-it-int4.task` | [Download](https://huggingface.co/google/gemma-1.1-2b-it-tflite/blob/main/gemma-1.1-2b-it-cpu-int4.bin?raw=true) | `gemma3-1b-it-int4.taskn`       |
    | Gecko Model (Optional)         | [Gecko 110M on Hugging Face](https://huggingface.co/litert-community/Gecko-110m-en/tree/main)                    | As required (refer to app usage) |
 
    Ensure all required files are present in the target directory:
@@ -103,7 +103,7 @@ ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Ac
    ├── Gecko_1024_quant.tflite
    ├── sentencepiece.model
    ├── asha-kb.pdf
-   ├── gemma-2b-it-cpu-int4.bin
+   ├── gemma3-1b-it-int4.task
    ```
 
 3. Build and run:
