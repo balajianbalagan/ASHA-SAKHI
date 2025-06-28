@@ -16,7 +16,7 @@ ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Ac
 
 ### On-Device AI Capabilities
 - **Local LLM Integration**: 
-  - Gemma 2B model running locally via MediaPipe
+  - Gemma 3B model running locally via MediaPipe
   - Gecko model for efficient text processing
   - Vector database integration for semantic search
 
