@@ -246,7 +246,6 @@ class MediapipeLLMDataSource @Inject constructor(
                     MediapipeLLMDataSource::class.java.simpleName,
                     "Initializing ASHA Sakhi chat"
                 )
-
                 llmInference!!.generateResponse("\n\nI am ready to assist with your healthcare queries. Please ask your specific question. Limit to 300 words")
             }
         }

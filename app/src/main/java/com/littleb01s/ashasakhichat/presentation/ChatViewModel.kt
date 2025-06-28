@@ -118,8 +118,33 @@ class ChatViewModel @Inject constructor(
 
     private var navController: NavController? = null
 
+    // TTS instance and ready flag
+    private var tts: android.speech.tts.TextToSpeech? = null
+    private var ttsReady: Boolean = false
+
     init {
-        // Don't initialize automatically anymore
+        // Initialize TTS with English locale
+        tts = android.speech.tts.TextToSpeech(context) { status ->
+            if (status == android.speech.tts.TextToSpeech.SUCCESS) {
+                val result = tts?.setLanguage(java.util.Locale.US)
+                ttsReady = result != android.speech.tts.TextToSpeech.LANG_MISSING_DATA && result != android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED
+            } else {
+                ttsReady = false
+            }
+        }
+    }
+
+    /**
+     * Speak the given text aloud using TTS in English (US).
+     */
+    fun speak(text: String) {
+        if (ttsReady && text.isNotBlank()) {
+            var currentLanguage = translationService.getCurrentLanguage();
+            if(currentLanguage.equals("hi")){
+                tts?.setLanguage(Locale.forLanguageTag("hin"));
+            }
+            tts?.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, "chat_message_tts")
+        }
     }
 
     fun setNavController(navController: NavController) {
@@ -400,6 +425,8 @@ class ChatViewModel @Inject constructor(
     
     override fun onCleared() {
         super.onCleared()
+        translationService.close()
+        tts?.shutdown()
         translationService.close()
         voskSpeechService.shutdown()
     }

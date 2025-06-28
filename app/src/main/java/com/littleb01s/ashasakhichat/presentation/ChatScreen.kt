@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.sharp.Send
 import androidx.compose.material3.*
@@ -242,6 +243,7 @@ fun ChatItem(
     onRetry: () -> Unit,
     onShare: (String) -> Unit
 ) {
+    val viewModel: ChatViewModel = hiltViewModel()
     val shareViaText = stringResource(R.string.share_via)
     Column(
         modifier = Modifier
@@ -252,6 +254,8 @@ fun ChatItem(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = if (message.isFromMe) Arrangement.End else Arrangement.Start
         ) {
+            // TTS Speak button for all messages (only for non-empty text)
+
             if (!message.isFromMe) {
                 Image(
                     painter = painterResource(id = R.drawable.chat_bot_icon),
@@ -307,6 +311,19 @@ fun ChatItem(
                             horizontalArrangement = Arrangement.End
                         ) {
                             val clipboardManager = LocalClipboardManager.current
+                            if (message.text.isNotBlank()) {
+                                // You can change br = true to speak in Brazilian Portuguese
+                                IconButton(
+                                    onClick = { viewModel.speak(message.text) }, // br = true for Portuguese
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.VolumeUp,
+                                        contentDescription = "Speak message",
+                                        tint = Color.Black
+                                    )
+                                }
+                            }
                             IconButton(
                                 onClick = { clipboardManager.setText(AnnotatedString(message.text)) },
                                 modifier = Modifier.size(24.dp)
