@@ -41,6 +41,7 @@ data class PatientResponse(
     val createdAt: String,
     val updatedAt: String,
     val checkupData: List<CheckupResponse>,
+    val appointmentData: List<PatientAppointmentResponse>,
     val lmp: String?,
     val latitude: String?,
     val longtitude: String?,
@@ -62,6 +63,15 @@ data class CheckupResponse(
     val checkupData: String?,
     val pregnancyStage: String?,
     val checkupStatus: Int?
+)
+
+data class PatientAppointmentResponse(
+    val appointmentId: Int,
+    val workerId: Int,
+    val patientId: Int,
+    val appointmentDate: String,
+    val appointmentStatus: String,
+    val appointmentType: String?
 )
 
 data class SavePatientRequest(

@@ -12,7 +12,7 @@ data class Appointment(
     val patientId: Int,
     val appointmentDate: Date,
     val appointmentStatus: String,
-    val appointmentType: String,
+    val appointmentType: String?,
     // Sync fields
     val needsUpload: Boolean = true,
     val needsDownload: Boolean = false,

@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.littleb01s.ashasakhichat.data.model.Appointment
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import com.littleb01s.ashasakhichat.util.Resource
 import java.time.DayOfWeek
