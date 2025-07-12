@@ -62,4 +62,9 @@
     <string name="select_language_gu">ભાષા પસંદ કરો</string>
     <string name="download">Download</string>
     <string name="download_models">Download Models</string>
+    <string name="downloads_section_title">Download Resources</string>
+    <string name="download_failed">Download Failed</string>
+    <string name="download_complete">Download Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="cancel">Cancel</string>
 </resources> 

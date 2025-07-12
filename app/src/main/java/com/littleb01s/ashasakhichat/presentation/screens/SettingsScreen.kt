@@ -6,12 +6,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -105,18 +109,10 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        // Header
-        Text(
-            text = stringResource(R.string.settings),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = customBlue,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
         // Language Section
         Card(
             modifier = Modifier
@@ -126,7 +122,8 @@ fun SettingsScreen(
             colors = CardDefaults.cardColors(
                 containerColor = Color(0xFFF5F5F5)
             )
-        ) {
+        )
+        {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -282,118 +279,178 @@ fun SettingsScreen(
             }
         }
 
-        // LazyColumn to scroll through download items
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(filesToDownload) { (filename, url) ->
-                val downloadState = downloadStateMap[filename] ?: DownloadState.Idle
-                val progress = downloadProgressMap[filename] ?: 0
+        // Downloads Section Title
+        Text(
+            text = stringResource(R.string.downloads_section_title),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = customBlue,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
 
-                Card(
+        filesToDownload.forEach { (filename, url) ->
+            val downloadState = downloadStateMap[filename] ?: DownloadState.Idle
+            val progress = downloadProgressMap[filename] ?: 0
+            val fileDir = context.getExternalFilesDir(null)
+            val file = java.io.File(fileDir, "llm/$filename")
+            val fileExists = file.exists() && file.length() > 0
+            val fileSizeMB = if (fileExists) String.format("%.2f", file.length() / (1024.0 * 1024.0)) else null
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF5F5F5)
-                    )
+                        .padding(horizontal = 20.dp, vertical = 14.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        // File Info Header
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        ) {
-                            Text(
-                                text = filename,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = customBlue
-                            )
-                        }
-
-                        // Progress Indicator
-                        if (downloadState == DownloadState.Downloading) {
-                            LinearProgressIndicator(
-                                progress = progress / 100f,
-                                modifier = Modifier.fillMaxWidth(),
-                                color = customBlue
-                            )
-                        }
-
-                        // Download or Retry/Cancel Buttons
+                        Text(
+                            text = filename,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = customBlue,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
                         when (downloadState) {
                             is DownloadState.Idle -> {
-                                Button(
+                                IconButton(
                                     onClick = {
                                         downloadStateMap[filename] = DownloadState.Downloading
                                         viewModel.downloadModels(
-                                            onProgress = { file, prog -> downloadProgressMap[file] = prog },
+                                            onProgress = { file, prog ->
+                                                downloadProgressMap[file] = prog
+                                            },
                                             onComplete = { },
                                             onError = { error ->
                                                 downloadStateMap[filename] = DownloadState.Failed(error)
                                             },
-                                            onFileStart = { file -> downloadStateMap[file] = DownloadState.Downloading }
+                                            onFileStart = { file ->
+                                                downloadStateMap[file] = DownloadState.Downloading
+                                            }
                                         )
                                     },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.size(32.dp)
                                 ) {
-                                    Text(stringResource(R.string.download))
+                                    Icon(
+                                        Icons.Filled.Download,
+                                        contentDescription = stringResource(R.string.download),
+                                        tint = customGreen
+                                    )
                                 }
                             }
+
                             is DownloadState.Downloading -> {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text("Downloading $filename: $progress%")
+                                Box(
+                                    modifier = Modifier.size(32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) 
+                                {
+                                    CircularProgressIndicator(
+                                        progress = progress / 100f,
+                                        color = customBlue,
+                                        strokeWidth = 3.dp,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    if (progress in 1..99) {
+                                        Text(
+                                            "$progress%",
+                                            fontSize = 10.sp,
+                                            color = customBlue,
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
                                     IconButton(
                                         onClick = {
                                             downloadStateMap[filename] = DownloadState.Cancelled
                                             viewModel.cancelDownload(filename)
-                                        }
+                                        },
+                                        modifier = Modifier.size(32.dp).align(Alignment.TopEnd)
                                     ) {
-                                        Icon(Icons.Filled.Close, contentDescription = "Cancel")
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            contentDescription = stringResource(R.string.cancel),
+                                            tint = Color.Red
+                                        )
                                     }
                                 }
                             }
+
                             is DownloadState.Failed -> {
-                                Text("Failed to download: ${downloadState.message}")
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                IconButton(
+                                    onClick = {
+                                        downloadStateMap[filename] = DownloadState.Downloading
+                                        viewModel.retryDownload(
+                                            filename,
+                                            onProgress = { file, prog ->
+                                                downloadProgressMap[file] = prog
+                                            },
+                                            onError = { error ->
+                                                downloadStateMap[filename] = DownloadState.Failed(error)
+                                            },
+                                            onFileStart = { file ->
+                                                downloadStateMap[file] = DownloadState.Downloading
+                                            }
+                                        )
+                                    },
+                                    modifier = Modifier.size(32.dp)
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            downloadStateMap[filename] = DownloadState.Downloading
-                                            viewModel.retryDownload(filename,
-                                                onProgress = { file, prog -> downloadProgressMap[file] = prog },
-                                                onError = { error -> downloadStateMap[filename] = DownloadState.Failed(error) },
-                                                onFileStart = { file -> downloadStateMap[file] = DownloadState.Downloading }
-                                            )
-                                        }
-                                    ) {
-                                        Text("Retry")
-                                    }
-                                    IconButton(
-                                        onClick = { downloadStateMap[filename] = DownloadState.Idle }
-                                    ) {
-                                        Icon(Icons.Filled.Delete, contentDescription = "Delete")
-                                    }
+                                    Icon(
+                                        Icons.Filled.Download,
+                                        contentDescription = stringResource(R.string.retry),
+                                        tint = Color.Red
+                                    )
                                 }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(R.string.download_failed),
+                                    color = Color.Red,
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
                             }
+
                             is DownloadState.Completed -> {
-                                Text("Download Completed")
+                                Icon(
+                                    imageVector = Icons.Filled.CheckCircle,
+                                    contentDescription = stringResource(R.string.download_complete),
+                                    tint = customGreen,
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
+
                             is DownloadState.Cancelled -> {
-                                Text("Download Cancelled")
+                                Icon(
+                                    imageVector = Icons.Filled.Cancel,
+                                    contentDescription = stringResource(R.string.cancelled),
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
                         }
+                    }
+                    // Download status below filename
+                    if (fileExists) {
+                        Text(
+                            text = "File already downloaded • $fileSizeMB MB",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 2.dp, start = 2.dp)
+                        )
                     }
                 }
             }

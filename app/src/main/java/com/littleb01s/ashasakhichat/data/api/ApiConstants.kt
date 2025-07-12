@@ -8,5 +8,5 @@ object ApiConstants {
     const val BASE_URL_PROD = "https://asha-sakhi-admin.onrender.com/"
     const val BASE_URL_PROD_2 = "https://kifm45w3ckyltdkbnocztive440sfhsr.lambda-url.ap-south-1.on.aws/"
     // Use this to switch between DEV and PROD
-    const val BASE_URL = BASE_URL_PROD_2
+    const val BASE_URL = BASE_URL_DEV
 }
