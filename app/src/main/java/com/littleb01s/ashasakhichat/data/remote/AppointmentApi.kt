@@ -1,8 +1,8 @@
 package com.littleb01s.ashasakhichat.data.remote
 
-import com.littleb01s.ashasakhichat.data.model.Appointment
-import com.littleb01s.ashasakhichat.data.model.AppointmentListResponse
-import com.littleb01s.ashasakhichat.data.model.AppointmentResponse
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
+import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
+import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
 import retrofit2.http.*
 
 interface AppointmentApi {

@@ -53,4 +53,9 @@
     <string name="tamil">தமிழ்</string>
     <string name="initializing">initializing</string>
     <string name="Calendar">कैलेंडर</string>
+    <string name="downloads_section_title">Download Resources</string>
+    <string name="download_failed">Download Failed</string>
+    <string name="download_complete">Download Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="cancel">Cancel</string>
 </resources>

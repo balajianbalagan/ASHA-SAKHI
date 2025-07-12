@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.littleb01s.ashasakhichat.data.model.Appointment
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import com.littleb01s.ashasakhichat.util.Resource
 import java.util.Date
@@ -107,6 +107,14 @@ fun AddAppointmentScreen(
             ) {
                 Text("Save Appointment")
             }
+            
+            // TODO: Backend endpoint not implemented yet
+            Text(
+                text = "Note: Backend endpoint for creating appointments is not implemented yet. Appointments will be saved locally only.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 } 

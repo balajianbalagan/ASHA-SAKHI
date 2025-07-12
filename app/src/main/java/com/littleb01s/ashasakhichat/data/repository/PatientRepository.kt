@@ -10,9 +10,15 @@ import com.littleb01s.ashasakhichat.data.local.dao.DocumentDao
 import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
+import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
+import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -44,12 +50,14 @@ class PatientRepository @Inject constructor(
     fun getPatientWithDetails(patientId: Int): Flow<PatientWithDetails?> {
         val patientFlow = patientDao.getPatientById(patientId)
         val checkupsFlow = checkupDao.getCheckupsForPatient(patientId)
+        val appointmentsFlow = appointmentDao.getAppointmentsForPatient(patientId)
         
-        return patientFlow.combine(checkupsFlow) { patient, checkups ->
+        return combine(patientFlow, checkupsFlow, appointmentsFlow) { patient, checkups, appointments ->
             patient?.let {
                 PatientWithDetails(
                     patient = it,
-                    checkups = checkups
+                    checkups = checkups,
+                    appointments = appointments
                 )
             }
         }
@@ -117,6 +125,23 @@ class PatientRepository @Inject constructor(
                             serverId = checkupResponse.checkupId
                         )
                         checkupDao.insertCheckup(checkup)
+                    }
+
+                    // Convert and save appointments
+                    patientResponse.appointmentData.forEach { appointmentResponse ->
+                        val appointment = Appointment(
+                            appointmentId = appointmentResponse.appointmentId,
+                            workerId = appointmentResponse.workerId,
+                            patientId = appointmentResponse.patientId,
+                            appointmentDate = parseIsoDate(appointmentResponse.appointmentDate) ?: Date(),
+                            appointmentStatus = appointmentResponse.appointmentStatus,
+                            appointmentType = appointmentResponse.appointmentType ?: "Regular",
+                            needsUpload = false,
+                            needsDownload = false,
+                            lastDownloadedAt = Date(),
+                            serverId = appointmentResponse.appointmentId
+                        )
+                        appointmentDao.insertAppointment(appointment)
                     }
                 }
             } else {
@@ -293,11 +318,36 @@ class PatientRepository @Inject constructor(
         // Then fetch and cache all patients from server
         fetchAndCachePatients(null)
     }
+
+    // Get appointments for a specific patient from local database
+    suspend fun getPatientAppointments(patientId: Int): Flow<Resource<AppointmentListResponse>> = flow {
+        try {
+            emit(Resource.Loading())
+            val appointments = appointmentDao.getAppointmentsForPatient(patientId).first()
+            val appointmentModels = appointments.map { appointment ->
+                Appointment(
+                    appointmentId = appointment.serverId ?: appointment.appointmentId,
+                    workerId = appointment.workerId,
+                    patientId = appointment.patientId,
+                    appointmentDate = appointment.appointmentDate,
+                    appointmentType = appointment.appointmentType,
+                    appointmentStatus = appointment.appointmentStatus,
+                    needsUpload = appointment.needsUpload,
+                    needsDownload = appointment.needsDownload,
+                    lastDownloadedAt = appointment.lastDownloadedAt
+                )
+            }
+            emit(Resource.Success(AppointmentListResponse(appointments = appointmentModels)))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Failed to fetch appointments"))
+        }
+    }
 }
 
 // Data class for combined patient details
 data class PatientWithDetails(
     val patient: Patient,
     val checkups: List<Checkup>,
-    // Add appointments and documents when needed
+    val appointments: List<Appointment>
+    // Add documents when needed
 ) 

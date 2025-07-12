@@ -22,7 +22,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.*
         Infant::class,
         RiskAnalysisResult::class
     ],
-    version = 7,
+    version = 9,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

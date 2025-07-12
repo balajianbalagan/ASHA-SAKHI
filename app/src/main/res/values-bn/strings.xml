@@ -50,6 +50,11 @@
     <string name="select_language_mr">भाषा निवडा</string>
     <string name="select_language_gu">ભાષા પસંદ કરો</string>
     <string name="Calendar">ক্যালেন্ডার</string>
+    <string name="downloads_section_title">Download Resources</string>
+    <string name="download_failed">Download Failed</string>
+    <string name="download_complete">Download Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="cancel">Cancel</string>
 
     <!-- <string name="logout">লগআউট</string>
     <string name="register">রেজিস্টার</string>

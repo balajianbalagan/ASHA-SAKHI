@@ -2,9 +2,9 @@ package com.littleb01s.ashasakhichat.data.repository
 
 import com.littleb01s.ashasakhichat.data.local.PreferencesManager
 import com.littleb01s.ashasakhichat.data.local.dao.AppointmentDao
-import com.littleb01s.ashasakhichat.data.model.Appointment
-import com.littleb01s.ashasakhichat.data.model.AppointmentListResponse
-import com.littleb01s.ashasakhichat.data.model.AppointmentResponse
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
+import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
+import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
 import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
 import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -49,8 +49,8 @@ class AppointmentRepositoryImpl @Inject constructor(
             try {
                 val response = api.createAppointment(appointment)
                 // If successful, save to local database
-                response.data?.let { appointmentData ->
-                    val localAppointment = com.littleb01s.ashasakhichat.data.local.entity.Appointment(
+                response.appointment?.let { appointmentData ->
+                    val localAppointment = Appointment(
                         appointmentId = 0, // Will be auto-generated
                         workerId = workerId.toInt(),
                         patientId = appointmentData.patientId,
@@ -59,7 +59,7 @@ class AppointmentRepositoryImpl @Inject constructor(
                         needsUpload = false,
                         needsDownload = false,
                         lastDownloadedAt = Date(),
-                        appointmentType = appointmentData.appointmentType,
+                        appointmentType = appointmentData.appointmentType ?: "Regular",
                         serverId = appointmentData.appointmentId
                     )
                     appointmentDao.insertAppointment(localAppointment)
@@ -67,7 +67,7 @@ class AppointmentRepositoryImpl @Inject constructor(
                 emit(Resource.Success(response))
             } catch (e: Exception) {
                 // If server save fails, save locally and mark for sync
-                val localAppointment = com.littleb01s.ashasakhichat.data.local.entity.Appointment(
+                val localAppointment = Appointment(
                     appointmentId = 0, // Will be auto-generated
                     workerId = workerId.toInt(),
                     patientId = appointment.patientId,
@@ -76,7 +76,7 @@ class AppointmentRepositoryImpl @Inject constructor(
                     needsUpload = true,
                     needsDownload = false,
                     lastDownloadedAt = null,
-                    appointmentType = appointment.appointmentType,
+                    appointmentType = appointment.appointmentType ?: "Regular",
                     serverId = null
                 )
                 appointmentDao.insertAppointment(localAppointment)
@@ -107,7 +107,7 @@ class AppointmentRepositoryImpl @Inject constructor(
                         needsUpload = false,
                         needsDownload = false,
                         lastDownloadedAt = Date(),
-                        appointmentType = appointment.appointmentType,
+                        appointmentType = appointment.appointmentType ?: "Regular",
                         serverId = appointment.appointmentId
 
                     )
@@ -131,7 +131,7 @@ class AppointmentRepositoryImpl @Inject constructor(
                                     needsUpload = appointment.needsUpload,
                                     needsDownload = appointment.needsDownload,
                                     lastDownloadedAt = appointment.lastDownloadedAt,
-                                    serverId = appointment.serverId?.toString()
+                                    serverId = appointment.serverId
                                 )
                             }
                         )
@@ -148,7 +148,7 @@ class AppointmentRepositoryImpl @Inject constructor(
         return appointmentDao.getAppointmentsForPatient(patientId).map { localAppointments ->
             localAppointments.map { appointment ->
                 Appointment(
-                    appointmentId = appointment.serverId,
+                    appointmentId = appointment.serverId ?:appointment.appointmentId,
                     workerId = appointment.workerId,
                     patientId = appointment.patientId,
                     appointmentDate = appointment.appointmentDate,

@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,6 +51,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import android.util.Base64
+import androidx.compose.material.icons.filled.Refresh
 import androidx.core.graphics.createBitmap
 
 // Define colors at the top level to match PatientDetailsScreen
@@ -71,26 +71,8 @@ fun PatientsScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val patients by viewModel.filteredPatients(searchQuery).collectAsState(initial = emptyList())
-    var isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
 
-    if (showErrorDialog) {
-        AlertDialog(
-            onDismissRequest = { showErrorDialog = false },
-            title = { Text("Sync Error") },
-            text = { Text(errorMessage) },
-            confirmButton = {
-                TextButton(onClick = { showErrorDialog = false }) {
-                    Text("OK")
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = CustomOrange,
-            textContentColor = MaterialTheme.colorScheme.onSurface
-        )
-    }
+
 
     Scaffold(
         containerColor = BackgroundColor,
@@ -133,7 +115,7 @@ fun PatientsScreen(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         label = { Text("Search by name") },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Search,
@@ -148,38 +130,6 @@ fun PatientsScreen(
                         ),
                         singleLine = true
                     )
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                try {
-                                    isRefreshing = true
-                                    // Sync both patients and appointments
-                                    viewModel.syncPatients()
-                                } catch (e: Exception) {
-                                    errorMessage = e.message ?: "Failed to sync data"
-                                    showErrorDialog = true
-                                } finally {
-                                    isRefreshing = false
-                                }
-                            }
-                        },
-                        enabled = !isRefreshing
-                    ) {
-                        if (isRefreshing) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp,
-                                color = CustomBlue
-                            )
-                        } else {
-                            Icon(
-                                Icons.Default.Refresh,
-                                contentDescription = "Sync",
-                                tint = CustomBlue,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
                 }
             }
 
