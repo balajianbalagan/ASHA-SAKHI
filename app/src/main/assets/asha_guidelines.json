@@ -1,0 +1,189 @@
+{
+  "pregnancy_care": {
+    "anc_visits": {
+      "first_anc_visit": {
+        "title": "First ANC Visit (Before 12 weeks)",
+        "description": "Establishes baseline health, identifies risks. Includes physical exams, Hb, blood grouping, HIV/Syphilis screening, urine tests, TT/Td vaccination, IFA/Calcium supplements. [Source: [https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf](https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf)]",
+        "key_procedures": "Medical history, physical exam, BP, blood/urine tests, counseling."
+      }
+    },
+    "complications": {
+      "hypertension_in_pregnancy": {
+        "title": "Hypertension in Pregnancy",
+        "description": "High BP (>=140/90 mmHg) can lead to preterm birth. Requires regular monitoring and management. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7392663/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7392663/)]",
+        "symptoms": "High BP, headache, visual disturbances, swelling, abdominal pain.",
+        "management": "Referral, close BP monitoring, bed rest, safe antihypertensives (Labetalol, Nifedipine), low-dose aspirin for preeclampsia risk, urgent IV drugs for severe cases. Avoid ACE inhibitors, ARBs, diuretics, most beta-blockers/calcium channel antagonists. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/)]"
+      }
+    },
+    "general_care": {
+      "title": "General Pregnancy Care Guidelines",
+      "description": "Ensures healthy pregnancy and delivery. Focuses on regular ANC, nutrition, rest, IFA, TT, and birth preparedness.",
+      "key_aspects": "At least 4 ANC visits, daily IFA, hygiene, avoid alcohol/smoking. Avoid heavy work, seek immediate care for bleeding/pain."
+    },
+    "abortion_care": {
+      "title": "Comprehensive Abortion Care (CAC)",
+      "description": "Expanded by Medical Termination of Pregnancy (Amendment) Act, 2021. Allows termination up to 20 weeks (1 doctor opinion), 20-24 weeks (2 doctor opinions for vulnerable groups), no limit for fetal abnormalities. Strengthens privacy and includes contraceptive failure clause for both partners. [Source: [https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf](https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf)]"
+    }
+  },
+  "delivery_care": {
+    "normal_delivery_procedure": {
+      "title": "Normal Delivery Procedure",
+      "description": "Safe conduct of labor and delivery. Involves monitoring labor, maintaining asepsis, supporting mother, and careful newborn handling.",
+      "key_steps": "Prepare room, monitor vital signs, assess dilation, guide pushing, receive baby, cord care, placenta delivery. Avoid pulling cord, watch for bleeding."
+    },
+    "emergency_obstetric_care": {
+      "title": "Emergency Obstetric Care",
+      "description": "Critical for preventing maternal/neonatal mortality. Covers Postpartum Hemorrhage (PPH) and Eclampsia.",
+      "pph_management": "Active management of third stage of labor (uterotonics, delayed cord clamping, controlled cord traction, uterine massage). Hemorrhage carts, rapid response teams, massive transfusion protocols. ASHAs/ANMs distribute Misoprostol for prevention in remote areas (3x200 mcg orally after delivery, with counseling on contraindications like multiple pregnancy, severe PIH/anemia, cardiac disease). [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]",
+      "eclampsia_management": "Immediate expert management. Magnesium sulfate (MgSO4) is preferred anticonvulsant. Antihypertensives (Labetalol, Hydralazine, Nifedipine) for BP control. Definitive treatment is delivery. Acute care during seizure: airway, breathing, circulation management, patient safety. Policy-practice gaps exist for MgSO4 availability/utilization due to ambiguities and stock-outs. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/)]"
+    },
+    "iphs_labor_rooms": {
+      "title": "Indian Public Health Standards (IPHS) for Labor Rooms",
+      "description": "Detailed guidelines for public health facility labor rooms covering space (LDR concept), equipment (warmers, dopplers, resuscitation kits), consumables (medicines, disposables), human resources (staffing norms, non-rotation), and practices. Prohibits harmful practices like routine enema, shaving, induction (unless C-section capable), routine suctioning, pulling baby, routine episiotomy, fundal pressure, immediate cord cutting, immediate bathing. [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf)]"
+    }
+  },
+  "postpartum_care": {
+    "immediate_postpartum_care": {
+      "title": "Immediate Postpartum Care",
+      "description": "Critical for mother and newborn up to 42 days. Includes daily monitoring, comprehensive counseling, and minimum six postnatal home visits by ASHAs (one supervised by ANM). [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]",
+      "key_aspects": "Monitor mother's vitals, bleeding, uterine tone. Ensure baby breathing, initiate breastfeeding. Watch for excessive bleeding, high fever, baby not breathing."
+    },
+    "kangaroo_mother_care": {
+      "title": "Kangaroo Mother Care (KMC) for LBW Babies",
+      "description": "Evidence-based intervention for low birth weight babies (<2.5 kg). Components: early, continuous skin-to-skin contact and exclusive breastfeeding. Requires mother/family support and post-discharge follow-up. Faces socio-cultural barriers, misconceptions among staff, perceived burden, and lack of infrastructure. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/)]"
+    }
+  },
+  "newborn_care": {
+    "essential_newborn_care": {
+      "title": "Essential Newborn Care",
+      "description": "Fundamental practices for newborn survival and health. Includes immediate care at birth (delayed cord clamping, drying, skin-to-skin, early breastfeeding), thermal care, resuscitation, infection prevention, danger sign recognition, and timely referral. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/)]",
+      "key_practices": "Keep baby warm, initiate breastfeeding, hygiene, monitor danger signs. Dry thoroughly, wrap, skin-to-skin, cord care. Avoid cold stress, watch for infection/poor feeding."
+    },
+    "programs": {
+      "navjaat_shishu_suraksha_karyakram": {
+        "title": "Navjaat Shishu Suraksha Karyakram (NSSK)",
+        "description": "Launched 2009 to equip doctors/nurses with essential newborn care skills. Aims for single-digit Neonatal Mortality Rate (NMR) by 2030. [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]"
+      }
+    }
+  },
+  "immunization": {
+    "vaccines": {
+      "tetanus_toxoid_for_pregnant_women": {
+        "title": "Tetanus Toxoid for Pregnant Women",
+        "description": "Two doses during pregnancy (first at first ANC, second 4 weeks later) to protect mother and newborn from tetanus. Td vaccine is an alternative. [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]"
+      }
+    },
+    "digital_platform": {
+      "title": "U-WIN (Digital Vaccination Platform)",
+      "description": "Launched Oct 2024 for complete digitization of vaccination records for pregnant women and children (0-17 years) under UIP. Improves data accuracy, streamlines record-keeping, enhances efficiency. [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/)]"
+    }
+  },
+  "nutrition": {
+    "pregnancy_nutrition_guidelines": {
+      "title": "Pregnancy Nutrition Guidelines",
+      "description": "Evidence-based dietary requirements for pregnant women. Focuses on extra calories (+300 kcal/day 2nd/3rd trimesters), protein (>=65g/day), daily IFA (60mg elemental iron), calcium (500mg twice daily), adequate fluids (>=2.5L). [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287)]",
+      "dietary_advice": "3 balanced meals + 2 snacks, 5+ servings fruits/vegetables, weekly fish/omega-3, daily milk/curd. Limit caffeine (<200mg/day), avoid alcohol/tobacco.",
+      "taboos_misconceptions": "Addresses myths like papaya/pineapple causing miscarriage (ripe fruit safe), eggs/meat making baby 'big' (protein prevents LBW), avoiding milk for cough/cold (no scientific basis).",
+      "procedures": "24-hour diet recall, counseling with local foods, monthly weight check, link to ICDS THR. Avoid raw/undercooked meat/fish/eggs, processed foods, unprescribed herbal remedies."
+    }
+  },
+  "emergency_care": {
+    "emergencies": {
+      "severe_bleeding_during_pregnancy": {
+        "title": "Severe Bleeding During Pregnancy (PPH)",
+        "description": "Life-threatening emergency. PPH (>=500ml blood loss post-birth) is leading cause of maternal death. Requires immediate referral, vital sign monitoring, and transportation. Prevention includes active management of third stage of labor and community Misoprostol distribution. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/)]"
+      },
+      "eclampsia": {
+        "title": "Eclampsia",
+        "description": "Severe pregnancy complication with seizures. Managed with Magnesium sulfate (MgSO4) and antihypertensives. Delivery is definitive treatment. Acute care focuses on airway, breathing, circulation, and patient safety. Challenges include inconsistent MgSO4 availability due to policy ambiguities and stock-outs. [Source: [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7072506/), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/)]"
+      }
+    }
+  },
+  "general_guidelines": {
+    "asha_worker_responsibilities": {
+      "title": "ASHA Worker Responsibilities",
+      "description": "Frontline health workers. Key roles: awareness creation, counseling on MCH (birth preparedness, safe delivery, breastfeeding, immunization, contraception, infection prevention), community mobilization, escorting to facilities, primary medical care, depot holder for essential supplies (ORS, IFA), reporting births/deaths/outbreaks, collaborating on village health plans, promoting household toilets. Selected based on residence, age (25-45), communication, leadership, and minimum 8th class education (relaxable). [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]",
+      "programs_involved": "Home-Based Newborn Care (HBNC - 6-7 visits in first 42 days) and Home-Based Care for Young Child (HBYC - 5 visits at 3, 6, 9, 12, 15 months), Community-Based Misoprostol Distribution. Incentivized for tasks linked to healthy outcomes and reporting. [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]"
+    }
+  },
+  "pregnancy_schemes": {
+    "maternal_schemes": {
+      "janani_shishu_suraksha_karyakram": {
+        "title": "Janani Shishu Suraksha Karyakram (JSSK)",
+        "description": "Launched 2011. Eliminates out-of-pocket expenses for institutional delivery (including C-sections) and sick newborn care (up to 30 days, now expanded for infants). Covers free drugs, diagnostics, blood, diet, and transport. Available at public health institutions. [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4204899/)]",
+        "key_benefits": "Zero out-of-pocket expenses, covers all pregnancy complications, free transport."
+      },
+      "pradhan_mantri_surakshit_matritva_abhiyan": {
+        "title": "Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA)",
+        "description": "Free, quality ANC on 9th of every month at government facilities. Includes specialist consultation, free USG/diagnostics, and identification/tracking of high-risk pregnancies (HRP). e-PMSMA (Jan 2022) provides financial incentives for HRP women and ASHAs for follow-up. Expanded HRP categories (25 total) for early identification and referral. [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287), [https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf](https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf), [https://main.mohfw.gov.in/newshighlights/e-pmsma-strategy-note](https://main.mohfw.gov.in/newshighlights/e-pmsma-strategy-note), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]",
+        "key_benefits": "Free quality ANC, specialist care, free diagnostics, HRP identification/tracking, financial incentives for HRP/ASHAs."
+      },
+      "anemia_mukt_bharat": {
+        "title": "Anemia-Mukt Bharat (AMB)",
+        "description": "Intensified National Iron Plus Initiative. Six-point strategy (6x6x6) to reduce anemia across 6 beneficiary groups. Key interventions: prophylactic IFA (60mg elemental iron, sugar-coated), periodic deworming, BCC campaigns (delayed cord clamping), routine digital testing/treatment, fortified foods (rice, double fortified salt), IV Iron Sucrose/FCM for moderate/severe anemia. IFA coverage: 95.0% pregnant women, 65.9% lactating women. [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018), [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287)]",
+        "key_interventions": "IFA supplementation, deworming, BCC, digital testing, fortified foods, IV iron. Addresses policy ambiguities and supply chain issues. [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8945674/)]"
+      },
+      "surakshit_matritva_aashwasan": {
+        "title": "Surakshit Matritva Aashwasan (SUMAN)",
+        "description": "Launched 2019. Assures dignified, respectful, quality healthcare for every woman/newborn at public facilities. Zero-tolerance for service denial. Aims to eliminate preventable maternal/newborn deaths. [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287), [https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf](https://main.mohfw.gov.in/sites/default/files/RMNCAH%2BN%20Strategy%20Document_0.pdf)]"
+      },
+      "pradhan_mantri_matru_vandana_yojana": {
+        "title": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+        "description": "Maternity benefit program providing Rs. 5000/- financial assistance for first living child, conditional on health behaviors. Provides partial wage compensation, supports safe delivery, nutrition, and feeding practices. [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287)]"
+      }
+    },
+    "financial_support_schemes": {
+      "free_drugs_service_initiative": {
+        "title": "Free Drugs Service Initiative (FDSI)",
+        "description": "Government financial support for free essential drugs at public healthcare facilities, reducing Out-of-Pocket Expenditure (OOPE). [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]"
+      },
+      "free_diagnostics_service_initiative": {
+        "title": "Free Diagnostics Service Initiative (FDSI)",
+        "description": "Government financial support for free essential diagnostics at public healthcare facilities, reducing Out-of-Pocket Expenditure (OOPE). [Source: [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018)]"
+      }
+    }
+  },
+  "clinical_protocols": {
+    "antenatal_care_protocol": {
+      "title": "Comprehensive Antenatal Care Protocol",
+      "description": "Detailed clinical guidelines for ANC. Covers early registration (<=12 weeks), scheduled visits (1st: <=12wks, 2nd: 26wks, 3rd: 32wks, 4th: 36-40wks), examinations (weight, BP, pallor, edema, breast, vaginal, abdominal, pelvic assessment at 36wks). [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf)]",
+      "lab_tests": "Hb, blood grouping, urine (sugar, protein, bacteriuria), GDM, Thyroid, HIV, Syphilis screening.",
+      "supplementation": "IFA (60mg elemental iron daily x 100 days prophylactic, 2x daily if anemic, injectable if severe), Calcium (500mg bid), TT/Td vaccination.",
+      "common_issues_management": "Hyperemesis (admit/hydrate), severe anemia (double IFA/albendazole), hypertension (monitor/refer/Nifedipine), heartburn (milk/antacid), UTI (treat), bleeding (<20wks suspect abortion, >20wks APH-refer), low fetal movement (check FHR).",
+      "counseling": "Birth preparation (plan), danger signs (bleeding, convulsions, severe pain, leaking fluid, prolonged labor, decreased fetal movement, high fever/dyspnea), nutrition (+300 kcal/day, protein, fluids), rest, healthy lifestyle (no alcohol/smoking, prescribed meds only)."
+    },
+    "labour_delivery_protocol": {
+      "title": "Labour and Delivery Protocol",
+      "description": "Comprehensive guidelines for safe labor and delivery. Stages: 1st (onset to 10cm dilation, ~12hrs), 2nd (baby delivery, ~2hrs), 3rd (placenta delivery, <=30mins). [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf)]",
+      "monitoring": "Partograph (FHR every 30mins, dilation every 4hrs, BP/Pulse every 30mins). Alert/Action lines for intervention/referral.",
+      "support_and_practices": "Hygiene, hydration, reassurance. Avoid routine enema, fundal pressure, routine episiotomy. Controlled head delivery, nuchal cord management. Episiotomy only if indicated.",
+      "cord_management": "Delayed cord clamping (2-3mins), sterile cutting, dry stump care.",
+      "active_third_stage": "PPH prevention using Misoprostol (600µg PO/SL) or Oxytocin (10U IM), Controlled Cord Traction, uterine massage (every 15mins x 2hrs).",
+      "essential_newborn_care": "Dry/wrap baby, skin-to-skin, maintain warmth (>=25°C), breastfeed within 1hr, delay bath (>=6hrs), clean eyes, Injection Vitamin K."
+    },
+    "postpartum_care_protocol": {
+      "title": "Postpartum Care Protocol",
+      "description": "Comprehensive care for mother and baby after delivery. Observation (>=24hrs): uterine tone, bleeding, BP, pulse, temp. Postnatal visits: <24hrs (in-facility), Day 3, Day 7 (home visits), extra visits for danger signs. [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf)]",
+      "maternal_danger_signs": "Heavy bleeding (>2 pads/30mins), convulsions, fever/weakness, severe abdominal pain, foul lochia, dyspnea (refer immediately).",
+      "counseling": "Hygiene (perineal wash, pad changes), rest (no heavy work 6wks), sexual activity (no sex <=6wks), nutrition (+550 kcal/day first 6 months), exclusive breastfeeding (6 months), family planning, birth registration."
+    },
+    "neonatal_care_resuscitation_protocol": {
+      "title": "Neonatal Care and Resuscitation Protocol",
+      "description": "Guidelines for newborn care and emergency resuscitation. Routine care: dry/wrap, skin-to-skin, delayed cord clamping, early breastfeeding, warmth, no stump applications. [Source: [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20III.pdf)]",
+      "danger_signs": "Poor feeding, fever, fast breathing (>=60/min), cold body, convulsions, lethargy, >10 pustules, blood in stool (refer immediately).",
+      "low_birth_weight_care": "For <2.5kg babies: home visits (Day 3, 7, 14, 21, 28), frequent breastfeeding, warmth, dry cord care.",
+      "infection_management": "Co-trimoxazole (5 days), GV paint (cord/skin), referral if no improvement.",
+      "birth_asphyxia_resuscitation": "Apgar <7 at 1min. Steps: open airway (suction), tactile stimulation. If HR <100, bag-mask (40 breaths/min). If HR <60, chest compressions (90/min, 3:1 ratio). Medications: Adrenaline (0.1ml/kg IV), NaHCO3 (2ml/kg IV for acidosis), Normal Saline (10ml/kg IV for shock). Stop if no heartbeat for 15mins or no breathing for 20-30mins. Post-resuscitation: skin-to-skin, hourly monitoring, early breastfeeding, refer if distress persists. Avoid routine suction, slapping, unskilled intubation."
+    }
+  },
+  "healthcare_infrastructure": {
+    "title": "Healthcare Infrastructure",
+    "description": "India's MCH infrastructure includes Indian Public Health Standards (IPHS 2022) for facility planning/functioning (Sub-District, District Hospitals, CHCs, PHCs, Sub-Health Centres). Existing PHCs/Sub-Health Centres are transforming into Health and Wellness Centres (HWCs) under Ayushman Bharat, focusing on comprehensive primary healthcare (pregnancy, neonatal, infant, child, adolescent, reproductive health). [Source: [https://pib.gov.in/PressReleasePage.aspx?PRID=1978287](https://pib.gov.in/PressReleasePage.aspx?PRID=1978287), [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6658933/), [https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018](https://nhm.gov.in/index1.php?lang=1&level=3&lid=145&sublinkid=1018), [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20I.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20I.pdf), [https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20II.pdf](https://main.mohfw.gov.in/sites/default/files/IPHS%202022%20-%20Volume%20II.pdf)]",
+    "case_study_chennai": {
+      "title": "Case Study: Chennai, Tamil Nadu",
+      "description": "Tamil Nadu complements national programs with state-specific schemes. Chennai's multi-layered healthcare includes public hospitals (specialized like Institute of Child Health, Govt Kasturba Hospital, R.S.R.M. Lying-In; general like Govt General, Stanley, Royapettah), a network of PHCs/UPHCs by Greater Chennai Corporation, and private hospitals (Motherhood, Rainbow Children's Hospital offering NICUs, fetal medicine, packages, home services). [Source: [https://www.tn.gov.in/directory/hospitals_specialised](https://www.tn.gov.in/directory/hospitals_specialised), [https://www.tn.gov.in/directory/hospitals_general](https://www.tn.gov.in/directory/hospitals_general), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-1.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-1.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-2.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-2.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-3.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-3.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-4.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-4.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-5.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-5.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-6.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-6.htm), [https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-7.htm](https://www.chennaicorporation.gov.in/gcc/health/primary-health-centers/zone-7.htm), [https://www.motherhoodhospitals.com/hospitals/chennai/](https://www.motherhoodhospitals.com/hospitals/chennai/), [https://www.rainbowhospitals.in/hospitals/chennai/](https://www.rainbowhospitals.in/hospitals/chennai/)]",
+      "state_specific_schemes": "Amma Baby Care Kit (Rs. 1000 kit with 16 hygiene items for postnatal mothers/newborns). Dr. Muthulakshmi Maternity Benefit Scheme (enhanced Rs. 18,000 financial aid for poor pregnant mothers, disbursed in installments linked to health behaviors, includes nutrition kits). [Source: [https://www.tnhealth.tn.gov.in/online_notification/directorate_details/DPHPM/DPHPM%20GOs/DPHPM%20GO%202023/G.O.(Ms).No.434,%20H&FW%20Dept.,%20dt.19.10.2023.pdf](https://www.tnhealth.tn.gov.in/online_notification/directorate_details/DPHPM/DPHPM%20GOs/DPHPM%20GO%202023/G.O.(Ms).No.434,%20H&FW%20Dept.,%20dt.19.10.2023.pdf), [https://www.thehindu.com/news/national/tamil-nadu/amma-baby-care-kit-scheme-launched/article7627443.ece](https://www.thehindu.com/news/national/tamil-nadu/amma-baby-care-kit-scheme-launched/article7627443.ece)]",
+      "emergency_medical_services": "Government: 108 Emergency Ambulance Service (free, 24/7, BLS/ALS, paramedics), 102 Ambulance Service (transport for pregnant women, newborns, patients). Private: RED Ambulances, VMEDO (ALS, cardiac ambulances with ventilators/defibrillators, air ambulance, real-time tracking). [Source: [https://www.tnhealth.tn.gov.in/online_notification/directorate_details/DMS/DMS%20GOs/DMS%20GO%202023/G.O.(Ms).No.434,%20H&FW%20Dept.,%20dt.19.10.2023.pdf](https://www.tnhealth.tn.gov.in/online_notification/directorate_details/DMS/DMS%20GOs/DMS%20GO%202023/G.O.(Ms).No.434,%20H&FW%20Dept.,%20dt.19.10.2023.pdf), [https://gvkemri.org/108-emergency-service/](https://gvkemri.org/108-emergency-service/), [https://redambulances.com/](https://redambulances.com/), [https://vmedo.com/ambulance-service-in-chennai/](https://vmedo.com/ambulance-service-in-chennai/)]"
+    }
+  }
+}

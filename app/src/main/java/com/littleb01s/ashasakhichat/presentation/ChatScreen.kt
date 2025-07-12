@@ -54,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.components.MarkdownRenderer
 import com.littleb01s.ashasakhichat.presentation.components.ModelDownloadDialog
+import com.littleb01s.ashasakhichat.presentation.components.StatusChip
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -301,6 +302,15 @@ fun ChatItem(
                                 )
                             }
                         }
+                    }
+                    
+                    // Add StatusChip for non-user messages
+                    if (!message.isFromMe && message.status != MessageStatus.NONE) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        StatusChip(
+                            status = message.status,
+                            modifier = Modifier.align(Alignment.Start)
+                        )
                     }
                     
                     if (!message.isFromMe && !message.isLoading) {

@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
 import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
 import com.littleb01s.ashasakhichat.utils.PDFReader
+import com.littleb01s.ashasakhichat.utils.ASHAJsonReader
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +24,8 @@ import java.io.FileOutputStream
 import java.util.Optional
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.mediapipe.tasks.genai.llminference.ProgressListener
 
 private var llmInference : LlmInference? = null
 private const val TAG =  "MediapipeLLMDataSource"
@@ -32,7 +35,7 @@ class MediapipeLLMDataSource @Inject constructor(
     private val modelDownloadService: ModelDownloadService
 ) {
     private val systemPrompt = """
-        You are a healthcare assistant for ASHA workers, trained on official ASHA guidelines. Provide accurate information based on the guidelines. If unsure, say so. Always recommend consulting proper medical authorities for serious concerns. Be specific and limit responses to three paragraphs.
+        You are a healthcare assistant for ASHA workers, trained on official ASHA guidelines. Provide accurate information based on the guidelines. If unsure, say so. Always recommend consulting proper medical authorities for serious concerns. Be specific and provide complete, well-structured responses. Always end your response with a complete sentence and do not cut off mid-sentence.
     """.trimIndent()
 
     private lateinit var embedder: Embedder<String>
@@ -105,29 +108,24 @@ class MediapipeLLMDataSource @Inject constructor(
         }
     }
 
-    suspend fun memorizeContent(pdfPath: String) {
+    suspend fun memorizeContent(jsonPath: String, pdfFallbackPath: String) {
         if (!isInitialized) {
             throw IllegalStateException("Models not initialized. Call initializeModels() first.")
         }
 
         try {
-            // Check if PDF exists
-            val pdfFile = File(pdfPath)
-            if (!pdfFile.exists()) {
-                throw IllegalStateException("PDF file not found at $pdfPath")
-            }
-
-            val chunks = PDFReader.readPDFInChunks(pdfPath)
+            // Try JSON first, with PDF fallback
+            val chunks = ASHAJsonReader.readASHAGuidelines(context, jsonPath, pdfFallbackPath)
             if (chunks.isEmpty()) {
-                throw IllegalStateException("No content chunks extracted from PDF")
+                throw IllegalStateException("No content chunks extracted from JSON or PDF")
             }
 
-            // Memorize the chunks
+            // Memorize the structured chunks
             semanticMemory.recordBatchedMemoryItems(ImmutableList.copyOf(chunks))
             isContentMemorized = true
-            Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} chunks from PDF")
+            Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} structured chunks from JSON/PDF")
         } catch (e: Exception) {
-            Log.e("MediapipeLLMDataSource", "Error memorizing PDF content: ${e.message}")
+            Log.e("MediapipeLLMDataSource", "Error memorizing content: ${e.message}")
             throw e
         }
     }
@@ -163,17 +161,133 @@ class MediapipeLLMDataSource @Inject constructor(
                 Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
             }
             
-            val contextText = relevantContext.joinToString("\n\n")
+            // Parse JSON chunks and extract relevant information
+            val structuredContext = relevantContext.mapNotNull { context ->
+                try {
+                    val jsonObject = org.json.JSONObject(context)
+                    val title = jsonObject.optString("title", "")
+                    val content = jsonObject.optString("content", "")
+                    val keyPoints = jsonObject.optJSONArray("key_points")?.let { array ->
+                        (0 until array.length()).map { array.getString(it) }
+                    } ?: emptyList()
+                    val guidelines = jsonObject.optJSONArray("guidelines")?.let { array ->
+                        (0 until array.length()).map { array.getString(it) }
+                    } ?: emptyList()
+                    val sectionType = jsonObject.optString("section_type", "")
+                    val chunkId = jsonObject.optString("chunk_id", "")
+                    
+                    // Extract additional fields based on section type
+                    val additionalInfo = when (sectionType) {
+                        "pregnancy_care" -> {
+                            val visitType = jsonObject.optString("visit_type", "")
+                            val complicationType = jsonObject.optString("complication_type", "")
+                            when {
+                                visitType.isNotEmpty() -> "Visit Type: $visitType"
+                                complicationType.isNotEmpty() -> "Complication: $complicationType"
+                                else -> ""
+                            }
+                        }
+                        "delivery_care" -> {
+                            val procedureType = jsonObject.optString("procedure_type", "")
+                            if (procedureType.isNotEmpty()) "Procedure Type: $procedureType" else ""
+                        }
+                        "postpartum_care" -> {
+                            val careType = jsonObject.optString("care_type", "")
+                            if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                        }
+                        "newborn_care" -> {
+                            val careType = jsonObject.optString("care_type", "")
+                            if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                        }
+                        "immunization" -> {
+                            val immunizationType = jsonObject.optString("immunization_type", "")
+                            if (immunizationType.isNotEmpty()) "Immunization Type: $immunizationType" else ""
+                        }
+                        "nutrition" -> {
+                            val nutritionType = jsonObject.optString("nutrition_type", "")
+                            if (nutritionType.isNotEmpty()) "Nutrition Type: $nutritionType" else ""
+                        }
+                        "emergency_care" -> {
+                            val emergencyType = jsonObject.optString("emergency_type", "")
+                            if (emergencyType.isNotEmpty()) "Emergency Type: $emergencyType" else ""
+                        }
+                        "general_guidelines" -> {
+                            val category = jsonObject.optString("category", "")
+                            if (category.isNotEmpty()) "Category: $category" else ""
+                        }
+                        "pregnancy_scheme" -> {
+                            val schemeType = jsonObject.optString("scheme_type", "")
+                            if (schemeType.isNotEmpty()) "Scheme Type: $schemeType" else ""
+                        }
+                        "clinical_protocol" -> {
+                            val protocolType = jsonObject.optString("protocol_type", "")
+                            if (protocolType.isNotEmpty()) "Protocol Type: $protocolType" else ""
+                        }
+                        "healthcare_infrastructure" -> "Healthcare Infrastructure Information"
+                        else -> ""
+                    }
+                    
+                    mapOf(
+                        "title" to title,
+                        "content" to content,
+                        "key_points" to keyPoints,
+                        "guidelines" to guidelines,
+                        "section_type" to sectionType,
+                        "chunk_id" to chunkId,
+                        "additional_info" to additionalInfo
+                    )
+                } catch (e: Exception) {
+                    Log.w("MediapipeLLMDataSource", "Failed to parse JSON chunk: ${e.message}")
+                    null
+                }
+            }
+            
+            // Build structured context text
+            val contextText = structuredContext.joinToString("\n\n") { chunk ->
+                buildString {
+                    appendLine("**${chunk["title"]}**")
+                    appendLine("Section Type: ${chunk["section_type"]}")
+                    
+                    val additionalInfo = chunk["additional_info"] as? String
+                    if (!additionalInfo.isNullOrEmpty()) {
+                        appendLine("Additional Info: $additionalInfo")
+                    }
+                    
+                    val keyPoints = chunk["key_points"] as? List<String>
+                    if (!keyPoints.isNullOrEmpty()) {
+                        appendLine("Key Points:")
+                        for (point in keyPoints) {
+                            appendLine("• $point")
+                        }
+                    }
+                    
+                    val guidelines = chunk["guidelines"] as? List<String>
+                    if (!guidelines.isNullOrEmpty()) {
+                        appendLine("Guidelines:")
+                        for (guideline in guidelines) {
+                            appendLine("• $guideline")
+                        }
+                    }
+                    
+                    appendLine("Content: ${chunk["content"]}")
+                }
+            }
             
             val prompt = """
                 $systemPrompt
                 
-                Relevant context from ASHA guidelines:
+                Relevant context from ASHA guidelines (structured):
                 $contextText
                 
                 User's query: $query
                 
-                Please provide a detailed response based on the ASHA guidelines context provided above. If the context doesn't contain relevant information, say so.
+                Please provide a detailed response based on the ASHA guidelines context provided above. Focus on the key points and guidelines that are most relevant to the user's query. Structure your response clearly with:
+                - Key information from the guidelines
+                - Specific procedures or steps if mentioned
+                - Important warnings or precautions
+                - Additional context from the section type and additional info
+                
+                If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
             """.trimIndent()
             
             Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
@@ -191,15 +305,320 @@ class MediapipeLLMDataSource @Inject constructor(
                     Log.e("MediapipeLLMDataSource", "Error in LLM response generation: ${e.message}")
                     e.printStackTrace()
                     throw e
-                }
+                }   
             }
             
             Log.d("MediapipeLLMDataSource", "Response generation completed successfully")
-            return response
+            
+            // Ensure response is complete and add AI note
+            val completeResponse = ensureCompleteResponse(response)
+            val responseWithNote = if (completeResponse.isNotBlank()) {
+                "$completeResponse\n\n**💡 AI Generated Response**"
+            } else {
+                "I apologize, but I couldn't generate a proper response. Please try again.\n\n**💡 AI Generated Response**"
+            }
+            
+            return responseWithNote
         } catch (e: Exception) {
             Log.e("MediapipeLLMDataSource", "Error in generateResponse: ${e.message}")
             e.printStackTrace()
             return "I apologize, but I encountered an error while processing your query. Please try again."
+        }
+    }
+
+    suspend fun generateQuickResponse(query: String): String {
+        if (!isInitialized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized")
+            return "I apologize, but I'm not ready to answer questions yet. Please try again in a moment."
+        }
+
+        try {
+            Log.d("MediapipeLLMDataSource", "Generating quick response for query: $query")
+            
+            val quickPrompt = """
+                $systemPrompt
+                
+                User's query: $query
+                
+                Please provide a brief, helpful statement as an ASHA healthcare assistant. Give general information about ASHA guidelines, pregnancy care, or related topics. Keep it concise (2-3 sentences) but informative. State that you are currently searching through ASHA guidelines to provide a detailed response with specific information.
+            """.trimIndent()
+            
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    Log.d("MediapipeLLMDataSource", "Generating quick LLM response...")
+                    var result = llmInference?.generateResponse(quickPrompt)
+                    if(result==null) {
+                        result = "Error in model"
+                    }
+                    Log.d("MediapipeLLMDataSource", "Quick LLM response generated successfully")
+                    result
+                } catch (e: Exception) {
+                    Log.e("MediapipeLLMDataSource", "Error in quick LLM response generation: ${e.message}")
+                    e.printStackTrace()
+                    throw e
+                }
+            }
+            
+            Log.d("MediapipeLLMDataSource", "Quick response generation completed successfully")
+            
+            // Ensure response is complete and add AI note
+            val completeResponse = ensureCompleteResponse(response)
+            val responseWithNote = if (completeResponse.isNotBlank()) {
+                "$completeResponse\n\n**💡 AI Generated Response**"
+            } else {
+                "I apologize, but I couldn't generate a proper response. Please try again.\n\n**💡 AI Generated Response**"
+            }
+            
+            return responseWithNote
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error in generateQuickResponse: ${e.message}")
+            e.printStackTrace()
+            return "I apologize, but I encountered an error while processing your query. Please try again."
+        }
+    }
+
+    suspend fun generateDetailedResponse(query: String): String {
+        if (!isInitialized || !isContentMemorized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized or content not memorized")
+            return "I apologize, but I'm not ready to provide detailed responses yet. Please try again in a moment."
+        }
+
+        try {
+            Log.d("MediapipeLLMDataSource", "Starting detailed response generation for query: $query")
+            
+            val retrievalRequest = RetrievalRequest.create(
+                query,
+                RetrievalConfig.create(
+                    1, // topK - increased to get more context
+                    0.7f, // minSimilarityScore - slightly lowered to get more matches
+                    RetrievalConfig.TaskType.RETRIEVAL_QUERY
+                )
+            )
+            
+            Log.d("MediapipeLLMDataSource", "Retrieving relevant context...")
+            val retrievalResponse =
+                withContext(Dispatchers.IO) {
+                    semanticMemory.retrieveResults(retrievalRequest).get()
+                }
+            val relevantContext = retrievalResponse.entities.map { it.data }
+            
+            // Log the retrieved context
+            Log.d("MediapipeLLMDataSource", "Retrieved ${relevantContext.size} relevant chunks for query: $query")
+            relevantContext.forEachIndexed { index, context ->
+                Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
+            }
+            
+            // Parse JSON chunks and extract relevant information
+            val structuredContext = relevantContext.mapNotNull { context ->
+                try {
+                    val jsonObject = org.json.JSONObject(context)
+                    val title = jsonObject.optString("title", "")
+                    val content = jsonObject.optString("content", "")
+                    val keyPoints = jsonObject.optJSONArray("key_points")?.let { array ->
+                        (0 until array.length()).map { array.getString(it) }
+                    } ?: emptyList()
+                    val guidelines = jsonObject.optJSONArray("guidelines")?.let { array ->
+                        (0 until array.length()).map { array.getString(it) }
+                    } ?: emptyList()
+                    val sectionType = jsonObject.optString("section_type", "")
+                    val chunkId = jsonObject.optString("chunk_id", "")
+                    
+                    // Extract additional fields based on section type
+                    val additionalInfo = when (sectionType) {
+                        "pregnancy_care" -> {
+                            val visitType = jsonObject.optString("visit_type", "")
+                            val complicationType = jsonObject.optString("complication_type", "")
+                            when {
+                                visitType.isNotEmpty() -> "Visit Type: $visitType"
+                                complicationType.isNotEmpty() -> "Complication: $complicationType"
+                                else -> ""
+                            }
+                        }
+                        "delivery_care" -> {
+                            val procedureType = jsonObject.optString("procedure_type", "")
+                            if (procedureType.isNotEmpty()) "Procedure Type: $procedureType" else ""
+                        }
+                        "postpartum_care" -> {
+                            val careType = jsonObject.optString("care_type", "")
+                            if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                        }
+                        "newborn_care" -> {
+                            val careType = jsonObject.optString("care_type", "")
+                            if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                        }
+                        "immunization" -> {
+                            val immunizationType = jsonObject.optString("immunization_type", "")
+                            if (immunizationType.isNotEmpty()) "Immunization Type: $immunizationType" else ""
+                        }
+                        "nutrition" -> {
+                            val nutritionType = jsonObject.optString("nutrition_type", "")
+                            if (nutritionType.isNotEmpty()) "Nutrition Type: $nutritionType" else ""
+                        }
+                        "emergency_care" -> {
+                            val emergencyType = jsonObject.optString("emergency_type", "")
+                            if (emergencyType.isNotEmpty()) "Emergency Type: $emergencyType" else ""
+                        }
+                        "general_guidelines" -> {
+                            val category = jsonObject.optString("category", "")
+                            if (category.isNotEmpty()) "Category: $category" else ""
+                        }
+                        "pregnancy_scheme" -> {
+                            val schemeType = jsonObject.optString("scheme_type", "")
+                            if (schemeType.isNotEmpty()) "Scheme Type: $schemeType" else ""
+                        }
+                        "clinical_protocol" -> {
+                            val protocolType = jsonObject.optString("protocol_type", "")
+                            if (protocolType.isNotEmpty()) "Protocol Type: $protocolType" else ""
+                        }
+                        "healthcare_infrastructure" -> "Healthcare Infrastructure Information"
+                        else -> ""
+                    }
+                    
+                    mapOf(
+                        "title" to title,
+                        "content" to content,
+                        "key_points" to keyPoints,
+                        "guidelines" to guidelines,
+                        "section_type" to sectionType,
+                        "chunk_id" to chunkId,
+                        "additional_info" to additionalInfo
+                    )
+                } catch (e: Exception) {
+                    Log.w("MediapipeLLMDataSource", "Failed to parse JSON chunk: ${e.message}")
+                    null
+                }
+            }
+            
+            // Build structured context text
+            val contextText = structuredContext.joinToString("\n\n") { chunk ->
+                buildString {
+                    appendLine("**${chunk["title"]}**")
+                    appendLine("Section Type: ${chunk["section_type"]}")
+                    
+                    val additionalInfo = chunk["additional_info"] as? String
+                    if (!additionalInfo.isNullOrEmpty()) {
+                        appendLine("Additional Info: $additionalInfo")
+                    }
+                    
+                    val keyPoints = chunk["key_points"] as? List<String>
+                    if (!keyPoints.isNullOrEmpty()) {
+                        appendLine("Key Points:")
+                        for (point in keyPoints) {
+                            appendLine("• $point")
+                        }
+                    }
+                    
+                    val guidelines = chunk["guidelines"] as? List<String>
+                    if (!guidelines.isNullOrEmpty()) {
+                        appendLine("Guidelines:")
+                        for (guideline in guidelines) {
+                            appendLine("• $guideline")
+                        }
+                    }
+                    
+                    appendLine("Content: ${chunk["content"]}")
+                }
+            }
+            
+            val prompt = """
+                $systemPrompt
+                
+                Relevant context from ASHA guidelines (structured):
+                $contextText
+                
+                User's query: $query
+                
+                Please provide a detailed response based on the ASHA guidelines context provided above. Focus on the key points and guidelines that are most relevant to the user's query. Structure your response clearly with:
+                - Key information from the guidelines
+                - Specific procedures or steps if mentioned
+                - Important warnings or precautions
+                - Additional context from the section type and additional info
+                
+                If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
+            """.trimIndent()
+            
+            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+            
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    Log.d("MediapipeLLMDataSource", "Generating detailed LLM response...")
+                    var result = llmInference?.generateResponse(prompt)
+                    if(result==null) {
+                        result = "Error in model"
+                    }
+                    Log.d("MediapipeLLMDataSource", "Detailed LLM response generated successfully")
+                    result
+                } catch (e: Exception) {
+                    Log.e("MediapipeLLMDataSource", "Error in detailed LLM response generation: ${e.message}")
+                    e.printStackTrace()
+                    throw e
+                }
+            }
+            
+            Log.d("MediapipeLLMDataSource", "Detailed response generation completed successfully")
+            
+            // Ensure response is complete and add AI note
+            val completeResponse = ensureCompleteResponse(response)
+            val responseWithNote = if (completeResponse.isNotBlank()) {
+                "$completeResponse\n\n**💡 AI Generated Response**"
+            } else {
+                "I apologize, but I couldn't generate a proper response. Please try again.\n\n**💡 AI Generated Response**"
+            }
+            
+            return responseWithNote
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error in generateDetailedResponse: ${e.message}")
+            e.printStackTrace()
+            return "I apologize, but I encountered an error while processing your query. Please try again."
+        }
+    }
+
+    suspend fun generateInstantResponse(query: String): String {
+        if (!isInitialized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized")
+            return "I apologize, but I'm not ready to answer questions yet. Please try again in a moment."
+        }
+
+        try {
+            Log.d("MediapipeLLMDataSource", "Generating instant response for query: $query")
+            
+            val instantPrompt = """
+                You are an ASHA healthcare assistant. The user asked: "$query"
+                
+                Provide a brief, helpful response in 1-2 sentences about ASHA guidelines, pregnancy care, or maternal health. Be encouraging and mention that you're searching for specific details.
+            """.trimIndent()
+            
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    Log.d("MediapipeLLMDataSource", "Generating instant LLM response...")
+                    var result = llmInference?.generateResponse(instantPrompt)
+                    if(result==null) {
+                        result = "I'm here to help with ASHA guidelines. Let me search for specific details for you."
+                    }
+                    Log.d("MediapipeLLMDataSource", "Instant LLM response generated successfully")
+                    result
+                } catch (e: Exception) {
+                    Log.e("MediapipeLLMDataSource", "Error in instant LLM response generation: ${e.message}")
+                    e.printStackTrace()
+                    throw e
+                }
+            }
+            
+            Log.d("MediapipeLLMDataSource", "Instant response generation completed successfully")
+            
+            // Ensure response is complete and add AI note
+            val completeResponse = ensureCompleteResponse(response)
+            val responseWithNote = if (completeResponse.isNotBlank()) {
+                "$completeResponse\n\n**💡 AI Generated Response**"
+            } else {
+                "I'm here to help with ASHA guidelines. Let me search for specific details for you.\n\n**💡 AI Generated Response**"
+            }
+            
+            return responseWithNote
+        } catch (e: Exception) {
+            Log.e("MediapipeLLMDataSource", "Error in generateInstantResponse: ${e.message}")
+            e.printStackTrace()
+            return "I'm here to help with ASHA guidelines. Let me search for specific details for you.\n\n**💡 AI Generated Response**"
         }
     }
 
@@ -224,6 +643,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 Log.d(TAG, "Creating LLM options...")
                 val options = LlmInference.LlmInferenceOptions.builder()
                     .setModelPath(modelFile.path)
+
                     .build()
 
                 Log.d(TAG, "Created LLM options successfully")
@@ -236,7 +656,376 @@ class MediapipeLLMDataSource @Inject constructor(
                 throw e
             }
         }
-        // Reset any necessary state
+
+    suspend fun generateResponseAsync(query: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
+        if (!isInitialized || !isContentMemorized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized or content not memorized")
+            throw IllegalStateException("Models not initialized or content not memorized")
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d("MediapipeLLMDataSource", "Starting async response generation for query: $query")
+                
+                val retrievalRequest = RetrievalRequest.create(
+                    query,
+                    RetrievalConfig.create(
+                        1, // topK - increased to get more context
+                        0.7f, // minSimilarityScore - slightly lowered to get more matches
+                        RetrievalConfig.TaskType.RETRIEVAL_QUERY
+                    )
+                )
+                
+                Log.d("MediapipeLLMDataSource", "Retrieving relevant context...")
+                val retrievalResponse = semanticMemory.retrieveResults(retrievalRequest).get()
+                val relevantContext = retrievalResponse.entities.map { it.data }
+                
+                // Log the retrieved context
+                Log.d("MediapipeLLMDataSource", "Retrieved ${relevantContext.size} relevant chunks for query: $query")
+                relevantContext.forEachIndexed { index, context ->
+                    Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
+                }
+                
+                // Parse JSON chunks and extract relevant information
+                val structuredContext = relevantContext.mapNotNull { context ->
+                    try {
+                        val jsonObject = org.json.JSONObject(context)
+                        val title = jsonObject.optString("title", "")
+                        val content = jsonObject.optString("content", "")
+                        val keyPoints = jsonObject.optJSONArray("key_points")?.let { array ->
+                            (0 until array.length()).map { array.getString(it) }
+                        } ?: emptyList()
+                        val guidelines = jsonObject.optJSONArray("guidelines")?.let { array ->
+                            (0 until array.length()).map { array.getString(it) }
+                        } ?: emptyList()
+                        val sectionType = jsonObject.optString("section_type", "")
+                        val chunkId = jsonObject.optString("chunk_id", "")
+                        
+                        // Extract additional fields based on section type
+                        val additionalInfo = when (sectionType) {
+                            "pregnancy_care" -> {
+                                val visitType = jsonObject.optString("visit_type", "")
+                                val complicationType = jsonObject.optString("complication_type", "")
+                                when {
+                                    visitType.isNotEmpty() -> "Visit Type: $visitType"
+                                    complicationType.isNotEmpty() -> "Complication: $complicationType"
+                                    else -> ""
+                                }
+                            }
+                            "delivery_care" -> {
+                                val procedureType = jsonObject.optString("procedure_type", "")
+                                if (procedureType.isNotEmpty()) "Procedure Type: $procedureType" else ""
+                            }
+                            "postpartum_care" -> {
+                                val careType = jsonObject.optString("care_type", "")
+                                if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                            }
+                            "newborn_care" -> {
+                                val careType = jsonObject.optString("care_type", "")
+                                if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                            }
+                            "immunization" -> {
+                                val immunizationType = jsonObject.optString("immunization_type", "")
+                                if (immunizationType.isNotEmpty()) "Immunization Type: $immunizationType" else ""
+                            }
+                            "nutrition" -> {
+                                val nutritionType = jsonObject.optString("nutrition_type", "")
+                                if (nutritionType.isNotEmpty()) "Nutrition Type: $nutritionType" else ""
+                            }
+                            "emergency_care" -> {
+                                val emergencyType = jsonObject.optString("emergency_type", "")
+                                if (emergencyType.isNotEmpty()) "Emergency Type: $emergencyType" else ""
+                            }
+                            "general_guidelines" -> {
+                                val category = jsonObject.optString("category", "")
+                                if (category.isNotEmpty()) "Category: $category" else ""
+                            }
+                            "pregnancy_scheme" -> {
+                                val schemeType = jsonObject.optString("scheme_type", "")
+                                if (schemeType.isNotEmpty()) "Scheme Type: $schemeType" else ""
+                            }
+                            "clinical_protocol" -> {
+                                val protocolType = jsonObject.optString("protocol_type", "")
+                                if (protocolType.isNotEmpty()) "Protocol Type: $protocolType" else ""
+                            }
+                            "healthcare_infrastructure" -> "Healthcare Infrastructure Information"
+                            else -> ""
+                        }
+                        
+                        mapOf(
+                            "title" to title,
+                            "content" to content,
+                            "key_points" to keyPoints,
+                            "guidelines" to guidelines,
+                            "section_type" to sectionType,
+                            "chunk_id" to chunkId,
+                            "additional_info" to additionalInfo
+                        )
+                    } catch (e: Exception) {
+                        Log.w("MediapipeLLMDataSource", "Failed to parse JSON chunk: ${e.message}")
+                        null
+                    }
+                }
+                
+                // Build structured context text
+                val contextText = structuredContext.joinToString("\n\n") { chunk ->
+                    buildString {
+                        appendLine("**${chunk["title"]}**")
+                        appendLine("Section Type: ${chunk["section_type"]}")
+                        
+                        val additionalInfo = chunk["additional_info"] as? String
+                        if (!additionalInfo.isNullOrEmpty()) {
+                            appendLine("Additional Info: $additionalInfo")
+                        }
+                        
+                        val keyPoints = chunk["key_points"] as? List<String>
+                        if (!keyPoints.isNullOrEmpty()) {
+                            appendLine("Key Points:")
+                            for (point in keyPoints) {
+                                appendLine("• $point")
+                            }
+                        }
+                        
+                        val guidelines = chunk["guidelines"] as? List<String>
+                        if (!guidelines.isNullOrEmpty()) {
+                            appendLine("Guidelines:")
+                            for (guideline in guidelines) {
+                                appendLine("• $guideline")
+                            }
+                        }
+                        
+                        appendLine("Content: ${chunk["content"]}")
+                    }
+                }
+                
+                val prompt = """
+                    $systemPrompt
+                    
+                    Relevant context from ASHA guidelines (structured):
+                    $contextText
+                    
+                    User's query: $query
+                    
+                    Please provide a detailed response based on the ASHA guidelines context provided above. Focus on the key points and guidelines that are most relevant to the user's query. Structure your response clearly with:
+                    - Key information from the guidelines
+                    - Specific procedures or steps if mentioned
+                    - Important warnings or precautions
+                    - Additional context from the section type and additional info
+                    
+                    If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
+                """.trimIndent()
+                
+                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+                
+                llmInference?.generateResponseAsync(prompt, progressListener)
+                    ?: throw IllegalStateException("LLM not initialized")
+            } catch (e: Exception) {
+                Log.e("MediapipeLLMDataSource", "Error in generateResponseAsync: ${e.message}")
+                e.printStackTrace()
+                throw e
+            }
+        }
+    }
+
+    suspend fun generateDetailedResponseAsync(query: String, progressListener: ProgressListener<String>): ListenableFuture<String> {
+        if (!isInitialized || !isContentMemorized) {
+            Log.e("MediapipeLLMDataSource", "Models not initialized or content not memorized")
+            throw IllegalStateException("Models not initialized or content not memorized")
+        }
+
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d("MediapipeLLMDataSource", "Starting async detailed response generation for query: $query")
+                
+                val retrievalRequest = RetrievalRequest.create(
+                    query,
+                    RetrievalConfig.create(
+                        1, // topK - increased to get more context
+                        0.7f, // minSimilarityScore - slightly lowered to get more matches
+                        RetrievalConfig.TaskType.RETRIEVAL_QUERY
+                    )
+                )
+                
+                Log.d("MediapipeLLMDataSource", "Retrieving relevant context...")
+                val retrievalResponse = semanticMemory.retrieveResults(retrievalRequest).get()
+                val relevantContext = retrievalResponse.entities.map { it.data }
+                
+                // Log the retrieved context
+                Log.d("MediapipeLLMDataSource", "Retrieved ${relevantContext.size} relevant chunks for query: $query")
+                relevantContext.forEachIndexed { index, context ->
+                    Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
+                }
+                
+                // Parse JSON chunks and extract relevant information
+                val structuredContext = relevantContext.mapNotNull { context ->
+                    try {
+                        val jsonObject = org.json.JSONObject(context)
+                        val title = jsonObject.optString("title", "")
+                        val content = jsonObject.optString("content", "")
+                        val keyPoints = jsonObject.optJSONArray("key_points")?.let { array ->
+                            (0 until array.length()).map { array.getString(it) }
+                        } ?: emptyList()
+                        val guidelines = jsonObject.optJSONArray("guidelines")?.let { array ->
+                            (0 until array.length()).map { array.getString(it) }
+                        } ?: emptyList()
+                        val sectionType = jsonObject.optString("section_type", "")
+                        val chunkId = jsonObject.optString("chunk_id", "")
+                        
+                        // Extract additional fields based on section type
+                        val additionalInfo = when (sectionType) {
+                            "pregnancy_care" -> {
+                                val visitType = jsonObject.optString("visit_type", "")
+                                val complicationType = jsonObject.optString("complication_type", "")
+                                when {
+                                    visitType.isNotEmpty() -> "Visit Type: $visitType"
+                                    complicationType.isNotEmpty() -> "Complication: $complicationType"
+                                    else -> ""
+                                }
+                            }
+                            "delivery_care" -> {
+                                val procedureType = jsonObject.optString("procedure_type", "")
+                                if (procedureType.isNotEmpty()) "Procedure Type: $procedureType" else ""
+                            }
+                            "postpartum_care" -> {
+                                val careType = jsonObject.optString("care_type", "")
+                                if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                            }
+                            "newborn_care" -> {
+                                val careType = jsonObject.optString("care_type", "")
+                                if (careType.isNotEmpty()) "Care Type: $careType" else ""
+                            }
+                            "immunization" -> {
+                                val immunizationType = jsonObject.optString("immunization_type", "")
+                                if (immunizationType.isNotEmpty()) "Immunization Type: $immunizationType" else ""
+                            }
+                            "nutrition" -> {
+                                val nutritionType = jsonObject.optString("nutrition_type", "")
+                                if (nutritionType.isNotEmpty()) "Nutrition Type: $nutritionType" else ""
+                            }
+                            "emergency_care" -> {
+                                val emergencyType = jsonObject.optString("emergency_type", "")
+                                if (emergencyType.isNotEmpty()) "Emergency Type: $emergencyType" else ""
+                            }
+                            "general_guidelines" -> {
+                                val category = jsonObject.optString("category", "")
+                                if (category.isNotEmpty()) "Category: $category" else ""
+                            }
+                            "pregnancy_scheme" -> {
+                                val schemeType = jsonObject.optString("scheme_type", "")
+                                if (schemeType.isNotEmpty()) "Scheme Type: $schemeType" else ""
+                            }
+                            "clinical_protocol" -> {
+                                val protocolType = jsonObject.optString("protocol_type", "")
+                                if (protocolType.isNotEmpty()) "Protocol Type: $protocolType" else ""
+                            }
+                            "healthcare_infrastructure" -> "Healthcare Infrastructure Information"
+                            else -> ""
+                        }
+                        
+                        mapOf(
+                            "title" to title,
+                            "content" to content,
+                            "key_points" to keyPoints,
+                            "guidelines" to guidelines,
+                            "section_type" to sectionType,
+                            "chunk_id" to chunkId,
+                            "additional_info" to additionalInfo
+                        )
+                    } catch (e: Exception) {
+                        Log.w("MediapipeLLMDataSource", "Failed to parse JSON chunk: ${e.message}")
+                        null
+                    }
+                }
+                
+                // Build structured context text
+                val contextText = structuredContext.joinToString("\n\n") { chunk ->
+                    buildString {
+                        appendLine("**${chunk["title"]}**")
+                        appendLine("Section Type: ${chunk["section_type"]}")
+                        
+                        val additionalInfo = chunk["additional_info"] as? String
+                        if (!additionalInfo.isNullOrEmpty()) {
+                            appendLine("Additional Info: $additionalInfo")
+                        }
+                        
+                        val keyPoints = chunk["key_points"] as? List<String>
+                        if (!keyPoints.isNullOrEmpty()) {
+                            appendLine("Key Points:")
+                            for (point in keyPoints) {
+                                appendLine("• $point")
+                            }
+                        }
+                        
+                        val guidelines = chunk["guidelines"] as? List<String>
+                        if (!guidelines.isNullOrEmpty()) {
+                            appendLine("Guidelines:")
+                            for (guideline in guidelines) {
+                                appendLine("• $guideline")
+                            }
+                        }
+                        
+                        appendLine("Content: ${chunk["content"]}")
+                    }
+                }
+                
+                val prompt = """
+                    $systemPrompt
+                    
+                    Relevant context from ASHA guidelines (structured):
+                    $contextText
+                    
+                    User's query: $query
+                    
+                    Please provide a detailed response based on the ASHA guidelines context provided above. Focus on the key points and guidelines that are most relevant to the user's query. Structure your response clearly with:
+                    - Key information from the guidelines
+                    - Specific procedures or steps if mentioned
+                    - Important warnings or precautions
+                    - Additional context from the section type and additional info
+                    
+                    If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
+                """.trimIndent()
+                
+                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+                
+                llmInference?.generateResponseAsync(prompt, progressListener)
+                    ?: throw IllegalStateException("LLM not initialized")
+            } catch (e: Exception) {
+                Log.e("MediapipeLLMDataSource", "Error in generateDetailedResponseAsync: ${e.message}")
+                e.printStackTrace()
+                throw e
+            }
+        }
+    }
+
+    /**
+     * Ensures the response is complete by checking for incomplete sentences
+     */
+    private fun ensureCompleteResponse(response: String): String {
+        if (response.isBlank()) return response
+        
+        val trimmedResponse = response.trim()
+        
+        // Check if response ends with incomplete sentence patterns
+        val incompletePatterns = listOf(
+            Regex(".*\\b(and|but|or|however|therefore|thus|hence|so|because|since|while|when|if|although|though)\\s*$"),
+            Regex(".*\\b(is|are|was|were|will|can|could|should|would|may|might)\\s*$"),
+            Regex(".*\\b(to|for|with|in|on|at|by|from|of|about|against|between|among)\\s*$"),
+            Regex(".*\\b(a|an|the|this|that|these|those|some|any|each|every|all|both|either|neither)\\s*$")
+        )
+        
+        // If response ends with incomplete pattern, add a completion
+        for (pattern in incompletePatterns) {
+            if (pattern.matches(trimmedResponse)) {
+                return "$trimmedResponse. Please provide more specific information about your query."
+            }
+        }
+        
+        // If response doesn't end with proper punctuation, add it
+        if (!trimmedResponse.endsWith(".") && !trimmedResponse.endsWith("!") && !trimmedResponse.endsWith("?")) {
+            return "$trimmedResponse."
+        }
+        
+        return trimmedResponse
     }
 
     suspend fun start(): String {
@@ -246,10 +1035,13 @@ class MediapipeLLMDataSource @Inject constructor(
                     MediapipeLLMDataSource::class.java.simpleName,
                     "Initializing ASHA Sakhi chat"
                 )
-                llmInference!!.generateResponse("\n\nI am ready to assist with your healthcare queries. Please ask your specific question. Limit to 300 words")
+                val response = llmInference!!.generateResponse("\n\nI am ready to assist with your healthcare queries. Please ask your specific question.")
+                val completeResponse = ensureCompleteResponse(response)
+                "$completeResponse\n\n**💡 AI Generated Response**"
             }
         }
-        return "I am ASHA Sakhi! Ready to answer your queries!"
+        return "I am ASHA Sakhi! Ready to answer your queries!\n\n**💡 AI Generated Response**";
     }
+}
 
 

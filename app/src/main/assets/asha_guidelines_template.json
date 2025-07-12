@@ -1,0 +1,2263 @@
+{
+  "pregnancy_care": {
+    "anc_visits": [
+      {
+        "title": "First ANC Visit (Before 12 weeks)",
+        "description": "First antenatal care visit should be conducted before 12 weeks of pregnancy to establish baseline health status and identify risk factors.",
+        "week": 12,
+        "key_points": [
+          "Complete medical history and physical examination",
+          "Blood pressure measurement",
+          "Weight and height measurement",
+          "Hemoglobin estimation",
+          "Blood grouping and Rh typing",
+          "Urine examination for protein and sugar",
+          "HIV testing with counseling",
+          "Syphilis testing"
+        ],
+        "guidelines": [
+          "Should be conducted at a health facility",
+          "Must include risk assessment",
+          "Should provide iron and folic acid supplementation",
+          "Must counsel on diet and rest"
+        ],
+        "procedures": [
+          "Take detailed medical history",
+          "Perform complete physical examination",
+          "Measure blood pressure",
+          "Collect blood samples for testing",
+          "Provide counseling on pregnancy care"
+        ],
+        "warnings": [
+          "High blood pressure requires immediate referral",
+          "Severe anemia needs urgent attention",
+          "HIV positive cases need special care"
+        ],
+        "risk_factors": [
+          "Age < 18 or > 35 years",
+          "Previous pregnancy complications",
+          "Medical conditions like diabetes, hypertension"
+        ]
+      },
+      {
+        "title": "Second ANC Visit (16-24 weeks)",
+        "description": "Second visit focuses on monitoring pregnancy progress and identifying any complications.",
+        "week": 20,
+        "key_points": [
+          "Monitor weight gain",
+          "Check blood pressure",
+          "Assess fetal growth",
+          "Screen for gestational diabetes",
+          "Provide nutrition counseling"
+        ],
+        "guidelines": [
+          "Should monitor weight gain pattern",
+          "Must check for signs of pre-eclampsia",
+          "Should provide nutrition education"
+        ],
+        "procedures": [
+          "Measure fundal height",
+          "Listen to fetal heart sounds",
+          "Check for edema",
+          "Provide dietary advice"
+        ],
+        "warnings": [
+          "Excessive weight gain may indicate problems",
+          "High blood pressure needs immediate attention",
+          "Protein in urine requires referral"
+        ],
+        "risk_factors": [
+          "Rapid weight gain",
+          "Swelling of face and hands",
+          "Headache and visual disturbances"
+        ]
+      }
+    ],
+    "complications": [
+      {
+        "title": "Hypertension in Pregnancy",
+        "description": "High blood pressure during pregnancy can lead to serious complications for both mother and baby. potentially leading to preterm birth. Regular prenatal care visits and home blood pressure monitoring are crucial.",
+        "symptoms": [
+          "Blood pressure \u2265 140/90 mmHg",
+          "Headache",
+          "Visual disturbances",
+          "Swelling of face and hands",
+          "Abdominal pain"
+        ],
+        "management": [
+          "Immediate referral to higher facility",
+          "Monitor blood pressure closely",
+          "Bed rest in left lateral position",
+          "Antihypertensive medication if needed",
+          "Pharmacological management with safe antihypertensive drugs (Labetalol, Nifedipine controlled release)",
+          "Maintain blood pressure within 110\u2013140/80\u201390 mmHg",
+          "Low-dose aspirin (150 mg daily) for high-risk for preeclampsia (12\u201316 weeks until 36 weeks)",
+          "Urgent management for severe hypertension (\u2265160/110 mmHg) with IV Hydralazine, Labetalol, or oral Nifedipine"
+        ],
+        "procedures": [
+          "Measure blood pressure in sitting position",
+          "Check for protein in urine",
+          "Monitor fetal heart rate",
+          "Assess for signs of pre-eclampsia",
+          "Home blood pressure monitoring recommended",
+          "Initiate low-dose aspirin for high-risk cases",
+          "Manage severe cases at specialist centers with inpatient care and protocols"
+        ],
+        "warnings": [
+          "Severe hypertension is a medical emergency",
+          "Eclampsia can develop rapidly",
+          "Requires immediate hospitalization",
+          "Avoid ACE inhibitors, ARBs, diuretics, most other beta-blockers and calcium channel antagonists due to fetal effects",
+          "Severe cases require management at specialist centers"
+        ],
+        "severity": "high",
+        "referral_needed": true,
+        "pharmacological_management": {
+          "safe_drugs": [
+            {
+              "drug": "Labetalol",
+              "dose": "100 mg twice a day to 400 mg three times a day"
+            },
+            {
+              "drug": "Nifedipine controlled release",
+              "dose": "30 mg daily to 60 mg twice a day"
+            }
+          ],
+          "target_bp_range": "110\u2013140/80\u201390 mmHg",
+          "contraindicated_drugs": [
+            "ACE inhibitors",
+            "Angiotensin Receptor Blockers (ARBs)",
+            "Diuretics",
+            "Most other beta-blockers and calcium channel antagonists"
+          ],
+          "severe_hypertension_management": [
+            {
+              "drug": "Hydralazine",
+              "dose": "5\u201310 mg bolus",
+              "route": "IV"
+            },
+            {
+              "drug": "Labetalol",
+              "dose": "20\u201380 mg bolus",
+              "route": "IV"
+            },
+            {
+              "drug": "Nifedipine",
+              "dose": "10 mg",
+              "route": "Oral"
+            }
+          ]
+        }
+      }
+    ],
+    "general_care": {
+      "title": "General Pregnancy Care Guidelines",
+      "description": "Essential care guidelines for all pregnant women to ensure healthy pregnancy and delivery.",
+      "key_points": [
+        "Regular antenatal visits",
+        "Proper nutrition and rest",
+        "Iron and folic acid supplementation",
+        "Tetanus toxoid immunization",
+        "Birth preparedness and complication readiness"
+      ],
+      "guidelines": [
+        "Should have at least 4 ANC visits",
+        "Must take iron and folic acid tablets",
+        "Should maintain proper hygiene",
+        "Must avoid alcohol and smoking"
+      ],
+      "procedures": [
+        "Counsel on diet and nutrition",
+        "Provide iron and folic acid tablets",
+        "Administer tetanus toxoid",
+        "Teach birth preparedness"
+      ],
+      "warnings": [
+        "Avoid heavy physical work",
+        "Seek immediate care for bleeding",
+        "Report severe vomiting or pain"
+      ]
+    },
+    "abortion_care": {
+      "title": "Comprehensive Abortion Care (CAC) and the Medical Termination of Pregnancy (Amendment) Act, 2021",
+      "description": "CAC is a vital component of the RMNCH+A strategy. The Medical Termination of Pregnancy (Amendment) Act, 2021, expands access to safe, affordable, and legal abortion services.",
+      "key_provisions": [
+        "Opinion from one registered medical practitioner for termination up to 20 weeks.",
+        "Opinion from two registered medical practitioners for termination between 20 and 24 weeks.",
+        "Upper gestation limit extended to 24 weeks for vulnerable groups.",
+        "No gestation limits for substantial fetal abnormalities diagnosed by a Medical Board.",
+        "Strengthening privacy protection for women.",
+        "Extension of contraceptive failure clause to include both woman and partner."
+      ],
+      "warnings": [
+        "Unsafe abortions attributed to 8% of maternal deaths (2001-03)."
+      ]
+    }
+  },
+  "delivery_care": {
+    "procedures": [
+      {
+        "title": "Normal Delivery Procedure",
+        "description": "Step-by-step procedure for conducting a normal delivery safely.",
+        "type": "normal",
+        "key_points": [
+          "Monitor labor progress",
+          "Maintain asepsis",
+          "Support the mother",
+          "Handle the newborn carefully"
+        ],
+        "guidelines": [
+          "Should be conducted in a clean environment",
+          "Must maintain proper hygiene",
+          "Should provide emotional support to mother"
+        ],
+        "steps": [
+          "Prepare delivery room and equipment",
+          "Monitor vital signs of mother",
+          "Assess cervical dilatation",
+          "Guide mother during pushing",
+          "Receive the baby safely",
+          "Cut and tie the cord",
+          "Deliver the placenta"
+        ],
+        "warnings": [
+          "Never pull on the cord",
+          "Watch for excessive bleeding",
+          "Monitor mother's condition post-delivery"
+        ]
+      }
+    ],
+    "emergency_procedures": {
+      "title": "Emergency Delivery Procedures",
+      "description": "Procedures to follow in emergency situations during delivery, including management of Postpartum Hemorrhage (PPH) and Eclampsia.",
+      "type": "emergency",
+      "key_points": [
+        "Stay calm and reassure the mother",
+        "Maintain basic hygiene",
+        "Handle complications carefully",
+        "Arrange immediate referral if needed"
+      ],
+      "guidelines": [
+        "Should have emergency contact numbers ready",
+        "Must maintain basic delivery kit",
+        "Should know when to refer"
+      ],
+      "procedures": [
+        "Assess the emergency situation",
+        "Provide basic life support",
+        "Control bleeding if present",
+        "Arrange transportation for referral"
+      ],
+      "warnings": [
+        "Do not attempt complex procedures",
+        "Prioritize mother's safety",
+        "Act quickly in emergencies"
+      ],
+      "emergencies_covered": [
+        {
+          "title": "Postpartum Hemorrhage (PPH)",
+          "definition": "Blood loss \u2265 500 ml within 24 hours after birth (severe PPH \u2265 1000 ml)",
+          "key_points": [
+            "Leading cause of maternal death worldwide"
+          ],
+          "prevention_management": [
+            "Active management of third stage of labor (uterotonic, delayed cord clamping, controlled cord traction, uterine massage)",
+            "Maintain hemorrhage cart with essential supplies",
+            "Establish rapid response team",
+            "Implement emergency release and massive transfusion protocols",
+            "Quantitative measurement of cumulative blood loss",
+            "Patient education on PPH risk and early warning signs"
+          ],
+          "community_based_misoprostol_distribution": {
+            "description": "ASHAs and ANMs permitted to undertake advance distribution of Misoprostol tablets for PPH prevention in remote areas.",
+            "dosage": "Three 200 mcg tablets (total 600 mcg) orally, self-administered just after delivery",
+            "conditionalities": [
+              "Rigorous training",
+              "Rule out multiple pregnancy or other contraindications (previous Cesarean section, multiple pregnancy, severe PIH/anemia, cardiac disease)"
+            ],
+            "counseling": "Dosage, contraindications, potential side effects"
+          }
+        },
+        {
+          "title": "Eclampsia",
+          "description": "Severe complication of pregnancy characterized by seizures.",
+          "management": [
+            "Magnesium sulfate (MgSO4) is preferred anticonvulsant",
+            "Antihypertensive drugs (Labetalol, Hydralazine, Nifedipine) to control blood pressure",
+            "Definitive treatment is delivery of the baby",
+            "Acute care during a seizure is critical and involves immediate medical interventions to manage the airway, breathing, and circulation, while also ensuring patient safety during convulsions",
+            "Administer oxygen, lateral decubitus position, suction oral secretions, cardiac monitoring, IV line, careful fluid management to avoid overload or hypoperfusion"
+          ],
+          "policy_practice_gap": {
+            "issues": [
+              "MgSO4 recognized as the 'gold standard' but inconsistent availability/utilization",
+              "Policy ambiguities (classified as 'level-T' drug but permitted at PHCs/CHCs)",
+              "Poor inventory management leading to stock-outs"
+            ],
+            "recommendations": [
+              "Clearer guidelines",
+              "Stronger supply chain management"
+            ]
+          }
+        }
+      ]
+    },
+    "iphs_labor_rooms": {
+      "title": "Indian Public Health Standards (IPHS) for Labor Rooms",
+      "description": "Detailed guidelines for the planning, infrastructure, and operational protocols of labor rooms at Primary Health Centres (PHCs) and Urban Primary Health Centres (UPHCs).",
+      "critical_areas": [
+        {
+          "area": "Space and Layout",
+          "details": [
+            "Recommend Labor-Delivery-Recovery (LDR) room concept",
+            "Specifications for number of labor tables/beds based on delivery load",
+            "Features for labor beds (e.g., adjustable side rails, Trendelenburg/reverse positions, hydraulic height adjustment)",
+            "Room components: nursing stations, newborn care areas, toilets, handwashing areas"
+          ]
+        },
+        {
+          "area": "Equipment and Accessories",
+          "details": [
+            "Radiant warmers, hand-held fetal dopplers, autoclaved delivery trays, resuscitation kits, glucometers",
+            "Biomedical waste (BMW) management protocols (segregation, disinfection, storage, disposal in color-coded bins)"
+          ]
+        },
+        {
+          "area": "Consumables",
+          "details": [
+            "Adequate quantities of essential consumables such as cotton, gauze, IV drip sets, needles, oral and parenteral medicines",
+            "Disposable mother and baby supplies (e.g., baby receiving sheets, caps, socks, cord clamps)"
+          ]
+        },
+        {
+          "area": "Human Resources",
+          "details": [
+            "Specific staffing norms are provided for ANMs, staff nurses, medical officers (including OBG/EmOC specialists, anesthetists/LSAS, and pediatricians), and support staff",
+            "Recommendations for non-rotation of labor room personnel to maintain expertise and continuity of care"
+          ]
+        },
+        {
+          "area": "Practices and Protocols",
+          "details": {
+            "triaging": "Categorizing clients into normal delivery (nurse-led) and those needing obstetrician care (specialist-led)",
+            "disinfection_sterilization": "Procedures for instruments and linen, including immediate soaking in chlorine solution, cleaning, autoclaving, and proper storage",
+            "cleaning_labor_room": "Daily and post-delivery cleaning with disinfectants, specific mopping procedures, and maintenance of a dry environment",
+            "entry_protocols": "Requiring a buffer zone for changing shoes, wearing masks and caps, and restricting entry to essential personnel to maintain a sterile environment",
+            "safe_care_dos": [
+              "Plotting the partograph",
+              "Active management of the third stage of labor (AMTSL)",
+              "Delayed cord clamping",
+              "Essential newborn care (drying and wrapping, immediate resuscitation if needed, skin-to-skin contact, early initiation of breastfeeding, Injection Vitamin K)",
+              "Assessment of maternal bleeding and newborn condition",
+              "Ensuring a minimum 48-hour postnatal stay",
+              "Use of the Safe Childbirth Checklist (SCC) at various checkpoints"
+            ],
+            "harmful_practices_donts": [
+              "Routine enema",
+              "Routine shaving",
+              "Routine induction/augmentation of labor (unless C-section capable)",
+              "Routine suctioning of the baby",
+              "Pulling of the baby",
+              "Routine episiotomy",
+              "Fundal pressure",
+              "Immediate cord cutting",
+              "Immediate bathing of the newborn"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "postpartum_care": {
+    "care_guidelines": [
+      {
+        "title": "Immediate Postpartum Care",
+        "description": "Care provided immediately after delivery to ensure mother and baby are safe. Guidelines emphasize daily monitoring of the newborn and mother, comprehensive post-discharge counseling, and ensuring a minimum of six postnatal home visits by ASHAs up to 42 days after birth, with at least one supervised visit by an ANM.",
+        "period": "immediate",
+        "key_points": [
+          "Monitor mother's vital signs",
+          "Check for bleeding",
+          "Ensure baby is breathing",
+          "Initiate breastfeeding"
+        ],
+        "guidelines": [
+          "Should monitor for 2 hours post-delivery",
+          "Must check for excessive bleeding",
+          "Should initiate breastfeeding within 1 hour",
+          "Ensure a minimum of six postnatal home visits by ASHAs up to 42 days after birth.",
+          "At least one supervised postnatal visit by an ANM."
+        ],
+        "procedures": [
+          "Monitor blood pressure and pulse",
+          "Check uterine contraction",
+          "Assess bleeding",
+          "Examine the baby",
+          "Help with first breastfeeding",
+          "Provide comprehensive post-discharge counseling."
+        ],
+        "warnings": [
+          "Excessive bleeding is an emergency",
+          "High fever needs immediate attention",
+          "Baby not breathing requires resuscitation"
+        ]
+      },
+      {
+        "title": "Kangaroo Mother Care (KMC) for Low Birth Weight (LBW) Babies",
+        "description": "Evidence-based intervention improving health and well-being of LBW babies through thermal control, breastfeeding promotion, infection prevention, and bonding.",
+        "components": [
+          "Skin-to-skin contact: early, continuous, prolonged contact between mother/caregiver and baby on chest.",
+          "Exclusive breastfeeding: babies receiving KMC are exclusively breastfed."
+        ],
+        "prerequisites": [
+          "Support to the mother in hospital and at home (counseling, supervision, family assistance)",
+          "Post-discharge follow-up: regular follow-up and accessible health providers for home-based KMC."
+        ],
+        "suitability": "All stable LBW babies (typically >1800g initially), with specific guidelines for positioning and monitoring.",
+        "implementation_challenges": [
+          "Socio-cultural barriers (skin-to-skin culturally inappropriate, lack of personal space, misconceptions about roles, burden on mother)",
+          "Misconceptions among healthcare professionals (less enthusiastic promotion)",
+          "Perceived burden on staff (obtaining consent, teaching methods, assisting feeding, follow-up)",
+          "Lack of clear policies and adequate infrastructure (lack of specific policies, space, reclining chairs)"
+        ],
+        "references": [
+          "https://www.who.int/tools/elena/interventions/kangaroo-care-infants",
+          "https://www.who.int/publications/i/item/9789240071636"
+        ]
+      }
+    ]
+  },
+  "newborn_care": {
+    "care_guidelines": [
+      {
+        "title": "Essential Newborn Care",
+        "description": "Basic care procedures for newborns to ensure their health and survival.",
+        "type": "general",
+        "key_points": [
+          "Keep baby warm",
+          "Initiate breastfeeding",
+          "Maintain hygiene",
+          "Monitor for danger signs"
+        ],
+        "guidelines": [
+          "Should maintain skin-to-skin contact",
+          "Must ensure proper cord care",
+          "Should monitor breathing and temperature"
+        ],
+        "procedures": [
+          "Dry the baby thoroughly",
+          "Wrap in clean cloth",
+          "Place on mother's chest",
+          "Help with breastfeeding",
+          "Care for the umbilical cord"
+        ],
+        "warnings": [
+          "Cold stress can be dangerous",
+          "Infection can develop quickly",
+          "Poor feeding needs attention"
+        ]
+      }
+    ],
+    "programs": [
+      {
+        "title": "Navjaat Shishu Suraksha Karyakram (NSSK)",
+        "description": "Launched in 2009, NSSK aims to equip doctors and nurses with the knowledge and skills required to provide essential newborn care around birth, aligning with India Newborn Action Plan (2014) and National Health Policy-2017's goal of achieving single-digit Neonatal Mortality Rate (NMR) by 2030.",
+        "key_points": [
+          "Capacity building for healthcare providers in essential newborn care",
+          "Aims to reduce NMR to single digit by 2030"
+        ],
+        "references": []
+      }
+    ],
+    "traditional_practices": {
+      "title": "Traditional Newborn Care Practices and Beliefs",
+      "description": "Traditional newborn care practices and beliefs persist in many communities, with both beneficial and harmful implications.",
+      "harmful_practices": [
+        {
+          "practice": "Prelacteal Feeds and Colostrum Avoidance",
+          "details": "61.1% receive prelacteal feeds (sugar water, honey, butter) for 1-3 days. Only 38.9% receive colostrum. Beliefs: 'stagnant impure milk', 'not good for health', 'cannot be digested', 'forms hard stool', 'pure milk not secreted'. Can predispose to infections.",
+          "percentage": "61.1% prelacteal feeds, 38.9% colostrum"
+        },
+        {
+          "practice": "Umbilical Cord Care",
+          "details": "94.9% apply substances (sweet flag, coconut oil, turmeric powder) to cord stump to prevent early drying/air entry into stomach. Unsterile blades/knives used in some home deliveries.",
+          "percentage": "94.9% apply substances"
+        },
+        {
+          "practice": "Bathing Practices",
+          "details": "71.2% bathed before cord drops off (23.7% within 24h, 47.5% on 2nd day).",
+          "percentage": "71.2% bathed before cord drops off"
+        },
+        {
+          "practice": "Other Harmful Practices",
+          "details": "Blowing into nostrils (45.7%). Beliefs about evil spirits: not leaving house in first month, applying kajal (16.9%), or not drying newborns' clothes outside the house.",
+          "percentage": "45.7% blowing into nostrils, 16.9% applying kajal"
+        },
+        {
+          "practice": "Illness Management",
+          "details": "Traditional healers are often approached for skin infections (42.4%), and herbal medications are used for diarrhea (40.6%) and cold (25.4%). For colic, sweet flag application (8.5%) and castor oil massage are common."
+        }
+      ],
+      "beneficial_practices": [
+        {
+          "practice": "Massage",
+          "percentage": "83.1%"
+        },
+        {
+          "practice": "Rooming-in",
+          "percentage": "84.7%"
+        }
+      ],
+      "implications": "Highlights gap in health education and behavior change communication. Requires culturally sensitive approaches."
+    }
+  },
+  "immunization": {
+    "vaccines": [
+      {
+        "title": "Tetanus Toxoid for Pregnant Women",
+        "description": "Tetanus toxoid vaccination to protect mother and newborn from tetanus.",
+        "name": "TT",
+        "age_group": "pregnant_women",
+        "key_points": [
+          "Two doses during pregnancy",
+          "First dose at first ANC visit",
+          "Second dose 4 weeks later",
+          "Protects mother and baby"
+        ],
+        "guidelines": [
+          "Should be given to all pregnant women",
+          "Must be given at least 2 weeks before delivery",
+          "Should be recorded properly"
+        ],
+        "procedures": [
+          "Check immunization history",
+          "Administer in deltoid muscle",
+          "Record in mother's card",
+          "Schedule next dose"
+        ],
+        "warnings": [
+          "Check for allergies",
+          "Monitor for side effects",
+          "Ensure proper storage"
+        ]
+      }
+    ],
+    "digital_platform": {
+      "title": "U-WIN (Digital Vaccination Platform)",
+      "description": "Launched in October 2024 for complete digitization of vaccination services and maintaining comprehensive vaccination records for pregnant women and children from birth up to 17 years under the Universal Immunization Programme.",
+      "launch_date": "October 2024",
+      "key_points": [
+        "Complete digitization of vaccination services",
+        "Comprehensive vaccination records for pregnant women and children (0-17 years)",
+        "Aims to improve data accuracy, streamline record-keeping, and enhance program efficiency"
+      ]
+    }
+  },
+  "nutrition": {
+    "guidelines": [
+      {
+        "title": "Pregnancy Nutrition Guidelines",
+        "description": "Evidence\u2011based dietary requirements for pregnant women in India.",
+        "type": "pregnancy",
+        "key_points": [
+          "Extra +300 kcal/day second & third trimesters",
+          "\u226565 g protein/day (dal, eggs, milk, lean meat)",
+          "Daily IFA 100 mg iron + 0.5 mg folic acid \u00d7 100 days (National Iron + Initiative)",
+          "1 tablet calcium (500 mg) twice daily away from IFA",
+          "Adequate fluids \u22652.5 L, emphasize safe water"
+        ],
+        "guidelines": [
+          "3 balanced meals + 2 healthy snacks",
+          "Include at least 5 servings of fruit/vegetables",
+          "Weekly fish/omega\u20113 rich food unless contra\u2011indicated",
+          "Daily milk/curd for calcium & vitamin D",
+          "Limit caffeine <200 mg/day; avoid alcohol & tobacco"
+        ],
+        "taboos_and_misconceptions": [
+          {
+            "myth": "Papaya or pineapple always cause miscarriage",
+            "evidence": "Ripe fruit is safe; only unripe/raw papaya latex has uterotonic effect.",
+            "action": "Allow ripe papaya/pineapple in moderation for vitamins A & C."
+          },
+          {
+            "myth": "Eggs and meat make the baby 'big' and delivery difficult",
+            "evidence": "High\u2011quality protein prevents low\u2011birth\u2011weight.",
+            "action": "Encourage 1 egg/day if affordable; monitor weight gain."
+          },
+          {
+            "myth": "Pregnant women should avoid milk when they have cough/cold",
+            "evidence": "No scientific basis; calcium need rises in pregnancy.",
+            "action": "Continue milk/curd unless lactose\u2011intolerant."
+          }
+        ],
+        "procedures": [
+          "24\u2011h diet recall \u2192 identify gaps",
+          "Counsel with local food examples & portion sizes",
+          "Monthly weight check, MUAC if under\u2011weight",
+          "Link to take\u2011home rations / THR under ICDS where available"
+        ],
+        "warnings": [
+          "Avoid raw or under\u2011cooked meat, fish & eggs (listeriosis risk)",
+          "Restrict processed foods high in salt & trans\u2011fat",
+          "No herbal/home remedies without medical advice"
+        ],
+        "references": [
+          "https://nhm.gov.in/images/pdf/Nutrition/AMB-guidelines/Anemia-Mukt-Bharat-Operational-Guidelines-FINAL.pdf",
+          "https://www.who.int/publications/i/item/9789240008120",
+          "https://pmc.ncbi.nlm.nih.gov/articles/PMC6396620/",
+          "https://pmc.ncbi.nlm.nih.gov/articles/PMC6886130/"
+        ]
+      }
+    ],
+    "national_initiatives": [
+      {
+        "title": "Mission Poshan 2.0",
+        "description": "Flagship program addressing malnutrition, aiming to improve health, wellness, and immunity through community engagement, outreach, behavioral change, and advocacy. Focuses on maternal nutrition, infant/young child feeding, SAM/MAM treatment, and wellness promotion via AYUSH practices.",
+        "key_points": [
+          "Reduce wasting, underweight prevalence, stunting, and anemia",
+          "Supply of fortified rice (iron, folic acid, Vitamin B12) under TPDS, PM-POSHAN, ICDS"
+        ]
+      }
+    ]
+  },
+  "emergency_care": {
+    "emergencies": [
+      {
+        "title": "Severe Bleeding During Pregnancy",
+        "description": "Emergency management of severe bleeding during pregnancy. also known as Postpartum Hemorrhage (PPH) if occurring after birth. PPH is defined as blood loss \u2265 500 ml within 24 hours after birth (severe PPH \u2265 1000 ml) and is the leading cause of maternal death worldwide.",
+        "type": "bleeding",
+        "severity": "high",
+        "symptoms": [
+          "Heavy vaginal bleeding",
+          "Severe abdominal pain",
+          "Dizziness or fainting",
+          "Rapid pulse",
+          "Low blood pressure"
+        ],
+        "management": [
+          "Immediate referral to hospital",
+          "Keep woman lying down",
+          "Elevate legs if possible",
+          "Monitor vital signs",
+          "Arrange transportation",
+          "Active management of the third stage of labor (uterotonic, delayed cord clamping, controlled cord traction, uterine massage) is strongly recommended for prevention.",
+          "Health facilities should maintain a hemorrhage cart, rapid response team, and implement emergency release and massive transfusion protocols.",
+          "Community-based Misoprostol distribution by ASHAs/ANMs in remote areas (3x200 mcg tablets orally after delivery, with counseling and contraindication checks)."
+        ],
+        "procedures": [
+          "Assess amount of bleeding",
+          "Check vital signs",
+          "Prepare for referral",
+          "Contact emergency services",
+          "Quantitative measurement of cumulative blood loss."
+        ],
+        "warnings": [
+          "This is a life-threatening emergency",
+          "Do not delay referral",
+          "Monitor for signs of shock",
+          "Contraindications for Misoprostol distribution: previous Cesarean section, multiple pregnancy, severe PIH/anemia, cardiac disease."
+        ]
+      },
+      {
+        "title": "Eclampsia",
+        "description": "Severe complication of pregnancy characterized by seizures, requiring immediate and expert management.",
+        "type": "seizure",
+        "severity": "high",
+        "symptoms": [
+          "Seizures",
+          "High blood pressure"
+        ],
+        "management": [
+          "Magnesium sulfate (MgSO4) is the preferred anticonvulsant.",
+          "Antihypertensive drugs (Labetalol, Hydralazine, Nifedipine) to control blood pressure.",
+          "Definitive treatment is delivery of the baby.",
+          "Acute care during seizure: manage airway, breathing, circulation, ensure patient safety (administer oxygen, lateral decubitus position, suction oral secretions, cardiac monitoring, IV line, careful fluid management)."
+        ],
+        "procedures": [
+          "Administer MgSO4 as per protocol.",
+          "Control blood pressure.",
+          "Prepare for delivery."
+        ],
+        "warnings": [
+          "Policy ambiguities regarding MgSO4 classification ('level-T' drug vs. use at PHCs/CHCs) and poor inventory management can lead to stock-outs.",
+          "Requires immediate hospitalization and specialist care."
+        ],
+        "policy_practice_gap": {
+          "issues": [
+            "MgSO4 recognized as 'gold standard' but inconsistent availability/utilization",
+            "Policy ambiguities (classified as 'level-T' drug but permitted by trained nurses/midwives at PHCs/CHCs)",
+            "Poor inventory management leading to stock-outs"
+          ],
+          "recommendations": [
+            "Clearer guidelines",
+            "Stronger supply chain management"
+          ]
+        }
+      }
+    ]
+  },
+  "general_guidelines": {
+    "guidelines": [
+      {
+        "title": "ASHA Worker Responsibilities",
+        "description": "General responsibilities and guidelines for ASHA workers in maternal care.",
+        "category": "responsibilities",
+        "key_points": [
+          "Provide antenatal care",
+          "Assist in deliveries",
+          "Provide postnatal care",
+          "Conduct home visits",
+          "Maintain records",
+          "Create awareness and provide information on health determinants (nutrition, sanitation, hygiene)",
+          "Counsel women on birth preparedness, safe delivery, breastfeeding, immunization, contraception, infection prevention",
+          "Mobilize community and facilitate access to health services (immunization, ANC, PNC, ICDS)",
+          "Arrange escorts/accompany pregnant women/children to health facilities",
+          "Provide primary medical care for minor ailments and first aid",
+          "Serve as depot holders for essential provisions (ORS, IFA, chloroquine, DDKs, OCPs, condoms)",
+          "Inform sub-centers/PHCs about births, deaths, unusual health problems/disease outbreaks",
+          "Collaborate with Village Health & Sanitation Committee for village health plans",
+          "Promote construction of household toilets"
+        ],
+        "guidelines": [
+          "Should visit pregnant women regularly",
+          "Must maintain proper records",
+          "Should provide health education",
+          "Must refer when necessary",
+          "Selection criteria: women residents of village, preferably married, widowed, or divorced, and generally in the age group of 25 to 45 years. They should possess effective communication skills, leadership qualities, and be able to reach out to the community. A minimum formal education up to the Eighth Class is required, though this criterion may be relaxed if no suitable candidate with this qualification is available."
+        ],
+        "procedures": [
+          "Conduct home visits",
+          "Provide counseling",
+          "Maintain ASHA diary",
+          "Coordinate with health facilities"
+        ],
+        "warnings": [
+          "Do not perform procedures beyond training",
+          "Always refer in emergencies",
+          "Maintain confidentiality"
+        ],
+        "programs_involved": [
+          {
+            "title": "Home-Based Newborn Care (HBNC)",
+            "description": "ASHAs conduct six or seven home visits for newborns during the critical first 42 days after birth. For home deliveries, an additional visit is made on the day of birth.",
+            "visits": "6-7 home visits in first 42 days (additional for home deliveries)"
+          },
+          {
+            "title": "Home-Based Care for Young Child (HBYC)",
+            "description": "ASHAs undertake five additional home visits for children at the completion of 3, 6, 9, 12, and 15 months of age.",
+            "objectives": [
+              "Reduce child deaths and illnesses",
+              "Improve nutritional status of young children",
+              "Ensure proper growth and early childhood development"
+            ],
+            "visits": "5 home visits at 3, 6, 9, 12, 15 months"
+          },
+          {
+            "title": "Community-Based Misoprostol Distribution",
+            "description": "ASHAs play a vital role in distributing Misoprostol for PPH prevention in areas where institutional delivery is unlikely. They provide 3x200 mcg tablets orally to pregnant women in their 8th month for self-administration after delivery, with training and conditionalities.",
+            "role": "Distribute Misoprostol for PPH prevention"
+          }
+        ],
+        "incentivization_and_support": [
+          "Incentivized for various tasks (e.g., tracking high-risk pregnancies under e-PMSMA, distributing Misoprostol for PPH prevention).",
+          "Incentives linked to healthy outcomes, meeting conditionalities and reporting requirements."
+        ]
+      }
+    ]
+  },
+  "pregnancy_schemes": {
+    "maternal_schemes": [
+      {
+        "title": "Janani Shishu Suraksha Karyakram (JSSK)",
+        "description": "Launched in 2011 to eliminate out-of-pocket expenses for institutional delivery and neonatal care. Covers all pregnant women delivering in public health institutions and sick newborns.",
+        "eligibility": "All pregnant women delivering in public health institutions",
+        "benefits": [
+          "Free drugs and diagnostics",
+          "Free blood transfusion if needed",
+          "Free diet (3 days normal, 7 days C-section)",
+          "Free transport (home to facility, inter-facility, drop-back)",
+          "Covers all antenatal and postnatal pregnancy complications"
+        ],
+        "how_to_apply": [
+          "Register at public health institution",
+          "Present MCP card and ID proof",
+          "No advance payment required"
+        ],
+        "documents_needed": [
+          "MCP Card",
+          "ID proof (Aadhaar/PAN)",
+          "BPL card if applicable"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Zero out-of-pocket expenses",
+          "Covers all pregnancy complications",
+          "Available at all public health institutions"
+        ],
+        "guidelines": [
+          "Must inform pregnant women about JSSK benefits",
+          "Should assist in registration process",
+          "Must ensure transport arrangements"
+        ],
+        "procedures": [
+          "Help pregnant woman register at facility",
+          "Ensure all documents are submitted",
+          "Coordinate transport arrangements",
+          "Follow up on benefit delivery"
+        ],
+        "warnings": [
+          "Only available at public health institutions",
+          "Private facilities not covered",
+          "Must register before delivery"
+        ]
+      },
+      {
+        "title": "Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA)",
+        "description": "Free quality ANC (check\u2011ups, USG, lab tests) for all pregnant women on the 9th of every month at government facilities. Includes Extended PMSMA (e-PMSMA) launched in January 2022 to ensure quality ANC for women with high-risk pregnancies (HRP) and facilitates individual tracking of these HRP cases until a safe delivery is achieved. Financial incentivization is provided to identified HRP women and ASHAs for extra follow-up visits.",
+        "eligibility": "All pregnant women, esp. 2nd & 3rd trimester",
+        "benefits": [
+          "One assured ANC by specialist/MBBS doctor",
+          "Free diagnostics incl. ultrasonography",
+          "Identification & marking of high\u2011risk pregnancies"
+        ],
+        "how_to_apply": [
+          "Visit designated PMSMA clinic on the 9th of any month",
+          "Carry MCP card/ID proof"
+        ],
+        "documents_needed": [
+          "MCP Card",
+          "Government photo ID"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Free quality ANC on 9th of every month",
+          "Specialist doctor consultation",
+          "Free ultrasonography and diagnostics",
+          "Extended PMSMA (e-PMSMA) for high-risk pregnancies",
+          "Financial incentives for HRP women and ASHAs for follow-up"
+        ],
+        "guidelines": [
+          "Must inform pregnant women about PMSMA",
+          "Should assist in scheduling visits",
+          "Must ensure proper documentation",
+          "Must identify and track high-risk pregnancies"
+        ],
+        "procedures": [
+          "Help schedule PMSMA visit",
+          "Ensure MCP card is updated",
+          "Coordinate with government facility",
+          "Follow up on diagnostic results",
+          "Facilitate individual tracking of HRP cases",
+          "Provide financial incentives to HRP women and ASHAs for follow-up"
+        ],
+        "warnings": [
+          "Only available on 9th of each month",
+          "Government facilities only",
+          "Must carry proper identification",
+          "Ensure proper identification and management of HRP cases"
+        ],
+        "references": [
+          "https://pmsma.nhp.gov.in/",
+          "https://pmsma.nhp.gov.in/about-scheme/"
+        ],
+        "high_risk_pregnancy_categories": [
+          {
+            "sl_no": 1,
+            "category": "HIV"
+          },
+          {
+            "sl_no": 2,
+            "category": "Syphilis"
+          },
+          {
+            "sl_no": 3,
+            "category": "Severe anemia"
+          },
+          {
+            "sl_no": 4,
+            "category": "Pregnancy Induced Hypertension"
+          },
+          {
+            "sl_no": 5,
+            "category": "Gestational Diabetes Mellitus"
+          },
+          {
+            "sl_no": 6,
+            "category": "Hypothyroidism"
+          },
+          {
+            "sl_no": 7,
+            "category": "Tuberculosis"
+          },
+          {
+            "sl_no": 8,
+            "category": "Malaria"
+          },
+          {
+            "sl_no": 9,
+            "category": "Previous LSCS (Lower Segment Caesarean Section)"
+          },
+          {
+            "sl_no": 10,
+            "category": "Cephalo-pelvic Disproportion"
+          },
+          {
+            "sl_no": 11,
+            "category": "Bad Obstetric History"
+          },
+          {
+            "sl_no": 12,
+            "category": "Twins/Multiple pregnancy"
+          },
+          {
+            "sl_no": 13,
+            "category": "Hepatitis B"
+          },
+          {
+            "sl_no": 14,
+            "category": "Abnormal fetal heart rate"
+          },
+          {
+            "sl_no": 15,
+            "category": "Teenage Pregnancy"
+          },
+          {
+            "sl_no": 16,
+            "category": "High Fever"
+          },
+          {
+            "sl_no": 17,
+            "category": "RTI/STI (Reproductive Tract Infection/Sexually Transmitted Infection)"
+          },
+          {
+            "sl_no": 18,
+            "category": "H/O Still Birth (History of Still Birth)"
+          },
+          {
+            "sl_no": 19,
+            "category": "Congenital Malformation"
+          },
+          {
+            "sl_no": 20,
+            "category": "Negative Blood Group"
+          },
+          {
+            "sl_no": 21,
+            "category": "Early Primi (Early Primigravida)"
+          },
+          {
+            "sl_no": 22,
+            "category": "Elderly Primi (Elderly Primigravida)"
+          },
+          {
+            "sl_no": 23,
+            "category": "Grand Multipara"
+          },
+          {
+            "sl_no": 24,
+            "category": "Short Stature"
+          },
+          {
+            "sl_no": 25,
+            "category": "Others (specify)"
+          }
+        ]
+      },
+      {
+        "title": "Anemia\u2011Mukt Bharat / Intensified National Iron Plus Initiative (I\u2011NIPI)",
+        "description": "Six\u2011point strategy to reduce anemia among women, children & adolescents through prophylactic IFA, deworming, and social behavior change. Employs a comprehensive '6x6x6 strategy' encompassing six beneficiary age groups, six interventions, and six institutional mechanisms.",
+        "eligibility": "Pregnant & lactating women 15\u201349 y",
+        "benefits": [
+          "Daily IFA 100 mg/0.5 mg \u00d7 180 days",
+          "Bi\u2011annual albendazole (2nd trimester onward)",
+          "Point\u2011of\u2011care hemoglobin testing & treatment",
+          "Daily IFA 60 mg elemental iron + 0.5 mg folic acid",
+          "Use of sugar-coated IFA tablets for adherence",
+          "Digital methods for routine testing and treatment",
+          "Fortified rice and double fortified salt",
+          "IV iron formulations (FCM) for rapid iron replenishment"
+        ],
+        "how_to_apply": [
+          "IFA distributed during ANC or ASHA home visit",
+          "Hemoglobin test at sub\u2011centre or PHC"
+        ],
+        "documents_needed": [
+          "MCP Card"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Daily IFA supplementation for 180 days",
+          "Bi-annual deworming with albendazole",
+          "Point-of-care hemoglobin testing",
+          "Prophylactic IFA Supplementation (60mg elemental iron)",
+          "Periodic Deworming",
+          "Intensified Year-Round Behaviour Change Communication (BCC) Campaigns",
+          "Routine Testing and Treatment for Anemia (digital methods, point-of-care)",
+          "Mandatory Provision of Fortified Foods (fortified rice, double fortified salt)",
+          "Use of Intravenous (IV) Iron Sucrose/Ferric Carboxymaltose (FCM) for moderate to severe anemia"
+        ],
+        "guidelines": [
+          "Must ensure daily IFA consumption",
+          "Should monitor hemoglobin levels",
+          "Must provide deworming medication",
+          "Should promote delayed cord clamping in newborns",
+          "Must ensure consistent availability of essential drugs",
+          "Should address policy ambiguities and supply chain issues"
+        ],
+        "procedures": [
+          "Distribute IFA tablets",
+          "Conduct hemoglobin testing",
+          "Administer deworming medication",
+          "Monitor compliance and side effects",
+          "Implement 6x6x6 strategy across all levels",
+          "Conduct BCC campaigns",
+          "Utilize digital methods for testing",
+          "Ensure provision of fortified foods",
+          "Administer IV iron formulations as per protocol"
+        ],
+        "warnings": [
+          "IFA should be taken on empty stomach",
+          "Monitor for side effects",
+          "Ensure proper storage of tablets",
+          "Address policy ambiguities for drug classification (e.g., MgSO4)",
+          "Improve inventory management to prevent stock-outs"
+        ],
+        "references": [
+          "https://nhm.gov.in/images/pdf/Nutrition/AMB-guidelines/Anemia-Mukt-Bharat-Operational-Guidelines-FINAL.pdf"
+        ],
+        "coverage_data": {
+          "pregnant_women_ifa": "95.0%",
+          "lactating_women_ifa": "65.9%"
+        }
+      },
+      {
+        "title": "Kangaroo Mother Care (KMC) Initiative",
+        "description": "Promotes continuous skin\u2011to\u2011skin contact & exclusive breastfeeding for LBW/ preterm newborns \u22642000 g.",
+        "eligibility": "Stabilized newborns \u22642000 g",
+        "benefits": [
+          "Reduced neonatal mortality",
+          "Improved breastfeeding & thermoregulation"
+        ],
+        "how_to_apply": [
+          "Initiate KMC in facility once newborn stable",
+          "Continue at home with ASHA support"
+        ],
+        "documents_needed": [
+          "Birth record with birth\u2011weight"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Continuous skin-to-skin contact",
+          "Exclusive breastfeeding support",
+          "Reduced neonatal mortality"
+        ],
+        "guidelines": [
+          "Should initiate KMC immediately after birth",
+          "Must maintain continuous skin-to-skin contact",
+          "Should support exclusive breastfeeding"
+        ],
+        "procedures": [
+          "Teach KMC technique to mother",
+          "Monitor temperature and feeding",
+          "Provide emotional support",
+          "Follow up on KMC compliance"
+        ],
+        "warnings": [
+          "Only for stabilized newborns",
+          "Monitor for temperature instability",
+          "Ensure proper positioning"
+        ],
+        "references": [
+          "https://www.who.int/tools/elena/interventions/kangaroo-care-infants",
+          "https://www.who.int/publications/i/item/9789240071636"
+        ]
+      },
+      {
+        "title": "Surakshit Matritva Aashwasan (SUMAN)",
+        "description": "Launched in 2019, SUMAN is a significant initiative aimed at providing assured, dignified, respectful, and quality healthcare to every woman and newborn visiting public health facilities. The program operates with a zero-tolerance policy for denial of services, striving to eliminate all preventable maternal and newborn deaths.",
+        "eligibility": "Every woman and newborn visiting public health facilities",
+        "benefits": [
+          "Assured, dignified, respectful, and quality healthcare",
+          "Zero-tolerance policy for denial of services",
+          "Elimination of preventable maternal and newborn deaths"
+        ],
+        "how_to_apply": [
+          "Access services at public health facilities"
+        ],
+        "documents_needed": [],
+        "priority": "High",
+        "key_points": [
+          "Assured and quality healthcare",
+          "Zero-tolerance for service denial",
+          "Aims to eliminate preventable maternal and newborn deaths"
+        ],
+        "guidelines": [],
+        "procedures": [],
+        "warnings": [],
+        "references": []
+      },
+      {
+        "title": "Pradhan Mantri Matru Vandana Yojana (PMMVY)",
+        "description": "Maternity benefit program providing financial assistance of Rs. 5000/- to women for their first living child, subject to the fulfillment of certain conditionalities. This scheme aims to provide partial wage compensation for wage loss during pregnancy and childbirth and to provide conditions for safe delivery and good nutrition and feeding practices.",
+        "eligibility": "Women for their first living child",
+        "benefits": [
+          "Financial assistance of Rs. 5000/-",
+          "Partial wage compensation for wage loss",
+          "Support for safe delivery and good nutrition/feeding practices"
+        ],
+        "how_to_apply": [],
+        "documents_needed": [],
+        "priority": "High",
+        "key_points": [
+          "Financial assistance for first living child",
+          "Conditional cash transfer",
+          "Aims to reduce wage loss and promote healthy practices"
+        ],
+        "guidelines": [],
+        "procedures": [],
+        "warnings": []
+      }
+    ],
+    "child_schemes": [
+      {
+        "title": "Rashtriya Bal Swasthya Karyakram (RBSK)",
+        "description": "Targets children birth to 18 years. Detects and intervenes early for 4Ds: defects at birth, deficiencies, diseases, developmental delays/disabilities.",
+        "eligibility": "Children birth to 18 years",
+        "benefits": [
+          "Early detection of 4Ds",
+          "Free screening and treatment",
+          "Mobile health teams",
+          "Reduces disease burden and family expenses"
+        ],
+        "how_to_apply": [
+          "Attend mobile health team camps",
+          "Register at Anganwadi centers",
+          "School-based screening programs"
+        ],
+        "documents_needed": [
+          "Birth certificate",
+          "School ID (if applicable)",
+          "Anganwadi registration"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Covers 4Ds: Defects, Deficiencies, Diseases, Developmental delays",
+          "Mobile health teams available",
+          "Early intervention prevents complications"
+        ],
+        "guidelines": [
+          "Should identify children for screening",
+          "Must refer detected cases to specialists",
+          "Should follow up on treatment compliance"
+        ],
+        "procedures": [
+          "Organize screening camps",
+          "Identify children needing screening",
+          "Refer to appropriate specialists",
+          "Monitor treatment progress"
+        ],
+        "warnings": [
+          "Early detection is crucial",
+          "Delayed treatment can worsen conditions",
+          "Regular follow-up required"
+        ]
+      }
+    ],
+    "adolescent_schemes": [
+      {
+        "title": "Rashtriya Kishor Swasthya Karyakram (RKSK)",
+        "description": "Targets adolescents (10\u201319 years), married and unmarried. Focus on reproductive and sexual health, nutrition, mental health, substance misuse, gender-based violence, NCDs.",
+        "eligibility": "Adolescents 10-19 years",
+        "benefits": [
+          "Reproductive and sexual health services",
+          "Nutrition counseling",
+          "Mental health support",
+          "Substance misuse prevention",
+          "Gender-based violence prevention",
+          "NCD prevention"
+        ],
+        "how_to_apply": [
+          "Visit adolescent-friendly health clinics",
+          "Attend community outreach programs",
+          "Participate in school health programs"
+        ],
+        "documents_needed": [
+          "Age proof",
+          "School ID (if applicable)",
+          "Parental consent for minors"
+        ],
+        "priority": "Medium",
+        "key_points": [
+          "Delays marriage and reduces teen pregnancy",
+          "Prevents STIs and HIV",
+          "Addresses mental health issues",
+          "Promotes healthy behaviors"
+        ],
+        "guidelines": [
+          "Should provide confidential services",
+          "Must maintain adolescent privacy",
+          "Should involve parents when appropriate"
+        ],
+        "procedures": [
+          "Conduct adolescent health camps",
+          "Provide counseling services",
+          "Refer to specialists when needed",
+          "Maintain confidentiality"
+        ],
+        "warnings": [
+          "Maintain strict confidentiality",
+          "Handle sensitive issues carefully",
+          "Involve parents for minors"
+        ]
+      }
+    ],
+    "immunization_schemes": [
+      {
+        "title": "Universal Immunization Programme (UIP)",
+        "description": "Provides free vaccination against 13 life-threatening diseases for newborns and pregnant women across the country, with costs entirely borne by the central government.",
+        "eligibility": "Newborns and pregnant women",
+        "benefits": [
+          "Free vaccination against 13 diseases",
+          "Free vaccination against 12 diseases",
+          "Regular immunization sessions",
+          "Vaccine safety monitoring"
+        ],
+        "how_to_apply": [
+          "Attend immunization session at nearest health centre",
+          "Present MCP Card",
+          "Follow vaccination schedule"
+        ],
+        "documents_needed": [
+          "MCP Card",
+          "Birth certificate for newborns"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Covers 13 vaccine-preventable diseases",
+          "Covers 12 vaccine-preventable diseases",
+          "Free for all beneficiaries",
+          "Regular sessions at health centers"
+        ],
+        "guidelines": [
+          "Must ensure all children are vaccinated",
+          "Should maintain vaccination records",
+          "Must follow up on missed vaccinations"
+        ],
+        "procedures": [
+          "Organize immunization sessions",
+          "Maintain vaccination records",
+          "Follow up on defaulters",
+          "Monitor for adverse events"
+        ],
+        "warnings": [
+          "Vaccination schedule must be followed strictly",
+          "Monitor for vaccine reactions",
+          "Keep records updated"
+        ],
+        "diseases_covered": {
+          "nationally_covered": [
+            "Diphtheria",
+            "Pertussis (whooping cough)",
+            "Tetanus",
+            "Poliomyelitis",
+            "Measles",
+            "Rubella",
+            "Severe form of Childhood Tuberculosis",
+            "Hepatitis B",
+            "Meningitis & Pneumonia caused by Haemophilus Influenzae type B"
+          ],
+          "sub_nationally_covered": [
+            "Rotavirus diarrhoea",
+            "Pneumococcal Pneumonia",
+            "Japanese Encephalitis"
+          ],
+          "additional": [
+            "Pneumococcal disease"
+          ]
+        },
+        "milestones": [
+          "Elimination of polio in 2014",
+          "Elimination of maternal and neonatal tetanus in 2015"
+        ],
+        "new_vaccine_introductions": [
+          {
+            "vaccine": "Inactivated Polio Vaccine (IPV)",
+            "year": 2015,
+            "purpose": "Global Polio end-game strategy"
+          },
+          {
+            "vaccine": "Rotavirus Vaccine (RVV)",
+            "year": 2016,
+            "purpose": "Reduce mortality and morbidity from rotavirus diarrhea"
+          },
+          {
+            "vaccine": "Measles-Rubella (MR) Vaccine",
+            "year": 2017,
+            "purpose": "Achieve measles elimination and rubella control"
+          },
+          {
+            "vaccine": "Pneumococcal Conjugate Vaccine (PCV)",
+            "year": 2017,
+            "purpose": "Reduce infant mortality and morbidity caused by pneumococcal pneumonia"
+          },
+          {
+            "vaccine": "Tetanus and adult Diphtheria (Td) Vaccine",
+            "purpose": "Replaced TT vaccine to address waning immunity against diphtheria in older age groups"
+          }
+        ]
+      },
+      {
+        "title": "Introduction of Rotavirus Vaccine in UIP",
+        "description": "Oral rotavirus vaccination for children aged 6-32 weeks to prevent severe diarrhea.",
+        "eligibility": "Children aged 6-32 weeks",
+        "benefits": [
+          "Prevents severe rotavirus diarrhea",
+          "Reduces hospitalizations",
+          "Protects against dehydration"
+        ],
+        "how_to_apply": [
+          "Receive 5 oral drops at UIP session",
+          "Follow recommended schedule",
+          "Present MCP Card"
+        ],
+        "documents_needed": [
+          "MCP Card",
+          "Age proof"
+        ],
+        "priority": "High",
+        "key_points": [
+          "5 oral drops administered",
+          "Age-specific dosing schedule",
+          "Prevents severe diarrhea"
+        ],
+        "guidelines": [
+          "Must follow age-specific schedule",
+          "Should monitor for side effects",
+          "Must maintain proper records"
+        ],
+        "procedures": [
+          "Administer oral drops",
+          "Record vaccination details",
+          "Monitor for adverse events",
+          "Follow up on missed doses"
+        ],
+        "warnings": [
+          "Age-specific dosing critical",
+          "Monitor for side effects",
+          "Keep detailed records"
+        ]
+      }
+    ],
+    "family_planning_schemes": [
+      {
+        "title": "Compensation Package for IUD/Sterilization Acceptors",
+        "description": "Provides fixed compensation for IUD insertion and sterilization procedures.",
+        "eligibility": "Women undergoing IUD insertion or sterilization",
+        "benefits": [
+          "Fixed compensation per procedure",
+          "Free procedure at accredited facilities",
+          "Post-procedure care"
+        ],
+        "how_to_apply": [
+          "Submit procedure certificate at facility",
+          "Provide required documents",
+          "Receive compensation after procedure"
+        ],
+        "documents_needed": [
+          "Procedure certificate",
+          "ID proof",
+          "Bank account details"
+        ],
+        "priority": "Medium",
+        "key_points": [
+          "Compensation varies by procedure type",
+          "Available at accredited facilities",
+          "Post-procedure follow-up included"
+        ],
+        "guidelines": [
+          "Must ensure informed consent",
+          "Should provide pre-procedure counseling",
+          "Must maintain proper records"
+        ],
+        "procedures": [
+          "Provide pre-procedure counseling",
+          "Assist with documentation",
+          "Coordinate with facility",
+          "Follow up post-procedure"
+        ],
+        "warnings": [
+          "Informed consent mandatory",
+          "Only at accredited facilities",
+          "Proper documentation required"
+        ]
+      },
+      {
+        "title": "PPIUCD Incentive Scheme",
+        "description": "Provider incentive for post-partum IUD insertion to promote long-term contraception.",
+        "eligibility": "Women delivering at accredited facilities",
+        "benefits": [
+          "Provider incentive per insertion",
+          "Long-term contraception",
+          "Immediate post-delivery insertion"
+        ],
+        "how_to_apply": [
+          "Avail PPIUCD service at delivery facility",
+          "Provide consent for insertion",
+          "Receive post-insertion care"
+        ],
+        "documents_needed": [
+          "MCP Card",
+          "Service slip",
+          "Consent form"
+        ],
+        "priority": "Medium",
+        "key_points": [
+          "Immediate post-delivery insertion",
+          "Long-term contraception",
+          "Provider incentives available"
+        ],
+        "guidelines": [
+          "Must obtain informed consent",
+          "Should provide post-insertion care",
+          "Must maintain proper records"
+        ],
+        "procedures": [
+          "Counsel on PPIUCD benefits",
+          "Obtain informed consent",
+          "Coordinate with facility",
+          "Follow up post-insertion"
+        ],
+        "warnings": [
+          "Informed consent mandatory",
+          "Only at accredited facilities",
+          "Monitor for complications"
+        ]
+      }
+    ],
+    "disease_control_schemes": [
+      {
+        "title": "RNTCP (Tuberculosis)",
+        "description": "Free DOTS therapy for tuberculosis patients with persistent cough.",
+        "eligibility": "Patients with persistent cough",
+        "benefits": [
+          "Free DOTS therapy",
+          "Regular monitoring",
+          "Contact screening"
+        ],
+        "how_to_apply": [
+          "Register at DOTS centre",
+          "Submit sputum sample",
+          "Follow treatment schedule"
+        ],
+        "documents_needed": [
+          "ID proof",
+          "Sputum test results",
+          "Treatment card"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Free DOTS therapy",
+          "Regular sputum monitoring",
+          "Contact screening included"
+        ],
+        "guidelines": [
+          "Must ensure treatment completion",
+          "Should monitor for side effects",
+          "Must screen contacts"
+        ],
+        "procedures": [
+          "Identify TB suspects",
+          "Refer for sputum testing",
+          "Monitor treatment compliance",
+          "Screen contacts"
+        ],
+        "warnings": [
+          "Treatment completion crucial",
+          "Monitor for drug resistance",
+          "Screen all contacts"
+        ]
+      },
+      {
+        "title": "NPCDCS: Cancer, Diabetes, CVD & Stroke Control",
+        "description": "Free screening and subsidized treatment for non-communicable diseases.",
+        "eligibility": "Age >= 30 years",
+        "benefits": [
+          "Free screening for NCDs",
+          "Subsidized treatment",
+          "Lifestyle counseling"
+        ],
+        "how_to_apply": [
+          "Visit NCD clinic",
+          "Present ID proof",
+          "Undergo screening"
+        ],
+        "documents_needed": [
+          "ID proof",
+          "Age proof"
+        ],
+        "priority": "High",
+        "key_points": [
+          "Free screening for NCDs",
+          "Early detection important",
+          "Lifestyle modification support"
+        ],
+        "guidelines": [
+          "Should screen all eligible individuals",
+          "Must refer positive cases",
+          "Should provide lifestyle counseling"
+        ],
+        "procedures": [
+          "Organize screening camps",
+          "Conduct risk assessments",
+          "Refer positive cases",
+          "Provide lifestyle counseling"
+        ],
+        "warnings": [
+          "Early detection crucial",
+          "Lifestyle modification important",
+          "Regular follow-up required"
+        ]
+      }
+    ],
+    "financial_support_schemes": [
+      {
+        "title": "Free Drugs Service Initiative (FDSI)",
+        "description": "Government of India provides financial support to ensure essential drugs are available at no cost to patients visiting public healthcare facilities. Contributes to reduction in Out-of-Pocket Expenditure (OOPE).",
+        "benefits": [
+          "Free essential drugs at public healthcare facilities"
+        ],
+        "key_points": [
+          "Reduces Out-of-Pocket Expenditure (OOPE)"
+        ],
+        "references": []
+      },
+      {
+        "title": "Free Diagnostics Service Initiative (FDSI)",
+        "description": "Government of India provides financial support to ensure essential diagnostics are available at no cost to patients visiting public healthcare facilities. Contributes to reduction in Out-of-Pocket Expenditure (OOPE).",
+        "benefits": [
+          "Free essential diagnostics at public healthcare facilities"
+        ],
+        "key_points": [
+          "Reduces Out-of-Pocket Expenditure (OOPE)"
+        ],
+        "references": []
+      }
+    ]
+  },
+  "clinical_protocols": {
+    "antenatal_care": {
+      "title": "Comprehensive Antenatal Care Protocol",
+      "description": "Detailed clinical guidelines for antenatal care including registration, visits, examinations, laboratory tests, supplementation, management of common issues, and counseling.",
+      "registration": {
+        "timing": "As soon as pregnancy suspected (\u226412 weeks)",
+        "requirements": [
+          "Keep antenatal card + PHC record",
+          "Complete medical history",
+          "Calculate EDD (LMP + 9 months + 7 days)"
+        ]
+      },
+      "visits": [
+        {
+          "visit": "1st Visit",
+          "timing": "Early (\u226412 weeks)",
+          "procedures": [
+            "Complete medical history",
+            "Physical examination",
+            "Laboratory tests",
+            "IFA supplementation"
+          ]
+        },
+        {
+          "visit": "2nd Visit",
+          "timing": "26 weeks",
+          "procedures": [
+            "Monitor weight gain",
+            "Check blood pressure",
+            "Assess fetal growth",
+            "Screen for complications"
+          ]
+        },
+        {
+          "visit": "3rd Visit",
+          "timing": "32 weeks",
+          "procedures": [
+            "Continue monitoring",
+            "Assess fetal position",
+            "Prepare for delivery"
+          ]
+        },
+        {
+          "visit": "4th Visit",
+          "timing": "36-40 weeks",
+          "procedures": [
+            "Pelvic assessment",
+            "Final delivery preparation",
+            "Birth plan discussion"
+          ]
+        }
+      ],
+      "examination": {
+        "each_visit": [
+          "Weight measurement",
+          "Blood pressure",
+          "Pallor assessment",
+          "Edema check",
+          "Respiratory rate",
+          "Breast examination"
+        ],
+        "vaginal_exam": [
+          "Confirm pregnancy",
+          "Check for discharge",
+          "Assess cervix"
+        ],
+        "abdominal_exam": [
+          "Assess fetal growth",
+          "Determine fetal lie",
+          "Measure fundal height"
+        ],
+        "pelvic_assessment": "At 36 weeks (CPD assessment)"
+      },
+      "laboratory_tests": [
+        "Hemoglobin estimation",
+        "Blood grouping",
+        "Urine examination (sugar, protein, bacteriuria)",
+        "Screening for Gestational Diabetes Mellitus (GDM)",
+        "Screening for Thyroid disorders",
+        "Screening for HIV",
+        "Screening for Syphilis"
+      ],
+      "supplementation": {
+        "iron_folic_acid": {
+          "prophylactic": "1 tablet daily \u00d7 100 days (recently shifted from 100mg to 60mg elemental iron)",
+          "therapeutic": "2 tablets daily \u00d7 100 days if Hb < 11 g/dl",
+          "severe_anemia": "Injectable iron if Hb < 7 g/dl"
+        },
+        "tetanus_toxoid": {
+          "schedule": "2 doses 1 month apart starting post-1st trimester",
+          "booster": "If previously immunized",
+          "alternative": "Tetanus and adult Diphtheria (Td) vaccination"
+        },
+        "calcium": "1 tablet (500 mg) twice daily away from IFA"
+      },
+      "common_issues": [
+        {
+          "issue": "Hyperemesis",
+          "action": "Admit and hydrate"
+        },
+        {
+          "issue": "Severe anemia",
+          "action": "Double IFA + albendazole"
+        },
+        {
+          "issue": "BP > 140/90",
+          "action": "Watch closely"
+        },
+        {
+          "issue": "BP > 160/110",
+          "action": "Nifedipine + refer"
+        },
+        {
+          "issue": "Heartburn",
+          "action": "Cold milk/antacid"
+        },
+        {
+          "issue": "UTI",
+          "action": "Treat appropriately"
+        },
+        {
+          "issue": "Bleeding < 20 weeks",
+          "action": "No vaginal examination, suspect abortion"
+        },
+        {
+          "issue": "Bleeding > 20 weeks",
+          "action": "APH - refer immediately"
+        },
+        {
+          "issue": "Low fetal movement",
+          "action": "Check fetal heart rate"
+        }
+      ],
+      "counseling": {
+        "birth_preparation": "Prepare for delivery, discuss birth plan",
+        "danger_signs": [
+          "Bleeding",
+          "Convulsions",
+          "Severe pain",
+          "Leaking fluid",
+          "Labour > 12 hours",
+          "Decreased fetal movement",
+          "High fever/dyspnea"
+        ],
+        "nutrition": "+300 kcal/day (second & third trimesters), \u226565 g protein/day, adequate fluids \u22652.5 L",
+        "rest": "8 hours sleep + 2 hours rest",
+        "lifestyle": "No alcohol/smoking, medications only if prescribed"
+      }
+    },
+    "labour_delivery": {
+      "title": "Labour and Delivery Protocol",
+      "description": "Comprehensive guidelines for managing labour and delivery safely, including stages of labor, monitoring, support, delivery procedures, cord management, active third stage management, and essential newborn care.",
+      "stages": [
+        {
+          "stage": "1st Stage",
+          "duration": "\u224812 hours",
+          "description": "Onset to 10 cm dilation"
+        },
+        {
+          "stage": "2nd Stage",
+          "duration": "\u22482 hours",
+          "description": "Delivery of baby"
+        },
+        {
+          "stage": "3rd Stage",
+          "duration": "\u226430 minutes",
+          "description": "Placenta delivery"
+        }
+      ],
+      "monitoring": {
+        "partograph": {
+          "fetal_heart_rate": "Every 30 minutes",
+          "dilation": "Every 4 hours",
+          "vital_signs": "BP/Pulse every 30 minutes"
+        },
+        "alert_line": "Watch closely",
+        "action_line": "Intervene/refer"
+      },
+      "support": [
+        "Maintain hygiene",
+        "Ensure hydration",
+        "Provide reassurance",
+        "Avoid routine enema",
+        "Avoid fundal pressure",
+        "Avoid routine episiotomy"
+      ],
+      "delivery": {
+        "head_control": "Control head delivery",
+        "nuchal_cord": {
+          "loose": "Slip over head",
+          "tight": "Clamp and cut"
+        },
+        "episiotomy": "Only if indicated (instrumental, fetal distress, previous 3/4\u00b0 tear)"
+      },
+      "cord_management": {
+        "clamping": "Clamp at 2 & 5 cm after 2-3 minutes (delayed cord clamping)",
+        "cutting": "Cut sterile",
+        "care": "Leave stump dry"
+      },
+      "active_third_stage": {
+        "purpose": "PPH prevention",
+        "medication": "Misoprostol 600 \u00b5g PO/SL (alternative: Oxytocin 10 U IM)",
+        "procedures": [
+          "Controlled Cord Traction",
+          "Uterine massage every 15 minutes \u00d7 2 hours"
+        ]
+      },
+      "essential_newborn_care": [
+        "Dry thoroughly",
+        "Wrap in clean cloth",
+        "Skin-to-skin contact",
+        "Maintain room temperature \u226525\u00b0C",
+        "Breastfeed within 1 hour",
+        "Delay bath \u22656 hours",
+        "Clean eyes daily",
+        "Injection Vitamin K"
+      ]
+    },
+    "postpartum_care": {
+      "title": "Postpartum Care Protocol",
+      "description": "Comprehensive care guidelines for mother and baby after delivery, covering observation, postnatal visits, identification of maternal danger signs, and counseling.",
+      "observation": {
+        "duration": "\u226524 hours",
+        "monitoring": [
+          "Uterus tone",
+          "Bleeding",
+          "Blood pressure",
+          "Pulse",
+          "Temperature"
+        ]
+      },
+      "visits": [
+        {
+          "timing": "<24 hours",
+          "location": "In-facility"
+        },
+        {
+          "timing": "Day 3",
+          "location": "Home visit"
+        },
+        {
+          "timing": "Day 7",
+          "location": "Home visit"
+        },
+        {
+          "timing": "Extra visits",
+          "condition": "If danger signs present"
+        }
+      ],
+      "maternal_danger_signs": {
+        "description": "Refer immediately if present",
+        "signs": [
+          "Heavy bleeding (>2 pads/30 minutes)",
+          "Convulsions",
+          "Fever and weakness",
+          "Severe abdominal pain",
+          "Foul lochia",
+          "Dyspnea"
+        ]
+      },
+      "counseling": {
+        "hygiene": [
+          "Wash perineum anterior to posterior",
+          "Change pads every 4-6 hours"
+        ],
+        "rest": "No heavy work for 6 weeks",
+        "sexual_activity": "No sex \u22646 weeks",
+        "nutrition": "+550 kcal/day (first 6 months)",
+        "breastfeeding": "Exclusive breastfeeding for 6 months",
+        "family_planning": "Discuss options",
+        "birth_registration": "Ensure registration"
+      }
+    },
+    "neonatal_care_resuscitation": {
+      "title": "Neonatal Care and Resuscitation Protocol",
+      "description": "Comprehensive guidelines for newborn care and emergency resuscitation, including routine care, identification of danger signs, management of low birth weight babies, infection management, birth asphyxia resuscitation steps, post-resuscitation care, and practices to avoid.",
+      "routine_care": [
+        "Dry in warm towel",
+        "Second dry wrap",
+        "Skin-to-skin contact",
+        "Delay cord clamping 2-3 minutes",
+        "Initiate breastfeeding \u22641 hour",
+        "Maintain warmth (>25\u00b0C)",
+        "No stump applications"
+      ],
+      "danger_signs": {
+        "description": "Refer immediately if present",
+        "signs": [
+          "Poor feeding",
+          "Fever",
+          "Fast breathing (\u226560/min)",
+          "Cold body",
+          "Convulsions",
+          "Lethargy",
+          ">10 pustules",
+          "Blood in stool"
+        ]
+      },
+      "low_birth_weight": {
+        "criteria": "<2.5 kg",
+        "home_visits": [
+          "Day 3",
+          "Day 7",
+          "Day 14",
+          "Day 21",
+          "Day 28"
+        ],
+        "care": [
+          "Frequent breastfeeding",
+          "Keep warm",
+          "Dry cord care"
+        ]
+      },
+      "infection_management": {
+        "medication": "Co-trimoxazole 5 days",
+        "topical": "GV paint for cord/skin",
+        "referral": "If no improvement"
+      },
+      "birth_asphyxia": {
+        "criteria": "Apgar <7 at 1 minute",
+        "resuscitation_steps": [
+          {
+            "step": "Open airway",
+            "action": "Suction mouth \u2192 nose"
+          },
+          {
+            "step": "Tactile stimulation",
+            "action": "Gentle stimulation"
+          },
+          {
+            "step": "If HR < 100",
+            "action": "Bag-mask 40 breaths per minute"
+          },
+          {
+            "step": "If HR < 60",
+            "action": "Chest compressions 90/min (3:1 ratio)"
+          }
+        ],
+        "medications": [
+          {
+            "drug": "Adrenaline",
+            "dose": "0.1 ml/kg 1:10,000 IV"
+          },
+          {
+            "drug": "NaHCO\u2083",
+            "dose": "2 ml/kg slow IV if metabolic acidosis"
+          },
+          {
+            "drug": "Normal Saline",
+            "dose": "10 ml/kg IV if shock"
+          }
+        ],
+        "stopping_criteria": [
+          "No heartbeat for 15 minutes",
+          "No breathing for 20-30 minutes despite efforts"
+        ]
+      },
+      "post_resuscitation": [
+        "Continue skin-to-skin contact",
+        "Monitor HR/RR/temperature hourly",
+        "Early breastfeeding",
+        "Refer if distress persists"
+      ],
+      "avoid": [
+        "Routine suction",
+        "Slapping",
+        "Unskilled intubation"
+      ]
+    }
+  },
+  "resources": {
+    "authoritative_links": [
+      {
+        "title": "WHO 2016 Antenatal Care Recommendations",
+        "url": "https://www.who.int/publications/b/59023"
+      },
+      {
+        "title": "JSSK Operational Guidelines",
+        "url": "https://nhm.gov.in/showlink.php?id=178"
+      },
+      {
+        "title": "National Iron Plus Initiative Overview",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6886130/"
+      },
+      {
+        "title": "Food Taboos in Indian Pregnancy \u2013 Karnataka Study",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6396620/"
+      },
+      {
+        "title": "PMSMA Official Portal",
+        "url": "https://pmsma.nhp.gov.in/"
+      },
+      {
+        "title": "National Health Mission (NHM) Overview",
+        "url": "https://nhm.gov.in/index1.php?lang=1&level=2&lid=1"
+      },
+      {
+        "title": "NHM RMNCAH+N Strategy",
+        "url": "https://nhm.gov.in/index1.php?lang=1&level=2&lid=1&sublinkid=1039"
+      },
+      {
+        "title": "Sample Registration System (SRS) by Registrar General of India (RGI) 2020",
+        "url": "https://censusindia.gov.in/census_and_nss_tables/sample_registration_system/SRS-Statistical-Report-2020.pdf"
+      },
+      {
+        "title": "UN Maternal Mortality Estimation Inter-Agency Group report (UN-MMIEG 1990-2020)",
+        "url": "https://www.who.int/publications/i/item/9789240068711"
+      },
+      {
+        "title": "Ministry of Health & Family Welfare (MOHFW) - Maternal Health",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Maternal-Health"
+      },
+      {
+        "title": "e-PMSMA Guidelines",
+        "url": "https://pmsma.nhp.gov.in/wp-content/uploads/2022/01/e-PMSMA_Guidelines.pdf"
+      },
+      {
+        "title": "Ministry of Health and Family Welfare - High Risk Pregnancy Categories",
+        "url": "https://main.mohfw.gov.in/sites/default/files/High%20Risk%20Pregnancy%20Categories.pdf"
+      },
+      {
+        "title": "Anemia Mukt Bharat Operational Guidelines",
+        "url": "https://nhm.gov.in/images/pdf/Nutrition/AMB-guidelines/Anemia-Mukt-Bharat-Operational-Guidelines-FINAL.pdf"
+      },
+      {
+        "title": "NITI Aayog - Anemia Mukt Bharat",
+        "url": "https://www.niti.gov.in/anemia-mukt-bharat"
+      },
+      {
+        "title": "WHO - Antenatal Care Recommendations",
+        "url": "https://www.who.int/publications/i/item/9789240008120"
+      },
+      {
+        "title": "Journal of Clinical and Diagnostic Research - Management of Hypertension in Pregnancy",
+        "url": "https://www.jcdr.net/articles/Vol10Issue12/RCDT/10.7860/JCDR/2016/22615.8953.pdf"
+      },
+      {
+        "title": "IPHS 2022 Volume III - Labor Room",
+        "url": "https://nhm.gov.in/nhm_docs/IPHS_2022_Volume_III.pdf"
+      },
+      {
+        "title": "WHO - Postpartum Hemorrhage",
+        "url": "https://www.who.int/news-room/fact-sheets/detail/postpartum-haemorrhage"
+      },
+      {
+        "title": "American College of Obstetricians and Gynecologists (ACOG) - PPH",
+        "url": "https://www.acog.org/clinical/clinical-guidance/practice-bulletin/articles/2017/04/postpartum-hemorrhage"
+      },
+      {
+        "title": "MOHFW - Misoprostol Distribution Guidelines",
+        "url": "https://main.mohfw.gov.in/sites/default/files/Guidelines%20for%20Misoprostol%20Distribution.pdf"
+      },
+      {
+        "title": "WHO - Eclampsia Management",
+        "url": "https://www.who.int/publications/i/item/9789241549922"
+      },
+      {
+        "title": "Journal of Obstetrics and Gynecology of India - MgSO4 in Eclampsia",
+        "url": "https://link.springer.com/article/10.1007/s13224-013-0490-x"
+      },
+      {
+        "title": "WHO - Postnatal Care for Mothers and Newborns",
+        "url": "https://www.who.int/publications/i/item/9789241506642"
+      },
+      {
+        "title": "WHO - Essential Newborn Care",
+        "url": "https://www.who.int/publications/i/item/9789240008120"
+      },
+      {
+        "title": "MOHFW - Navjaat Shishu Suraksha Karyakram (NSSK)",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Child-Health/Navjaat-Shishu-Suraksha-Karyakram-NSSK"
+      },
+      {
+        "title": "Journal of Family Medicine and Primary Care - Traditional Newborn Care Practices",
+        "url": "https://www.jfmpc.com/article.asp?issn=2249-4863;year=2018;volume=7;issue=5;spage=1101;epage=1106;aulast=Rao"
+      },
+      {
+        "title": "UNICEF - Immunization in India",
+        "url": "https://www.unicef.org/india/what-we-do/immunization"
+      },
+      {
+        "title": "MOHFW - Universal Immunization Programme (UIP)",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Child-Health/Universal-Immunization-Programme-UIP"
+      },
+      {
+        "title": "MOHFW - RBSK Guidelines",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Child-Health/Rashtriya-Bal-Swasthya-Karyakram-RBSK"
+      },
+      {
+        "title": "MOHFW - RKSK Guidelines",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Adolescent-Health/Rashtriya-Kishor-Swasthya-Karyakram-RKSK"
+      },
+      {
+        "title": "MOHFW - Mission Poshan 2.0",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Nutrition/Mission-Poshan-2.0"
+      },
+      {
+        "title": "MOHFW - ASHA Programme",
+        "url": "https://main.mohfw.gov.in/Major-Programmes/Community-Processes/ASHA-Programme"
+      },
+      {
+        "title": "MOHFW - HBNC and HBYC Guidelines",
+        "url": "https://main.mohfw.gov.in/sites/default/files/HBNC%20and%20HBYC%20Guidelines.pdf"
+      },
+      {
+        "title": "Tamil Nadu Health and Family Welfare Department - Amma Baby Care Kit",
+        "url": "https://www.tnhealth.tn.gov.in/index.php/public-health/maternal-child-health/amma-baby-care-kit"
+      },
+      {
+        "title": "Tamil Nadu Health and Family Welfare Department - Dr. Muthulakshmi Maternity Benefit Scheme",
+        "url": "https://www.tnhealth.tn.gov.in/index.php/public-health/maternal-child-health/dr-muthulakshmi-maternity-benefit-scheme"
+      },
+      {
+        "title": "Greater Chennai Corporation - Public Hospitals",
+        "url": "https://chennaicorporation.gov.in/gcc/online-services/health/hospitals/"
+      },
+      {
+        "title": "Greater Chennai Corporation - PHCs/UPHCs",
+        "url": "https://chennaicorporation.gov.in/gcc/online-services/health/primary-health-centers/"
+      },
+      {
+        "title": "RED Ambulances Chennai",
+        "url": "https://redambulances.com/ambulance-service-in-chennai/"
+      },
+      {
+        "title": "VMEDO Ambulance Service Chennai",
+        "url": "https://vmedo.com/ambulance-service-chennai/"
+      }
+    ]
+  },
+  "healthcare_infrastructure": {
+    "title": "Healthcare Infrastructure",
+    "description": "Overview of India's healthcare infrastructure supporting maternal and child health, including public health standards, transformation to Health and Wellness Centres, and a case study of Chennai.",
+    "public_health_standards": {
+      "title": "Indian Public Health Standards (IPHS) 2022",
+      "description": "Detailed specifications for planning, maintenance, and functioning of public healthcare infrastructure, ensuring affordable and accessible health services across different facility levels.",
+      "facility_levels": [
+        "Sub-District Hospitals",
+        "District Hospitals",
+        "Community Health Centres (CHCs)",
+        "Primary Health Centres (PHCs)",
+        "Sub-Health Centres"
+      ]
+    },
+    "health_wellness_centres": {
+      "title": "Transformation to Health and Wellness Centres (HWCs)",
+      "description": "Existing PHCs and Sub-Health Centres are being transformed into HWCs as part of the Ayushman Bharat scheme. They deliver comprehensive primary healthcare with a focus on MCH and reproductive healthcare.",
+      "focus_areas": [
+        "Pregnancy and childbirth",
+        "Neonatal and infant healthcare",
+        "Childhood and adolescent healthcare",
+        "Reproductive healthcare"
+      ]
+    },
+    "case_study_chennai": {
+      "title": "Case Study: Maternal and Child Health Services in Chennai, Tamil Nadu",
+      "description": "Tamil Nadu has implemented state-specific schemes complementing national programs, exemplified by Chennai's multi-layered healthcare delivery.",
+      "state_specific_schemes": [
+        {
+          "title": "Amma Baby Care Kit",
+          "description": "Kit valued at Rs. 1000 provided to all babies born in government institutions (launched 2015). Contains 16 items to improve hygiene of postnatal mothers and newborns.",
+          "value": "Rs. 1000",
+          "items": [
+            "Baby towel",
+            "Dress",
+            "Bed",
+            "Protective net",
+            "Napkins",
+            "Oil",
+            "Shampoo",
+            "Soap",
+            "Nail clipper",
+            "Rattle",
+            "Toy",
+            "Liquid hand wash",
+            "Bathing soap",
+            "Traditional herbal preparation ('sowbagya sundi lehiyam')",
+            "Kit bag"
+          ]
+        },
+        {
+          "title": "Dr. Muthulakshmi Maternity Benefit Scheme",
+          "description": "Enhanced financial assistance to poor pregnant mothers from Rs. 12,000 to Rs. 18,000. Aims for optimal nutrition and wage loss compensation, reducing MMR and IMR. Disbursed in installments, strategically linked to key health behaviors.",
+          "total_benefit": "Rs. 18,000",
+          "installments": [
+            {
+              "amount": "Rs. 2,000",
+              "condition": "Antenatal registration on or before 12 weeks",
+              "installment_no": "I"
+            },
+            {
+              "amount": "Rs. 2,000",
+              "condition": "Completion of third month (First Nutrition Kit)",
+              "type": "kind_benefit"
+            },
+            {
+              "amount": "Rs. 2,000",
+              "condition": "After 4 months",
+              "installment_no": "II"
+            },
+            {
+              "amount": "Rs. 2,000",
+              "condition": "Second Nutrition Kit",
+              "type": "kind_benefit"
+            },
+            {
+              "amount": "Rs. 4,000",
+              "condition": "After delivery",
+              "installment_no": "III"
+            },
+            {
+              "amount": "Rs. 4,000",
+              "condition": "After completion of all 3rd doses of OPV/Rota/Pentavalent and 2 doses of IPV",
+              "installment_no": "IV"
+            },
+            {
+              "amount": "Rs. 2,000",
+              "condition": "After completion of Measles Rubella vaccination (9th-12th month of infant)",
+              "installment_no": "V"
+            }
+          ],
+          "nutrition_kit_components": [
+            "Health Mix Powder for Pregnant Mothers: 1 kg",
+            "IFA Syrup: 3 Nos",
+            "Dates: 1 Kg",
+            "Protein biscuits: 500 gms",
+            "Aavin Ghee: 500gms",
+            "T.Albendazole: 3 Nos",
+            "Towel: 1 Nos"
+          ]
+        }
+      ],
+      "public_private_facilities": {
+        "public_hospitals": [
+          {
+            "name": "Institute of Child Health and Hospital for Children",
+            "type": "specialized"
+          },
+          {
+            "name": "Govt Kasturba Hospital for Women",
+            "type": "specialized"
+          },
+          {
+            "name": "R.S.R.M. Lying-In Hospital",
+            "type": "specialized"
+          },
+          {
+            "name": "Government General Hospital",
+            "type": "general"
+          },
+          {
+            "name": "Govt Stanley Hospital",
+            "type": "general"
+          },
+          {
+            "name": "Govt Royapettah Hospital",
+            "type": "general"
+          }
+        ],
+        "primary_health_centres": "Network of PHCs and UPHCs managed by Greater Chennai Corporation.",
+        "private_hospitals": [
+          {
+            "name": "Motherhood Hospital",
+            "services": [
+              "NICUs (24/7)",
+              "fetal medicine",
+              "pregnancy/delivery/immunization packages",
+              "home services (vaccinations, video consultations)"
+            ]
+          },
+          {
+            "name": "Rainbow Children's Hospital",
+            "services": [
+              "NICUs (24/7)",
+              "fetal medicine",
+              "pregnancy/delivery/immunization packages",
+              "home services (vaccinations, video consultations)"
+            ]
+          }
+        ]
+      },
+      "emergency_medical_services": {
+        "government_services": [
+          {
+            "name": "108 Emergency Ambulance Service",
+            "description": "Free, 24/7 emergency response (medical, police, fire). Ambulances with Basic Life Support (BLS) and Advanced Life Support (ALS) facilities and staffed by trained paramedics.",
+            "contact": "108"
+          },
+          {
+            "name": "102 Ambulance Service",
+            "description": "Primarily focused on providing transport for pregnant women, newborns, and patients requiring institutional care.",
+            "contact": "102"
+          }
+        ],
+        "private_services": [
+          {
+            "name": "RED Ambulances",
+            "services": [
+              "ALS",
+              "Cardiac Ambulances equipped with ventilators and defibrillators",
+              "air ambulance services",
+              "real-time tracking"
+            ]
+          },
+          {
+            "name": "VMEDO",
+            "services": [
+              "ALS",
+              "Cardiac Ambulances equipped with ventilators and defibrillators",
+              "air ambulance services",
+              "real-time tracking"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -195,7 +195,9 @@ class ChatViewModel @Inject constructor(
                         // Initialize models and memorize content
                         _initializationMessage.value = "Loading ASHA guidelines..."
                         llmDataSource.initializeModels()
-                        llmDataSource.memorizeContent(File(llmDir, "asha-kb.pdf").path)
+                        val jsonFile = File(llmDir, "asha_guidelines.json")
+                        val pdfFile = File(llmDir, "asha-kb.pdf")
+                        llmDataSource.memorizeContent(jsonFile.path, pdfFile.path)
                         
                         _isLLMInitialized.value = true
                         Log.d("ChatViewModel", "LLM initialization successful, navigating to chat")
@@ -231,8 +233,10 @@ class ChatViewModel @Inject constructor(
     private fun initializeGuidelineContent() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val pdfFile = File(context.getExternalFilesDir("llm"), "asha-kb.pdf")
-                llmDataSource.memorizeContent(pdfFile.path)
+                val llmDir = context.getExternalFilesDir("llm")
+                val jsonFile = File(llmDir, "asha_guidelines.json")
+                val pdfFile = File(llmDir, "asha-kb.pdf")
+                llmDataSource.memorizeContent(jsonFile.path, pdfFile.path)
                 Log.d("ChatViewModel", "Successfully initialized ASHA guidelines content")
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error initializing guidelines content: ${e.message}")
@@ -330,31 +334,89 @@ class ChatViewModel @Inject constructor(
                 }
                 Log.d("ChatViewModel", "Message for LLM: $messageForLLM")
 
-                // Generate response synchronously
-                Log.d("ChatViewModel", "Generating response from LLM")
-                val response = llmDataSource.generateResponse(messageForLLM)
-                Log.d("ChatViewModel", "Received response from LLM")
-                
-                // Translate response if needed
-                val translatedResponse = if (currentLanguage != "en") {
-                    Log.d("ChatViewModel", "Translating response to $currentLanguage")
-                    translationService.translate(response)
-                } else {
-                    response
+                // Phase 1: Generate instant response without vector search (immediate)
+                Log.d("ChatViewModel", "Generating instant response immediately")
+                val instantResponse = try {
+                    llmDataSource.generateInstantResponse(messageForLLM)
+                } catch (e: Exception) {
+                    Log.e("ChatViewModel", "Error generating instant response: ${e.message}")
+                    "I'm here to help with ASHA guidelines. Let me search for specific details for you.\n\n**💡 AI Generated Response**"
                 }
-                Log.d("ChatViewModel", "Final translated response: ${translatedResponse.take(100)}...")
 
-                // Update messages with the response
-                val finalMessages = _messages.value.toMutableList()
-                if (finalMessages.isNotEmpty() && finalMessages.last().isLoading) {
-                    finalMessages.removeAt(finalMessages.lastIndex)
+                // Update UI with instant response immediately
+                val instantMessages = _messages.value.toMutableList()
+                if (instantMessages.isNotEmpty() && instantMessages.last().isLoading) {
+                    instantMessages.removeAt(instantMessages.lastIndex)
                 }
-                finalMessages.add(Message(
-                    text = translatedResponse,
-                    isFromMe = false
+                instantMessages.add(Message(
+                    text = instantResponse,
+                    isFromMe = false,
+                    status = MessageStatus.SEARCHING_DATA
                 ))
-                _messages.value = finalMessages
-                Log.d("ChatViewModel", "Message processing completed successfully")
+                _messages.value = instantMessages
+
+                // Phase 2: Generate detailed response with vector search in parallel (non-blocking)
+                Log.d("ChatViewModel", "Starting detailed response generation in parallel")
+                launch(Dispatchers.IO) {
+                    try {
+                        // Update status to searching data
+                        val searchingMessages = _messages.value.toMutableList()
+                        if (searchingMessages.isNotEmpty()) {
+                            val lastMessage = searchingMessages.last()
+                            searchingMessages[searchingMessages.lastIndex] = lastMessage.copy(
+                                status = MessageStatus.SEARCHING_DATA
+                            )
+                            _messages.value = searchingMessages
+                        }
+
+                        // Simulate a small delay to show searching status
+                        delay(500)
+                        
+                        // Update status to generating response
+                        val generatingMessages = _messages.value.toMutableList()
+                        if (generatingMessages.isNotEmpty()) {
+                            val lastMessage = generatingMessages.last()
+                            generatingMessages[generatingMessages.lastIndex] = lastMessage.copy(
+                                status = MessageStatus.GENERATING_RESPONSE
+                            )
+                            _messages.value = generatingMessages
+                        }
+
+                        val detailedResponse = llmDataSource.generateDetailedResponse(messageForLLM)
+                        
+                        // Update UI with detailed response when ready
+                        val finalMessages = _messages.value.toMutableList()
+                        if (finalMessages.isNotEmpty()) {
+                            val lastMessage = finalMessages.last()
+                            // Only update if the detailed response is different and more comprehensive
+                            if (lastMessage.text != detailedResponse && detailedResponse.length > lastMessage.text.length) {
+                                finalMessages[finalMessages.lastIndex] = lastMessage.copy(
+                                    text = detailedResponse,
+                                    status = MessageStatus.COMPLETED
+                                )
+                                _messages.value = finalMessages
+                                Log.d("ChatViewModel", "Updated with detailed response")
+                            } else {
+                                // Mark as completed even if not updated
+                                finalMessages[finalMessages.lastIndex] = lastMessage.copy(
+                                    status = MessageStatus.COMPLETED
+                                )
+                                _messages.value = finalMessages
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("ChatViewModel", "Error generating detailed response: ${e.message}")
+                        // Mark as completed even if failed
+                        val errorMessages = _messages.value.toMutableList()
+                        if (errorMessages.isNotEmpty()) {
+                            val lastMessage = errorMessages.last()
+                            errorMessages[errorMessages.lastIndex] = lastMessage.copy(
+                                status = MessageStatus.COMPLETED
+                            )
+                            _messages.value = errorMessages
+                        }
+                    }
+                }
 
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error in sendMessage: ${e.message}")
@@ -376,6 +438,150 @@ class ChatViewModel @Inject constructor(
                 _isProcessing.value = false
                 lastMessageTime.set(0)
                 Log.d("ChatViewModel", "Message processing finished")
+            }
+        }
+    }
+
+    fun sendMessageWithStreaming(message: String) {
+        if (message.isBlank()) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d("ChatViewModel", "Starting streaming message processing for: $message")
+                _isProcessing.value = true
+                lastMessageTime.set(System.currentTimeMillis())
+                
+                // Add user message - show original message in UI
+                val updatedMessages = _messages.value.toMutableList()
+                updatedMessages.add(Message(
+                    text = message,
+                    isFromMe = true
+                ))
+                _messages.value = updatedMessages
+
+                // Add loading message
+                val loadingMessage = Message(
+                    text = "",
+                    isFromMe = false,
+                    isLoading = true
+                )
+                updatedMessages.add(loadingMessage)
+                _messages.value = updatedMessages
+
+                // Translate message to English if needed
+                val currentLanguage = translationService.getCurrentLanguage()
+                Log.d("ChatViewModel", "Current language: $currentLanguage")
+                
+                val messageForLLM = if (currentLanguage != "en") {
+                    Log.d("ChatViewModel", "Translating message to English")
+                    translationService.translateToEnglish(message)
+                } else {
+                    message
+                }
+                Log.d("ChatViewModel", "Message for LLM: $messageForLLM")
+
+                // Phase 1: Generate quick response without vector search
+                Log.d("ChatViewModel", "Generating quick response")
+                val quickResponse = try {
+                    llmDataSource.generateQuickResponse(messageForLLM)
+                } catch (e: Exception) {
+                    Log.e("ChatViewModel", "Error generating quick response: ${e.message}")
+                    "I'm processing your request. Please wait for a detailed response based on ASHA guidelines."
+                }
+
+                // Update UI with quick response
+                val quickMessages = _messages.value.toMutableList()
+                if (quickMessages.isNotEmpty() && quickMessages.last().isLoading) {
+                    quickMessages.removeAt(quickMessages.lastIndex)
+                }
+                quickMessages.add(Message(
+                    text = quickResponse,
+                    isFromMe = false
+                ))
+                _messages.value = quickMessages
+
+                // Phase 2: Generate detailed response with vector search using streaming
+                Log.d("ChatViewModel", "Starting detailed response generation with streaming")
+                try {
+                    val asyncInference = llmDataSource.generateDetailedResponseAsync(messageForLLM, object : ProgressListener<String> {
+                        override fun run(partialResult: String?, done: Boolean) {
+                            viewModelScope.launch {
+                                val currentMessages = _messages.value.toMutableList()
+                                if (currentMessages.isNotEmpty()) {
+                                    val lastMessage = currentMessages.last()
+                                    val updatedText = if (partialResult.isNullOrBlank()) {
+                                        lastMessage.text
+                                    } else {
+                                        // Replace the quick response with the detailed streaming response
+                                        partialResult.toString()
+                                    }
+                                    currentMessages[currentMessages.lastIndex] = lastMessage.copy(
+                                        text = updatedText
+                                    )
+                                    _messages.value = currentMessages
+
+                                    if (done) {
+                                        // Add AI-generated note when response is complete
+                                        val finalMessages = _messages.value.toMutableList()
+                                        if (finalMessages.isNotEmpty()) {
+                                            val lastMessage = finalMessages.last()
+                                            val finalText = if (lastMessage.text.isNotBlank()) {
+                                                "${lastMessage.text}\n\n**💡 AI Generated Response**"
+                                            } else {
+                                                "I apologize, but I couldn't generate a proper response. Please try again.\n\n**💡 AI Generated Response**"
+                                            }
+                                            finalMessages[finalMessages.lastIndex] = lastMessage.copy(text = finalText)
+                                            _messages.value = finalMessages
+                                        }
+                                        _isProcessing.value = false
+                                    }
+                                }
+                            }
+                        }
+                    })
+
+                    // Handle completion
+                    asyncInference.addListener({
+                        viewModelScope.launch {
+                            _isProcessing.value = false
+                        }
+                    }, Executors.newSingleThreadExecutor())
+                } catch (e: Exception) {
+                    viewModelScope.launch {
+                        val errorMessages = _messages.value.toMutableList()
+                        if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
+                            errorMessages.removeAt(errorMessages.lastIndex)
+                        }
+                        errorMessages.add(Message(
+                            text = e.message ?: "An error occurred during detailed response generation",
+                            isFromMe = false,
+                            isError = true
+                        ))
+                        _messages.value = errorMessages
+                        _isProcessing.value = false
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.e("ChatViewModel", "Error in sendMessageWithStreaming: ${e.message}")
+                e.printStackTrace()
+                
+                val errorMessages = _messages.value.toMutableList()
+                if (errorMessages.isNotEmpty() && errorMessages.last().isLoading) {
+                    errorMessages.removeAt(errorMessages.lastIndex)
+                }
+                val errorText = e.message ?: "An error occurred"
+                val translatedError = translationService.translate(errorText)
+                errorMessages.add(Message(
+                    text = translatedError,
+                    isFromMe = false,
+                    isError = true
+                ))
+                _messages.value = errorMessages
+            } finally {
+                _isProcessing.value = false
+                lastMessageTime.set(0)
+                Log.d("ChatViewModel", "Streaming message processing finished")
             }
         }
     }
@@ -438,6 +644,9 @@ class ChatViewModel @Inject constructor(
      * - Formats lists and important information
      */
     private fun formatResponse(text: String): String {
+        // Check if text already contains AI note
+        val hasAINote = text.contains("**💡 AI Generated Response**")
+        
         // If the text is already in markdown format, return it as is
         if (text.contains("**") || text.contains("*") || text.contains("#") || 
             text.contains("- ") || text.contains("1. ") || text.contains("```")) {
@@ -446,7 +655,7 @@ class ChatViewModel @Inject constructor(
         
         // For very short responses, return as is
         if (text.length < 100) {
-            return text
+            return if (hasAINote) text else "$text\n\n**💡 AI Generated Response**"
         }
         
         // For longer responses, format them with markdown
@@ -486,10 +695,10 @@ class ChatViewModel @Inject constructor(
         val formattedText = formattedLines.joinToString("\n")
         if (formattedText.length > 500) {
             val truncatedText = formattedText.substring(0, 500) + "..."
-            return "$truncatedText\n\n*[Show more]()*"
+            return "$truncatedText\n\n*[Show more]()*\n\n**💡 AI Generated Response**"
         }
         
-        return formattedText
+        return if (hasAINote) formattedText else "$formattedText\n\n**💡 AI Generated Response**"
     }
 
     private fun getCurrentDate(): String {
@@ -607,12 +816,20 @@ data class Message(
     val isFromMe: Boolean,
     val isError: Boolean = false,
     val isLoading: Boolean = false,
-    val timestamp: LocalDateTime = LocalDateTime.now()
+    val timestamp: LocalDateTime = LocalDateTime.now(),
+    val status: MessageStatus = MessageStatus.NONE
 ) {
     val formattedDate: String
         get() = timestamp.format(DateTimeFormatter.ofPattern("MMM dd, yyyy"))
     
     val formattedTime: String
         get() = timestamp.format(DateTimeFormatter.ofPattern("hh:mm a"))
+}
+
+enum class MessageStatus {
+    NONE,
+    SEARCHING_DATA,
+    GENERATING_RESPONSE,
+    COMPLETED
 }
 

@@ -1,4 +1,4 @@
-# ASHA Sakhi Chat 🤖
+# ASHA Sakhi Chat 💡
 
 ## Demo Video
 
@@ -12,7 +12,7 @@
 
 ASHA Sakhi Chat is an innovative mobile application designed to empower ASHA (Accredited Social Health Activist) workers in India with AI-powered assistance for maternal healthcare. The app runs entirely on-device, making it perfect for areas with limited internet connectivity.
 
-## 🤖 AI & Technical Features
+## 💡 AI & Technical Features
 
 ### On-Device AI Capabilities
 - **Local LLM Integration**: 

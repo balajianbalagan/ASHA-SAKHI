@@ -1,0 +1,1330 @@
+{
+    "pregnancy_care": {
+      "anc_visits": [
+        {
+          "title": "First ANC Visit (Before 12 weeks)",
+          "description": "First antenatal care visit should be conducted before 12 weeks of pregnancy to establish baseline health status and identify risk factors.",
+          "week": 12,
+          "key_points": [
+            "Complete medical history and physical examination",
+            "Blood pressure measurement",
+            "Weight and height measurement",
+            "Hemoglobin estimation",
+            "Blood grouping and Rh typing",
+            "Urine examination for protein and sugar",
+            "HIV testing with counseling",
+            "Syphilis testing"
+          ],
+          "guidelines": [
+            "Should be conducted at a health facility",
+            "Must include risk assessment",
+            "Should provide iron and folic acid supplementation",
+            "Must counsel on diet and rest"
+          ],
+          "procedures": [
+            "Take detailed medical history",
+            "Perform complete physical examination",
+            "Measure blood pressure",
+            "Collect blood samples for testing",
+            "Provide counseling on pregnancy care"
+          ],
+          "warnings": [
+            "High blood pressure requires immediate referral",
+            "Severe anemia needs urgent attention",
+            "HIV positive cases need special care"
+          ],
+          "risk_factors": [
+            "Age < 18 or > 35 years",
+            "Previous pregnancy complications",
+            "Medical conditions like diabetes, hypertension"
+          ]
+        },
+        {
+          "title": "Second ANC Visit (16-24 weeks)",
+          "description": "Second visit focuses on monitoring pregnancy progress and identifying any complications.",
+          "week": 20,
+          "key_points": [
+            "Monitor weight gain",
+            "Check blood pressure",
+            "Assess fetal growth",
+            "Screen for gestational diabetes",
+            "Provide nutrition counseling"
+          ],
+          "guidelines": [
+            "Should monitor weight gain pattern",
+            "Must check for signs of pre-eclampsia",
+            "Should provide nutrition education"
+          ],
+          "procedures": [
+            "Measure fundal height",
+            "Listen to fetal heart sounds",
+            "Check for edema",
+            "Provide dietary advice"
+          ],
+          "warnings": [
+            "Excessive weight gain may indicate problems",
+            "High blood pressure needs immediate attention",
+            "Protein in urine requires referral"
+          ],
+          "risk_factors": [
+            "Rapid weight gain",
+            "Swelling of face and hands",
+            "Headache and visual disturbances"
+          ]
+        }
+      ],
+      "complications": [
+        {
+          "title": "Hypertension in Pregnancy",
+          "description": "High blood pressure during pregnancy can lead to serious complications for both mother and baby.",
+          "symptoms": [
+            "Blood pressure ≥ 140/90 mmHg",
+            "Headache",
+            "Visual disturbances",
+            "Swelling of face and hands",
+            "Abdominal pain"
+          ],
+          "management": [
+            "Immediate referral to higher facility",
+            "Monitor blood pressure closely",
+            "Bed rest in left lateral position",
+            "Antihypertensive medication if needed"
+          ],
+          "procedures": [
+            "Measure blood pressure in sitting position",
+            "Check for protein in urine",
+            "Monitor fetal heart rate",
+            "Assess for signs of pre-eclampsia"
+          ],
+          "warnings": [
+            "Severe hypertension is a medical emergency",
+            "Eclampsia can develop rapidly",
+            "Requires immediate hospitalization"
+          ],
+          "severity": "high",
+          "referral_needed": true
+        }
+      ],
+      "general_care": {
+        "title": "General Pregnancy Care Guidelines",
+        "description": "Essential care guidelines for all pregnant women to ensure healthy pregnancy and delivery.",
+        "key_points": [
+          "Regular antenatal visits",
+          "Proper nutrition and rest",
+          "Iron and folic acid supplementation",
+          "Tetanus toxoid immunization",
+          "Birth preparedness and complication readiness"
+        ],
+        "guidelines": [
+          "Should have at least 4 ANC visits",
+          "Must take iron and folic acid tablets",
+          "Should maintain proper hygiene",
+          "Must avoid alcohol and smoking"
+        ],
+        "procedures": [
+          "Counsel on diet and nutrition",
+          "Provide iron and folic acid tablets",
+          "Administer tetanus toxoid",
+          "Teach birth preparedness"
+        ],
+        "warnings": [
+          "Avoid heavy physical work",
+          "Seek immediate care for bleeding",
+          "Report severe vomiting or pain"
+        ]
+      }
+    },
+    "delivery_care": {
+      "procedures": [
+        {
+          "title": "Normal Delivery Procedure",
+          "description": "Step-by-step procedure for conducting a normal delivery safely.",
+          "type": "normal",
+          "key_points": [
+            "Monitor labor progress",
+            "Maintain asepsis",
+            "Support the mother",
+            "Handle the newborn carefully"
+          ],
+          "guidelines": [
+            "Should be conducted in a clean environment",
+            "Must maintain proper hygiene",
+            "Should provide emotional support to mother"
+          ],
+          "steps": [
+            "Prepare delivery room and equipment",
+            "Monitor vital signs of mother",
+            "Assess cervical dilatation",
+            "Guide mother during pushing",
+            "Receive the baby safely",
+            "Cut and tie the cord",
+            "Deliver the placenta"
+          ],
+          "warnings": [
+            "Never pull on the cord",
+            "Watch for excessive bleeding",
+            "Monitor mother's condition post-delivery"
+          ]
+        }
+      ],
+      "emergency_procedures": {
+        "title": "Emergency Delivery Procedures",
+        "description": "Procedures to follow in emergency situations during delivery.",
+        "type": "emergency",
+        "key_points": [
+          "Stay calm and reassure the mother",
+          "Maintain basic hygiene",
+          "Handle complications carefully",
+          "Arrange immediate referral if needed"
+        ],
+        "guidelines": [
+          "Should have emergency contact numbers ready",
+          "Must maintain basic delivery kit",
+          "Should know when to refer"
+        ],
+        "procedures": [
+          "Assess the emergency situation",
+          "Provide basic life support",
+          "Control bleeding if present",
+          "Arrange transportation for referral"
+        ],
+        "warnings": [
+          "Do not attempt complex procedures",
+          "Prioritize mother's safety",
+          "Act quickly in emergencies"
+        ]
+      }
+    },
+    "postpartum_care": {
+      "care_guidelines": [
+        {
+          "title": "Immediate Postpartum Care",
+          "description": "Care provided immediately after delivery to ensure mother and baby are safe.",
+          "period": "immediate",
+          "key_points": [
+            "Monitor mother's vital signs",
+            "Check for bleeding",
+            "Ensure baby is breathing",
+            "Initiate breastfeeding"
+          ],
+          "guidelines": [
+            "Should monitor for 2 hours post-delivery",
+            "Must check for excessive bleeding",
+            "Should initiate breastfeeding within 1 hour"
+          ],
+          "procedures": [
+            "Monitor blood pressure and pulse",
+            "Check uterine contraction",
+            "Assess bleeding",
+            "Examine the baby",
+            "Help with first breastfeeding"
+          ],
+          "warnings": [
+            "Excessive bleeding is an emergency",
+            "High fever needs immediate attention",
+            "Baby not breathing requires resuscitation"
+          ]
+        }
+      ]
+    },
+    "newborn_care": {
+      "care_guidelines": [
+        {
+          "title": "Essential Newborn Care",
+          "description": "Basic care procedures for newborns to ensure their health and survival.",
+          "type": "general",
+          "key_points": [
+            "Keep baby warm",
+            "Initiate breastfeeding",
+            "Maintain hygiene",
+            "Monitor for danger signs"
+          ],
+          "guidelines": [
+            "Should maintain skin-to-skin contact",
+            "Must ensure proper cord care",
+            "Should monitor breathing and temperature"
+          ],
+          "procedures": [
+            "Dry the baby thoroughly",
+            "Wrap in clean cloth",
+            "Place on mother's chest",
+            "Help with breastfeeding",
+            "Care for the umbilical cord"
+          ],
+          "warnings": [
+            "Cold stress can be dangerous",
+            "Infection can develop quickly",
+            "Poor feeding needs attention"
+          ]
+        }
+      ]
+    },
+    "immunization": {
+      "vaccines": [
+        {
+          "title": "Tetanus Toxoid for Pregnant Women",
+          "description": "Tetanus toxoid vaccination to protect mother and newborn from tetanus.",
+          "name": "TT",
+          "age_group": "pregnant_women",
+          "key_points": [
+            "Two doses during pregnancy",
+            "First dose at first ANC visit",
+            "Second dose 4 weeks later",
+            "Protects mother and baby"
+          ],
+          "guidelines": [
+            "Should be given to all pregnant women",
+            "Must be given at least 2 weeks before delivery",
+            "Should be recorded properly"
+          ],
+          "procedures": [
+            "Check immunization history",
+            "Administer in deltoid muscle",
+            "Record in mother's card",
+            "Schedule next dose"
+          ],
+          "warnings": [
+            "Check for allergies",
+            "Monitor for side effects",
+            "Ensure proper storage"
+          ]
+        }
+      ]
+    },
+    "nutrition": {
+      "guidelines": [
+        {
+          "title": "Pregnancy Nutrition Guidelines",
+          "description": "Evidence‑based dietary requirements for pregnant women in India.",
+          "type": "pregnancy",
+          "key_points": [
+            "Extra +300 kcal/day second & third trimesters",
+            "≥65 g protein/day (dal, eggs, milk, lean meat)",
+            "Daily IFA 100 mg iron + 0.5 mg folic acid × 100 days (National Iron + Initiative)",
+            "1 tablet calcium (500 mg) twice daily away from IFA",
+            "Adequate fluids ≥2.5 L, emphasize safe water"
+          ],
+          "guidelines": [
+            "3 balanced meals + 2 healthy snacks",
+            "Include at least 5 servings of fruit/vegetables",
+            "Weekly fish/omega‑3 rich food unless contra‑indicated",
+            "Daily milk/curd for calcium & vitamin D",
+            "Limit caffeine <200 mg/day; avoid alcohol & tobacco"
+          ],
+          "taboos_and_misconceptions": [
+            {
+              "myth": "Papaya or pineapple always cause miscarriage",
+              "evidence": "Ripe fruit is safe; only unripe/raw papaya latex has uterotonic effect.",
+              "action": "Allow ripe papaya/pineapple in moderation for vitamins A & C."
+            },
+            {
+              "myth": "Eggs and meat make the baby 'big' and delivery difficult",
+              "evidence": "High‑quality protein prevents low‑birth‑weight.",
+              "action": "Encourage 1 egg/day if affordable; monitor weight gain."
+            },
+            {
+              "myth": "Pregnant women should avoid milk when they have cough/cold",
+              "evidence": "No scientific basis; calcium need rises in pregnancy.",
+              "action": "Continue milk/curd unless lactose‑intolerant."
+            }
+          ],
+          "procedures": [
+            "24‑h diet recall → identify gaps",
+            "Counsel with local food examples & portion sizes",
+            "Monthly weight check, MUAC if under‑weight",
+            "Link to take‑home rations / THR under ICDS where available"
+          ],
+          "warnings": [
+            "Avoid raw or under‑cooked meat, fish & eggs (listeriosis risk)",
+            "Restrict processed foods high in salt & trans‑fat",
+            "No herbal/home remedies without medical advice"
+          ],
+          "references": [
+            "https://nhm.gov.in/images/pdf/Nutrition/AMB-guidelines/Anemia-Mukt-Bharat-Operational-Guidelines-FINAL.pdf",
+            "https://www.who.int/publications/i/item/9789240008120",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC6396620/",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC6886130/"
+          ]
+        }
+      ]
+    },
+    "emergency_care": {
+      "emergencies": [
+        {
+          "title": "Severe Bleeding During Pregnancy",
+          "description": "Emergency management of severe bleeding during pregnancy.",
+          "type": "bleeding",
+          "severity": "high",
+          "symptoms": [
+            "Heavy vaginal bleeding",
+            "Severe abdominal pain",
+            "Dizziness or fainting",
+            "Rapid pulse",
+            "Low blood pressure"
+          ],
+          "management": [
+            "Immediate referral to hospital",
+            "Keep woman lying down",
+            "Elevate legs if possible",
+            "Monitor vital signs",
+            "Arrange transportation"
+          ],
+          "procedures": [
+            "Assess amount of bleeding",
+            "Check vital signs",
+            "Prepare for referral",
+            "Contact emergency services"
+          ],
+          "warnings": [
+            "This is a life-threatening emergency",
+            "Do not delay referral",
+            "Monitor for signs of shock"
+          ]
+        }
+      ]
+    },
+    "general_guidelines": {
+      "guidelines": [
+        {
+          "title": "ASHA Worker Responsibilities",
+          "description": "General responsibilities and guidelines for ASHA workers in maternal care.",
+          "category": "responsibilities",
+          "key_points": [
+            "Provide antenatal care",
+            "Assist in deliveries",
+            "Provide postnatal care",
+            "Conduct home visits",
+            "Maintain records"
+          ],
+          "guidelines": [
+            "Should visit pregnant women regularly",
+            "Must maintain proper records",
+            "Should provide health education",
+            "Must refer when necessary"
+          ],
+          "procedures": [
+            "Conduct home visits",
+            "Provide counseling",
+            "Maintain ASHA diary",
+            "Coordinate with health facilities"
+          ],
+          "warnings": [
+            "Do not perform procedures beyond training",
+            "Always refer in emergencies",
+            "Maintain confidentiality"
+          ]
+        }
+      ]
+    },
+    "pregnancy_schemes": {
+      "maternal_schemes": [
+        {
+          "title": "Janani Shishu Suraksha Karyakram (JSSK)",
+          "description": "Launched in 2011 to eliminate out-of-pocket expenses for institutional delivery and neonatal care. Covers all pregnant women delivering in public health institutions and sick newborns.",
+          "eligibility": "All pregnant women delivering in public health institutions",
+          "benefits": [
+            "Free drugs and diagnostics",
+            "Free blood transfusion if needed",
+            "Free diet (3 days normal, 7 days C-section)",
+            "Free transport (home to facility, inter-facility, drop-back)",
+            "Covers all antenatal and postnatal pregnancy complications"
+          ],
+          "how_to_apply": [
+            "Register at public health institution",
+            "Present MCP card and ID proof",
+            "No advance payment required"
+          ],
+          "documents_needed": [
+            "MCP Card",
+            "ID proof (Aadhaar/PAN)",
+            "BPL card if applicable"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Zero out-of-pocket expenses",
+            "Covers all pregnancy complications",
+            "Available at all public health institutions"
+          ],
+          "guidelines": [
+            "Must inform pregnant women about JSSK benefits",
+            "Should assist in registration process",
+            "Must ensure transport arrangements"
+          ],
+          "procedures": [
+            "Help pregnant woman register at facility",
+            "Ensure all documents are submitted",
+            "Coordinate transport arrangements",
+            "Follow up on benefit delivery"
+          ],
+          "warnings": [
+            "Only available at public health institutions",
+            "Private facilities not covered",
+            "Must register before delivery"
+          ]
+        },
+        {
+          "title": "Pradhan Mantri Surakshit Matritva Abhiyan (PMSMA)",
+          "description": "Free quality ANC (check‑ups, USG, lab tests) for all pregnant women on the 9th of every month at government facilities.",
+          "eligibility": "All pregnant women, esp. 2nd & 3rd trimester",
+          "benefits": [
+            "One assured ANC by specialist/MBBS doctor",
+            "Free diagnostics incl. ultrasonography",
+            "Identification & marking of high‑risk pregnancies"
+          ],
+          "how_to_apply": [
+            "Visit designated PMSMA clinic on the 9th of any month",
+            "Carry MCP card/ID proof"
+          ],
+          "documents_needed": [
+            "MCP Card",
+            "Government photo ID"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Free quality ANC on 9th of every month",
+            "Specialist doctor consultation",
+            "Free ultrasonography and diagnostics"
+          ],
+          "guidelines": [
+            "Must inform pregnant women about PMSMA",
+            "Should assist in scheduling visits",
+            "Must ensure proper documentation"
+          ],
+          "procedures": [
+            "Help schedule PMSMA visit",
+            "Ensure MCP card is updated",
+            "Coordinate with government facility",
+            "Follow up on diagnostic results"
+          ],
+          "warnings": [
+            "Only available on 9th of each month",
+            "Government facilities only",
+            "Must carry proper identification"
+          ],
+          "references": [
+            "https://pmsma.nhp.gov.in/",
+            "https://pmsma.nhp.gov.in/about-scheme/"
+          ]
+        },
+        {
+          "title": "Anemia‑Mukt Bharat / Intensified National Iron Plus Initiative (I‑NIPI)",
+          "description": "Six‑point strategy to reduce anemia among women, children & adolescents through prophylactic IFA, deworming, and social behavior change.",
+          "eligibility": "Pregnant & lactating women 15–49 y",
+          "benefits": [
+            "Daily IFA 100 mg/0.5 mg × 180 days",
+            "Bi‑annual albendazole (2nd trimester onward)",
+            "Point‑of‑care hemoglobin testing & treatment"
+          ],
+          "how_to_apply": [
+            "IFA distributed during ANC or ASHA home visit",
+            "Hemoglobin test at sub‑centre or PHC"
+          ],
+          "documents_needed": [
+            "MCP Card"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Daily IFA supplementation for 180 days",
+            "Bi-annual deworming with albendazole",
+            "Point-of-care hemoglobin testing"
+          ],
+          "guidelines": [
+            "Must ensure daily IFA consumption",
+            "Should monitor hemoglobin levels",
+            "Must provide deworming medication"
+          ],
+          "procedures": [
+            "Distribute IFA tablets",
+            "Conduct hemoglobin testing",
+            "Administer deworming medication",
+            "Monitor compliance and side effects"
+          ],
+          "warnings": [
+            "IFA should be taken on empty stomach",
+            "Monitor for side effects",
+            "Ensure proper storage of tablets"
+          ],
+          "references": [
+            "https://nhm.gov.in/images/pdf/programmes/child-health/guidelines/Control-of-Iron-Deficiency-Anaemia.pdf"
+          ]
+        },
+        {
+          "title": "Kangaroo Mother Care (KMC) Initiative",
+          "description": "Promotes continuous skin‑to‑skin contact & exclusive breastfeeding for LBW/ preterm newborns ≤2000 g.",
+          "eligibility": "Stabilized newborns ≤2000 g",
+          "benefits": [
+            "Reduced neonatal mortality",
+            "Improved breastfeeding & thermoregulation"
+          ],
+          "how_to_apply": [
+            "Initiate KMC in facility once newborn stable",
+            "Continue at home with ASHA support"
+          ],
+          "documents_needed": [
+            "Birth record with birth‑weight"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Continuous skin-to-skin contact",
+            "Exclusive breastfeeding support",
+            "Reduced neonatal mortality"
+          ],
+          "guidelines": [
+            "Should initiate KMC immediately after birth",
+            "Must maintain continuous skin-to-skin contact",
+            "Should support exclusive breastfeeding"
+          ],
+          "procedures": [
+            "Teach KMC technique to mother",
+            "Monitor temperature and feeding",
+            "Provide emotional support",
+            "Follow up on KMC compliance"
+          ],
+          "warnings": [
+            "Only for stabilized newborns",
+            "Monitor for temperature instability",
+            "Ensure proper positioning"
+          ],
+          "references": [
+            "https://www.who.int/tools/elena/interventions/kangaroo-care-infants",
+            "https://www.who.int/publications/i/item/9789240071636"
+          ]
+        }
+      ],
+      "child_schemes": [
+        {
+          "title": "Rashtriya Bal Swasthya Karyakram (RBSK)",
+          "description": "Targets children birth to 18 years. Detects and intervenes early for 4Ds: defects at birth, deficiencies, diseases, developmental delays/disabilities.",
+          "eligibility": "Children birth to 18 years",
+          "benefits": [
+            "Early detection of 4Ds",
+            "Free screening and treatment",
+            "Mobile health teams",
+            "Reduces disease burden and family expenses"
+          ],
+          "how_to_apply": [
+            "Attend mobile health team camps",
+            "Register at Anganwadi centers",
+            "School-based screening programs"
+          ],
+          "documents_needed": [
+            "Birth certificate",
+            "School ID (if applicable)",
+            "Anganwadi registration"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Covers 4Ds: Defects, Deficiencies, Diseases, Developmental delays",
+            "Mobile health teams available",
+            "Early intervention prevents complications"
+          ],
+          "guidelines": [
+            "Should identify children for screening",
+            "Must refer detected cases to specialists",
+            "Should follow up on treatment compliance"
+          ],
+          "procedures": [
+            "Organize screening camps",
+            "Identify children needing screening",
+            "Refer to appropriate specialists",
+            "Monitor treatment progress"
+          ],
+          "warnings": [
+            "Early detection is crucial",
+            "Delayed treatment can worsen conditions",
+            "Regular follow-up required"
+          ]
+        }
+      ],
+      "adolescent_schemes": [
+        {
+          "title": "Rashtriya Kishor Swasthya Karyakram (RKSK)",
+          "description": "Targets adolescents (10–19 years), married and unmarried. Focus on reproductive and sexual health, nutrition, mental health, substance misuse, gender-based violence, NCDs.",
+          "eligibility": "Adolescents 10-19 years",
+          "benefits": [
+            "Reproductive and sexual health services",
+            "Nutrition counseling",
+            "Mental health support",
+            "Substance misuse prevention",
+            "Gender-based violence prevention",
+            "NCD prevention"
+          ],
+          "how_to_apply": [
+            "Visit adolescent-friendly health clinics",
+            "Attend community outreach programs",
+            "Participate in school health programs"
+          ],
+          "documents_needed": [
+            "Age proof",
+            "School ID (if applicable)",
+            "Parental consent for minors"
+          ],
+          "priority": "Medium",
+          "key_points": [
+            "Delays marriage and reduces teen pregnancy",
+            "Prevents STIs and HIV",
+            "Addresses mental health issues",
+            "Promotes healthy behaviors"
+          ],
+          "guidelines": [
+            "Should provide confidential services",
+            "Must maintain adolescent privacy",
+            "Should involve parents when appropriate"
+          ],
+          "procedures": [
+            "Conduct adolescent health camps",
+            "Provide counseling services",
+            "Refer to specialists when needed",
+            "Maintain confidentiality"
+          ],
+          "warnings": [
+            "Maintain strict confidentiality",
+            "Handle sensitive issues carefully",
+            "Involve parents for minors"
+          ]
+        }
+      ],
+      "immunization_schemes": [
+        {
+          "title": "Universal Immunization Programme (UIP)",
+          "description": "Provides free vaccination against 12 diseases for newborns and pregnant women.",
+          "eligibility": "Newborns and pregnant women",
+          "benefits": [
+            "Free vaccination against 12 diseases",
+            "Regular immunization sessions",
+            "Vaccine safety monitoring"
+          ],
+          "how_to_apply": [
+            "Attend immunization session at nearest health centre",
+            "Present MCP Card",
+            "Follow vaccination schedule"
+          ],
+          "documents_needed": [
+            "MCP Card",
+            "Birth certificate for newborns"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Covers 12 vaccine-preventable diseases",
+            "Free for all beneficiaries",
+            "Regular sessions at health centers"
+          ],
+          "guidelines": [
+            "Must ensure all children are vaccinated",
+            "Should maintain vaccination records",
+            "Must follow up on missed vaccinations"
+          ],
+          "procedures": [
+            "Organize immunization sessions",
+            "Maintain vaccination records",
+            "Follow up on defaulters",
+            "Monitor for adverse events"
+          ],
+          "warnings": [
+            "Vaccination schedule must be followed strictly",
+            "Monitor for vaccine reactions",
+            "Keep records updated"
+          ]
+        },
+        {
+          "title": "Introduction of Rotavirus Vaccine in UIP",
+          "description": "Oral rotavirus vaccination for children aged 6-32 weeks to prevent severe diarrhea.",
+          "eligibility": "Children aged 6-32 weeks",
+          "benefits": [
+            "Prevents severe rotavirus diarrhea",
+            "Reduces hospitalizations",
+            "Protects against dehydration"
+          ],
+          "how_to_apply": [
+            "Receive 5 oral drops at UIP session",
+            "Follow recommended schedule",
+            "Present MCP Card"
+          ],
+          "documents_needed": [
+            "MCP Card",
+            "Age proof"
+          ],
+          "priority": "High",
+          "key_points": [
+            "5 oral drops administered",
+            "Age-specific dosing schedule",
+            "Prevents severe diarrhea"
+          ],
+          "guidelines": [
+            "Must follow age-specific schedule",
+            "Should monitor for side effects",
+            "Must maintain proper records"
+          ],
+          "procedures": [
+            "Administer oral drops",
+            "Record vaccination details",
+            "Monitor for adverse events",
+            "Follow up on missed doses"
+          ],
+          "warnings": [
+            "Age-specific dosing critical",
+            "Monitor for side effects",
+            "Keep detailed records"
+          ]
+        }
+      ],
+      "family_planning_schemes": [
+        {
+          "title": "Compensation Package for IUD/Sterilization Acceptors",
+          "description": "Provides fixed compensation for IUD insertion and sterilization procedures.",
+          "eligibility": "Women undergoing IUD insertion or sterilization",
+          "benefits": [
+            "Fixed compensation per procedure",
+            "Free procedure at accredited facilities",
+            "Post-procedure care"
+          ],
+          "how_to_apply": [
+            "Submit procedure certificate at facility",
+            "Provide required documents",
+            "Receive compensation after procedure"
+          ],
+          "documents_needed": [
+            "Procedure certificate",
+            "ID proof",
+            "Bank account details"
+          ],
+          "priority": "Medium",
+          "key_points": [
+            "Compensation varies by procedure type",
+            "Available at accredited facilities",
+            "Post-procedure follow-up included"
+          ],
+          "guidelines": [
+            "Must ensure informed consent",
+            "Should provide pre-procedure counseling",
+            "Must maintain proper records"
+          ],
+          "procedures": [
+            "Provide pre-procedure counseling",
+            "Assist with documentation",
+            "Coordinate with facility",
+            "Follow up post-procedure"
+          ],
+          "warnings": [
+            "Informed consent mandatory",
+            "Only at accredited facilities",
+            "Proper documentation required"
+          ]
+        },
+        {
+          "title": "PPIUCD Incentive Scheme",
+          "description": "Provider incentive for post-partum IUD insertion to promote long-term contraception.",
+          "eligibility": "Women delivering at accredited facilities",
+          "benefits": [
+            "Provider incentive per insertion",
+            "Long-term contraception",
+            "Immediate post-delivery insertion"
+          ],
+          "how_to_apply": [
+            "Avail PPIUCD service at delivery facility",
+            "Provide consent for insertion",
+            "Receive post-insertion care"
+          ],
+          "documents_needed": [
+            "MCP Card",
+            "Service slip",
+            "Consent form"
+          ],
+          "priority": "Medium",
+          "key_points": [
+            "Immediate post-delivery insertion",
+            "Long-term contraception",
+            "Provider incentives available"
+          ],
+          "guidelines": [
+            "Must obtain informed consent",
+            "Should provide post-insertion care",
+            "Must maintain proper records"
+          ],
+          "procedures": [
+            "Counsel on PPIUCD benefits",
+            "Obtain informed consent",
+            "Coordinate with facility",
+            "Follow up post-insertion"
+          ],
+          "warnings": [
+            "Informed consent mandatory",
+            "Only at accredited facilities",
+            "Monitor for complications"
+          ]
+        }
+      ],
+      "disease_control_schemes": [
+        {
+          "title": "RNTCP (Tuberculosis)",
+          "description": "Free DOTS therapy for tuberculosis patients with persistent cough.",
+          "eligibility": "Patients with persistent cough",
+          "benefits": [
+            "Free DOTS therapy",
+            "Regular monitoring",
+            "Contact screening"
+          ],
+          "how_to_apply": [
+            "Register at DOTS centre",
+            "Submit sputum sample",
+            "Follow treatment schedule"
+          ],
+          "documents_needed": [
+            "ID proof",
+            "Sputum test results",
+            "Treatment card"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Free DOTS therapy",
+            "Regular sputum monitoring",
+            "Contact screening included"
+          ],
+          "guidelines": [
+            "Must ensure treatment completion",
+            "Should monitor for side effects",
+            "Must screen contacts"
+          ],
+          "procedures": [
+            "Identify TB suspects",
+            "Refer for sputum testing",
+            "Monitor treatment compliance",
+            "Screen contacts"
+          ],
+          "warnings": [
+            "Treatment completion crucial",
+            "Monitor for drug resistance",
+            "Screen all contacts"
+          ]
+        },
+        {
+          "title": "NPCDCS: Cancer, Diabetes, CVD & Stroke Control",
+          "description": "Free screening and subsidized treatment for non-communicable diseases.",
+          "eligibility": "Age >= 30 years",
+          "benefits": [
+            "Free screening for NCDs",
+            "Subsidized treatment",
+            "Lifestyle counseling"
+          ],
+          "how_to_apply": [
+            "Visit NCD clinic",
+            "Present ID proof",
+            "Undergo screening"
+          ],
+          "documents_needed": [
+            "ID proof",
+            "Age proof"
+          ],
+          "priority": "High",
+          "key_points": [
+            "Free screening for NCDs",
+            "Early detection important",
+            "Lifestyle modification support"
+          ],
+          "guidelines": [
+            "Should screen all eligible individuals",
+            "Must refer positive cases",
+            "Should provide lifestyle counseling"
+          ],
+          "procedures": [
+            "Organize screening camps",
+            "Conduct risk assessments",
+            "Refer positive cases",
+            "Provide lifestyle counseling"
+          ],
+          "warnings": [
+            "Early detection crucial",
+            "Lifestyle modification important",
+            "Regular follow-up required"
+          ]
+        }
+      ]
+    },
+    "clinical_protocols": {
+      "antenatal_care": {
+        "title": "Comprehensive Antenatal Care Protocol",
+        "description": "Detailed clinical guidelines for antenatal care including registration, visits, examinations, and management of common issues.",
+        "registration": {
+          "timing": "As soon as pregnancy suspected (≤12 weeks)",
+          "requirements": [
+            "Keep antenatal card + PHC record",
+            "Complete medical history",
+            "Calculate EDD (LMP + 9 months + 7 days)"
+          ]
+        },
+        "visits": [
+          {
+            "visit": "1st Visit",
+            "timing": "Early (≤12 weeks)",
+            "procedures": [
+              "Complete medical history",
+              "Physical examination",
+              "Laboratory tests",
+              "IFA supplementation"
+            ]
+          },
+          {
+            "visit": "2nd Visit",
+            "timing": "26 weeks",
+            "procedures": [
+              "Monitor weight gain",
+              "Check blood pressure",
+              "Assess fetal growth",
+              "Screen for complications"
+            ]
+          },
+          {
+            "visit": "3rd Visit",
+            "timing": "32 weeks",
+            "procedures": [
+              "Continue monitoring",
+              "Assess fetal position",
+              "Prepare for delivery"
+            ]
+          },
+          {
+            "visit": "4th Visit",
+            "timing": "36-40 weeks",
+            "procedures": [
+              "Pelvic assessment",
+              "Final delivery preparation",
+              "Birth plan discussion"
+            ]
+          }
+        ],
+        "examination": {
+          "each_visit": [
+            "Weight measurement",
+            "Blood pressure",
+            "Pallor assessment",
+            "Edema check",
+            "Respiratory rate",
+            "Breast examination"
+          ],
+          "vaginal_exam": [
+            "Confirm pregnancy",
+            "Check for discharge",
+            "Assess cervix"
+          ],
+          "abdominal_exam": [
+            "Assess fetal growth",
+            "Determine fetal lie",
+            "Measure fundal height"
+          ],
+          "pelvic_assessment": "At 36 weeks (CPD assessment)"
+        },
+        "laboratory_tests": [
+          "Hemoglobin estimation",
+          "Blood grouping",
+          "Urine examination (sugar, protein, bacteriuria)"
+        ],
+        "supplementation": {
+          "iron_folic_acid": {
+            "prophylactic": "1 tablet daily × 100 days",
+            "therapeutic": "2 tablets daily × 100 days if Hb < 11 g/dl",
+            "severe_anemia": "Injectable iron if Hb < 7 g/dl"
+          },
+          "tetanus_toxoid": {
+            "schedule": "2 doses 1 month apart starting post-1st trimester",
+            "booster": "If previously immunized"
+          }
+        },
+        "common_issues": [
+          {
+            "issue": "Hyperemesis",
+            "action": "Admit and hydrate"
+          },
+          {
+            "issue": "Severe anemia",
+            "action": "Double IFA + albendazole"
+          },
+          {
+            "issue": "BP > 140/90",
+            "action": "Watch closely"
+          },
+          {
+            "issue": "BP > 160/110",
+            "action": "Nifedipine + refer"
+          },
+          {
+            "issue": "Heartburn",
+            "action": "Cold milk/antacid"
+          },
+          {
+            "issue": "UTI",
+            "action": "Treat appropriately"
+          },
+          {
+            "issue": "Bleeding < 20 weeks",
+            "action": "No vaginal examination, suspect abortion"
+          },
+          {
+            "issue": "Bleeding > 20 weeks",
+            "action": "APH - refer immediately"
+          },
+          {
+            "issue": "Low fetal movement",
+            "action": "Check fetal heart rate"
+          }
+        ],
+        "counseling": {
+          "birth_preparation": "Prepare for delivery",
+          "danger_signs": [
+            "Bleeding",
+            "Convulsions",
+            "Severe pain",
+            "Leaking fluid",
+            "Labour > 12 hours",
+            "Decreased fetal movement",
+            "High fever/dyspnea"
+          ],
+          "nutrition": "+300 kcal/day",
+          "rest": "8 hours sleep + 2 hours rest",
+          "lifestyle": "No alcohol/smoking, medications only if prescribed"
+        }
+      },
+      "labour_delivery": {
+        "title": "Labour and Delivery Protocol",
+        "description": "Comprehensive guidelines for managing labour and delivery safely.",
+        "stages": [
+          {
+            "stage": "1st Stage",
+            "duration": "≈12 hours",
+            "description": "Onset to 10 cm dilation"
+          },
+          {
+            "stage": "2nd Stage",
+            "duration": "≈2 hours",
+            "description": "Delivery of baby"
+          },
+          {
+            "stage": "3rd Stage",
+            "duration": "≤30 minutes",
+            "description": "Placenta delivery"
+          }
+        ],
+        "monitoring": {
+          "partograph": {
+            "fetal_heart_rate": "Every 30 minutes",
+            "dilation": "Every 4 hours",
+            "vital_signs": "BP/Pulse every 30 minutes"
+          },
+          "alert_line": "Watch closely",
+          "action_line": "Intervene/refer"
+        },
+        "support": [
+          "Maintain hygiene",
+          "Ensure hydration",
+          "Provide reassurance",
+          "Avoid routine enema",
+          "Avoid fundal pressure",
+          "Avoid routine episiotomy"
+        ],
+        "delivery": {
+          "head_control": "Control head delivery",
+          "nuchal_cord": {
+            "loose": "Slip over head",
+            "tight": "Clamp and cut"
+          },
+          "episiotomy": "Only if indicated (instrumental, fetal distress, previous 3/4° tear)"
+        },
+        "cord_management": {
+          "clamping": "Clamp at 2 & 5 cm after 2-3 minutes",
+          "cutting": "Cut sterile",
+          "care": "Leave stump dry"
+        },
+        "active_third_stage": {
+          "purpose": "PPH prevention",
+          "medication": "Misoprostol 600 µg PO/SL (alternative: Oxytocin 10 U IM)",
+          "procedures": [
+            "Controlled Cord Traction",
+            "Uterine massage every 15 minutes × 2 hours"
+          ]
+        },
+        "essential_newborn_care": [
+          "Dry thoroughly",
+          "Wrap in clean cloth",
+          "Skin-to-skin contact",
+          "Maintain room temperature ≥25°C",
+          "Breastfeed within 1 hour",
+          "Delay bath ≥6 hours",
+          "Clean eyes daily"
+        ]
+      },
+      "postpartum_care": {
+        "title": "Postpartum Care Protocol",
+        "description": "Comprehensive care guidelines for mother and baby after delivery.",
+        "observation": {
+          "duration": "≥24 hours",
+          "monitoring": [
+            "Uterus tone",
+            "Bleeding",
+            "Blood pressure",
+            "Pulse",
+            "Temperature"
+          ]
+        },
+        "visits": [
+          {
+            "timing": "<24 hours",
+            "location": "In-facility"
+          },
+          {
+            "timing": "Day 3",
+            "location": "Home visit"
+          },
+          {
+            "timing": "Day 7",
+            "location": "Home visit"
+          },
+          {
+            "timing": "Extra visits",
+            "condition": "If danger signs present"
+          }
+        ],
+        "maternal_danger_signs": {
+          "description": "Refer immediately if present",
+          "signs": [
+            "Heavy bleeding (>2 pads/30 minutes)",
+            "Convulsions",
+            "Fever and weakness",
+            "Severe abdominal pain",
+            "Foul lochia",
+            "Dyspnea"
+          ]
+        },
+        "counseling": {
+          "hygiene": [
+            "Wash perineum anterior to posterior",
+            "Change pads every 4-6 hours"
+          ],
+          "rest": "No heavy work for 6 weeks",
+          "sexual_activity": "No sex ≤6 weeks",
+          "nutrition": "+550 kcal/day (first 6 months)",
+          "breastfeeding": "Exclusive breastfeeding for 6 months",
+          "family_planning": "Discuss options",
+          "birth_registration": "Ensure registration"
+        }
+      },
+      "neonatal_care_resuscitation": {
+        "title": "Neonatal Care and Resuscitation Protocol",
+        "description": "Comprehensive guidelines for newborn care and emergency resuscitation.",
+        "routine_care": [
+          "Dry in warm towel",
+          "Second dry wrap",
+          "Skin-to-skin contact",
+          "Delay cord clamping 2-3 minutes",
+          "Initiate breastfeeding ≤1 hour",
+          "Maintain warmth (>25°C)",
+          "No stump applications"
+        ],
+        "danger_signs": {
+          "description": "Refer immediately if present",
+          "signs": [
+            "Poor feeding",
+            "Fever",
+            "Fast breathing (≥60/min)",
+            "Cold body",
+            "Convulsions",
+            "Lethargy",
+            ">10 pustules",
+            "Blood in stool"
+          ]
+        },
+        "low_birth_weight": {
+          "criteria": "<2.5 kg",
+          "home_visits": [
+            "Day 3",
+            "Day 7",
+            "Day 14",
+            "Day 21",
+            "Day 28"
+          ],
+          "care": [
+            "Frequent breastfeeding",
+            "Keep warm",
+            "Dry cord care"
+          ]
+        },
+        "infection_management": {
+          "medication": "Co-trimoxazole 5 days",
+          "topical": "GV paint for cord/skin",
+          "referral": "If no improvement"
+        },
+        "birth_asphyxia": {
+          "criteria": "Apgar <7 at 1 minute",
+          "resuscitation_steps": [
+            {
+              "step": "Open airway",
+              "action": "Suction mouth → nose"
+            },
+            {
+              "step": "Tactile stimulation",
+              "action": "Gentle stimulation"
+            },
+            {
+              "step": "If HR < 100",
+              "action": "Bag-mask 40 breaths per minute"
+            },
+            {
+              "step": "If HR < 60",
+              "action": "Chest compressions 90/min (3:1 ratio)"
+            }
+          ],
+          "medications": [
+            {
+              "drug": "Adrenaline",
+              "dose": "0.1 ml/kg 1:10,000 IV"
+            },
+            {
+              "drug": "NaHCO₃",
+              "dose": "2 ml/kg slow IV if metabolic acidosis"
+            },
+            {
+              "drug": "Normal Saline",
+              "dose": "10 ml/kg IV if shock"
+            }
+          ],
+          "stopping_criteria": [
+            "No heartbeat for 15 minutes",
+            "No breathing for 20-30 minutes despite efforts"
+          ]
+        },
+        "post_resuscitation": [
+          "Continue skin-to-skin contact",
+          "Monitor HR/RR/temperature hourly",
+          "Early breastfeeding",
+          "Refer if distress persists"
+        ],
+        "avoid": [
+          "Routine suction",
+          "Slapping",
+          "Unskilled intubation"
+        ]
+      }
+    },
+    "resources": {
+      "authoritative_links": [
+        {
+          "title": "WHO 2016 Antenatal Care Recommendations",
+          "url": "https://www.who.int/publications/b/59023"
+        },
+        {
+          "title": "JSSK Operational Guidelines",
+          "url": "https://nhm.gov.in/showlink.php?id=178"
+        },
+        {
+          "title": "National Iron Plus Initiative Overview",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6886130/"
+        },
+        {
+          "title": "Food Taboos in Indian Pregnancy – Karnataka Study",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6396620/"
+        },
+        {
+          "title": "PMSMA Official Portal",
+          "url": "https://pmsma.nhp.gov.in/"
+        }
+      ]
+    }
+  } 
