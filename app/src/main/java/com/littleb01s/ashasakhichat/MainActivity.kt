@@ -355,6 +355,18 @@ class MainActivity : ComponentActivity() {
                                         onNavigateBack = { navController.navigateUp() }
                                     )
                                 }
+                                composable(
+                                    route = Screen.CourseDetail.route,
+                                    arguments = listOf(
+                                        navArgument("courseId") { type = NavType.StringType }
+                                    )
+                                ) { backStackEntry ->
+                                    val courseId = backStackEntry.arguments?.getString("courseId")
+                                    CourseDetailScreen(
+                                        courseId = courseId,
+                                        navController = navController
+                                    )
+                                }
                             }
                         }
                     }

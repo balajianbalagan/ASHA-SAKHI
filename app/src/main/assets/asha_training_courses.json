@@ -1,0 +1,79 @@
+[
+  {
+    "id": "course_1",
+    "title": "Maternal Health Basics",
+    "description": "Learn about the essentials of maternal health, including prenatal care, nutrition, and warning signs during pregnancy.",
+    "type": "photo",
+    "mediaUrl": "placeholder_photo_url",
+    "completed": false,
+    "subContent": [
+      {
+        "id": "sub_1_1",
+        "type": "photo",
+        "mediaUrl": "https://www.who.int/images/default-source/mca/maternal-health.jpg",
+        "text": "Prenatal care is essential for monitoring the health of both mother and baby. Regular checkups help detect and prevent potential complications.",
+        "completed": false
+      },
+      {
+        "id": "sub_1_2",
+        "type": "video",
+        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+        "text": "Watch this video to understand the importance of nutrition during pregnancy.",
+        "completed": false
+      },
+      {
+        "id": "sub_1_3",
+        "type": "photo",
+        "mediaUrl": "https://www.cdc.gov/reproductivehealth/maternalinfanthealth/images/pregnancy-graphic.jpg",
+        "text": "Be aware of warning signs such as severe headaches, vision changes, or swelling. Seek medical attention if these occur.",
+        "completed": false
+      }
+    ],
+    "quiz": [
+      {
+        "id": "quiz_1_1",
+        "question": "Which of the following is a key aspect of prenatal care?",
+        "options": [
+          {"text": "Regular checkups", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "Skipping meals", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Avoiding all exercise", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 0
+      },
+      {
+        "id": "quiz_1_2",
+        "question": "Which symptom should prompt immediate medical attention during pregnancy?",
+        "options": [
+          {"text": "Mild fatigue", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Severe headache", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "Increased appetite", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 1
+      }
+    ]
+  },
+  {
+    "id": "course_2",
+    "title": "Immunization Schedule",
+    "description": "Understand the national immunization schedule for children and mothers, including timing and importance of each vaccine.",
+    "type": "photo",
+    "mediaUrl": "placeholder_photo_url",
+    "completed": false
+  },
+  {
+    "id": "course_3",
+    "title": "Newborn Care",
+    "description": "Best practices for newborn care, breastfeeding, hygiene, and early danger signs to watch for in infants.",
+    "type": "video",
+    "mediaUrl": "placeholder_video_url",
+    "completed": false
+  },
+  {
+    "id": "course_4",
+    "title": "Family Planning",
+    "description": "Overview of family planning methods, counseling techniques, and addressing common myths and misconceptions.",
+    "type": "photo",
+    "mediaUrl": "placeholder_photo_url",
+    "completed": false
+  }
+] 

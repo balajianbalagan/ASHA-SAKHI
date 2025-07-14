@@ -122,6 +122,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("com.kizitonwose.calendar:compose:2.5.0")
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }
 
 // Allow references to generated code
