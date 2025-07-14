@@ -124,6 +124,8 @@ dependencies {
     implementation("com.kizitonwose.calendar:compose:2.5.0")
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
 }
 
 // Allow references to generated code

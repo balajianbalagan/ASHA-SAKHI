@@ -213,7 +213,8 @@ class MainActivity : ComponentActivity() {
                                 // Full Screen Routes
                                 composable(Screen.Training.route) {
                                     TrainingScreen(
-                                        onNavigateBack = { navController.navigateUp() }
+                                        onNavigateBack = { navController.navigateUp() },
+                                        navController = navController
                                     )
                                 }
                                 composable(Screen.RiskAnalysis.route) {
