@@ -3,16 +3,18 @@ package com.littleb01s.ashasakhichat.data.remote
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
 import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
+import com.littleb01s.ashasakhichat.data.api.AppointmentResponseWrapper
+import com.littleb01s.ashasakhichat.data.repository.CreateAppointmentRequest
 import retrofit2.http.*
 
 interface AppointmentApi {
-    @GET("fetch-appointments")
+    @GET("api/appointment/fetch-appointments")
     suspend fun fetchAppointments(
         @Query("workerId") workerId: String
     ): AppointmentListResponse
 
-    @POST("appointments/create-appointments")
+    @POST("api/appointment/create-appointments")
     suspend fun createAppointment(
-        @Body appointment: Appointment
-    ): AppointmentResponse
+        @Body request: CreateAppointmentRequest
+    ): AppointmentResponseWrapper
 } 

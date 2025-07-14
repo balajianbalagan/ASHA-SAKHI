@@ -56,6 +56,11 @@ class AppointmentViewModel @Inject constructor(
             repository.createAppointment(appointment)
                 .onEach { result ->
                     _createAppointmentState.value = result
+                    // If successful, refetch appointments to show the new one
+                    if (result is Resource.Success) {
+                        // Refetch appointments for the same patient
+                        fetchAppointmentsForPatient(appointment.patientId)
+                    }
                 }
                 .launchIn(viewModelScope)
         }

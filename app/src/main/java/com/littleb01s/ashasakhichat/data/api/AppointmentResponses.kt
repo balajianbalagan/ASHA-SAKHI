@@ -9,4 +9,9 @@ data class AppointmentResponse(
 
 data class AppointmentListResponse(
     val appointments: List<Appointment>
+)
+
+// Wrapper for server response that has a "data" field
+data class AppointmentResponseWrapper(
+    val data: AppointmentResponse
 ) 

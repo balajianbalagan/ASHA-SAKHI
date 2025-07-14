@@ -2,6 +2,7 @@ package com.littleb01s.ashasakhichat.presentation.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,6 +54,11 @@ fun AppointmentsScreen(
     
     val appointmentsState by viewModel.appointments.collectAsState()
     
+    // Filter state
+    val statusFilters = remember {
+        mutableStateSetOf("Scheduled") // Default to show only scheduled
+    }
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,15 +79,24 @@ fun AppointmentsScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // Filter section
+            FilterSection(
+                statusFilters = statusFilters,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+            
+            // Appointments list
             when (val state = appointmentsState) {
                 is Resource.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
@@ -87,7 +104,9 @@ fun AppointmentsScreen(
                 }
                 is Resource.Error -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -97,10 +116,20 @@ fun AppointmentsScreen(
                     }
                 }
                 is Resource.Success -> {
-                    val appointments = state.data!!.appointments
-                    if (appointments.isEmpty()) {
+                    val allAppointments = state.data!!.appointments
+                    val filteredAppointments = allAppointments
+                        .filter { appointment ->
+                            statusFilters.contains(appointment.appointmentStatus)
+                        }
+                        .sortedBy { appointment ->
+                            appointment.appointmentDate
+                        }
+                    
+                    if (filteredAppointments.isEmpty()) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
                             Column(
@@ -108,12 +137,20 @@ fun AppointmentsScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Text(
-                                    text = "No appointments scheduled",
+                                    text = if (allAppointments.isEmpty()) {
+                                        "No appointments scheduled"
+                                    } else {
+                                        "No appointments match the selected filters"
+                                    },
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = "Appointments will appear here once created",
+                                    text = if (allAppointments.isEmpty()) {
+                                        "Appointments will appear here once created"
+                                    } else {
+                                        "Try adjusting your filters"
+                                    },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                 )
@@ -123,10 +160,12 @@ fun AppointmentsScreen(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                .weight(1f)
+                                .padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(bottom = 80.dp) // Add padding for FAB
                         ) {
-                            items(appointments) { appointment ->
+                            items(filteredAppointments) { appointment ->
                                 AppointmentCard(
                                     appointment = appointment,
                                     onViewDetails = onViewAppointmentDetails,
@@ -141,6 +180,64 @@ fun AppointmentsScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilterSection(
+    statusFilters: MutableSet<String>,
+    modifier: Modifier = Modifier
+) {
+    val availableStatuses = listOf("Scheduled", "Completed", "Cancelled")
+    
+    Column(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                Icons.Default.FilterList,
+                contentDescription = "Filter",
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = "Filter by Status",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(availableStatuses) { status ->
+                FilterChip(
+                    selected = statusFilters.contains(status),
+                    onClick = {
+                        if (statusFilters.contains(status)) {
+                            statusFilters.remove(status)
+                        } else {
+                            statusFilters.add(status)
+                        }
+                    },
+                    label = {
+                        Text(status)
+                    },
+                    leadingIcon = if (statusFilters.contains(status)) {
+                        {
+                            Icon(
+                                Icons.Default.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else null
+                )
             }
         }
     }
@@ -318,6 +415,29 @@ private fun AppointmentCard(
                             )
                         }
                     }
+                }
+            }
+            
+            // Sync pending indicator
+            if (appointment.needsUpload) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.CloudUpload,
+                        "Pending Sync to Server",
+                        modifier = Modifier.size(12.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Pending Sync to Server",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
