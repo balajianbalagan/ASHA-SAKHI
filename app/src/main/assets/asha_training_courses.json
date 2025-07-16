@@ -57,23 +57,172 @@
     "title": "Immunization Schedule",
     "description": "Understand the national immunization schedule for children and mothers, including timing and importance of each vaccine.",
     "type": "photo",
-    "mediaUrl": "placeholder_photo_url",
-    "completed": false
+    "mediaUrl": "https://www.who.int/images/default-source/campaigns/immunization-week-2023/immunization-week-2023-banner.jpg",
+    "completed": false,
+    "subContent": [
+      {
+        "id": "sub_2_1",
+        "type": "photo",
+        "mediaUrl": "https://www.cdc.gov/vaccines/parents/images/why-immunize-graphic.jpg",
+        "text": "Immunization protects children and mothers from serious diseases, preventing illness, disability, and death. It's a cornerstone of public health.",
+        "completed": false
+      },
+      {
+        "id": "sub_2_2",
+        "type": "photo",
+        "mediaUrl": "https://www.mohfw.gov.in/assets/images/immunization-schedule.jpg",
+        "text": "Follow the national immunization schedule for children from birth to 5 years, including vaccines like BCG, DPT, Polio, Measles, and more.",
+        "completed": false
+      },
+      {
+        "id": "sub_2_3",
+        "type": "video",
+        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+        "text": "Pregnant women should receive Tetanus-Diphtheria (Td) or Tdap vaccine to protect themselves and their newborns from life-threatening diseases.",
+        "completed": false
+      }
+    ],
+    "quiz": [
+      {
+        "id": "quiz_2_1",
+        "question": "At what age is the first dose of Polio vaccine typically given to infants in India?",
+        "options": [
+          {"text": "At birth", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "6 weeks", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "9 months", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 0
+      },
+      {
+        "id": "quiz_2_2",
+        "question": "Which vaccine protects pregnant women and their newborns from Tetanus and Diphtheria?",
+        "options": [
+          {"text": "Measles", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "BCG", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Td/Tdap", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"}
+        ],
+        "correctIndex": 2
+      }
+    ]
   },
   {
     "id": "course_3",
     "title": "Newborn Care",
     "description": "Best practices for newborn care, breastfeeding, hygiene, and early danger signs to watch for in infants.",
     "type": "video",
-    "mediaUrl": "placeholder_video_url",
-    "completed": false
+    "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+    "completed": false,
+    "subContent": [
+      {
+        "id": "sub_3_1",
+        "type": "photo",
+        "mediaUrl": "https://www.who.int/images/default-source/mca/newborn-care.jpg",
+        "text": "Essential care immediately after birth includes ensuring warmth, drying the baby, promoting skin-to-skin contact, and initiating breastfeeding early.",
+        "completed": false
+      },
+      {
+        "id": "sub_3_2",
+        "type": "video",
+        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+        "text": "Exclusive breastfeeding for the first six months provides optimal nutrition, strengthens immunity, and fosters bonding between mother and baby.",
+        "completed": false
+      },
+      {
+        "id": "sub_3_3",
+        "type": "photo",
+        "mediaUrl": "https://www.cdc.gov/ncbddd/images/newborn-safety.jpg",
+        "text": "Learn about proper umbilical cord care, safe bathing techniques, and ensuring a safe sleeping environment to prevent infections and accidents.",
+        "completed": false
+      },
+      {
+        "id": "sub_3_4",
+        "type": "photo",
+        "mediaUrl": "https://www.unicef.org/sites/default/files/styles/hero_desktop/public/UN014605.jpg",
+        "text": "Key danger signs in newborns include difficulty breathing, fever, lethargy, poor feeding, and convulsions. Seek medical help immediately if observed.",
+        "completed": false
+      }
+    ],
+    "quiz": [
+      {
+        "id": "quiz_3_1",
+        "question": "How long is exclusive breastfeeding recommended for infants?",
+        "options": [
+          {"text": "3 months", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "6 months", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "1 year", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 1
+      },
+      {
+        "id": "quiz_3_2",
+        "question": "Which of these is a danger sign in a newborn requiring immediate medical attention?",
+        "options": [
+          {"text": "Frequent crying", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Difficulty breathing", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "Sleeping a lot", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 1
+      }
+    ]
   },
   {
     "id": "course_4",
     "title": "Family Planning",
     "description": "Overview of family planning methods, counseling techniques, and addressing common myths and misconceptions.",
     "type": "photo",
-    "mediaUrl": "placeholder_photo_url",
-    "completed": false
+    "mediaUrl": "https://www.who.int/images/default-source/campaigns/family-planning.jpg",
+    "completed": false,
+    "subContent": [
+      {
+        "id": "sub_4_1",
+        "type": "photo",
+        "mediaUrl": "https://www.unfpa.org/sites/default/files/styles/hero_desktop/public/news/family-planning-banner.jpg",
+        "text": "Family planning empowers individuals to decide the number, spacing, and timing of their children, significantly improving maternal and child health outcomes.",
+        "completed": false
+      },
+      {
+        "id": "sub_4_2",
+        "type": "photo",
+        "mediaUrl": "https://www.cdc.gov/reproductivehealth/contraception/images/contraception-methods.jpg",
+        "text": "Explore various modern contraceptive methods like pills, injectables, IUDs, condoms, and permanent methods, understanding their effectiveness and proper usage.",
+        "completed": false
+      },
+      {
+        "id": "sub_4_3",
+        "type": "video",
+        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+        "text": "Effective counseling involves active listening, providing accurate and unbiased information, and respecting the client's informed choices regarding family planning.",
+        "completed": false
+      },
+      {
+        "id": "sub_4_4",
+        "type": "photo",
+        "mediaUrl": "https://www.who.int/images/default-source/reproductive-health/family-planning-myths.jpg",
+        "text": "Learn to identify and address common myths and misconceptions about family planning methods to ensure that individuals make informed decisions based on facts.",
+        "completed": false
+      }
+    ],
+    "quiz": [
+      {
+        "id": "quiz_4_1",
+        "question": "Which of the following is NOT a direct benefit of family planning?",
+        "options": [
+          {"text": "Improved maternal health", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Reduced infant mortality", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Increased unplanned pregnancies", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"}
+        ],
+        "correctIndex": 2
+      },
+      {
+        "id": "quiz_4_2",
+        "question": "What is a key aspect of effective family planning counseling?",
+        "options": [
+          {"text": "Telling clients which method to use", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Providing accurate information and respecting choices", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "Discouraging certain methods", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+        ],
+        "correctIndex": 1
+      }
+    ]
   }
-] 
+]
