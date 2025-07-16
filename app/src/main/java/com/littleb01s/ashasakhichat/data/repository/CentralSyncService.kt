@@ -7,7 +7,7 @@ import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
 import com.littleb01s.ashasakhichat.data.local.dao.SyncTimestampDao
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.data.local.entity.SyncTimestamp
-import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
+import com.littleb01s.ashasakhichat.data.api.AppointmentApi
 import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
 import com.littleb01s.ashasakhichat.data.repository.PatientRepository
 import com.littleb01s.ashasakhichat.data.repository.CreateAppointmentRequest

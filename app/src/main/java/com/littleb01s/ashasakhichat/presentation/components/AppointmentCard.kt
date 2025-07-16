@@ -20,10 +20,11 @@ fun AppointmentCard(
     appointment: Appointment,
     onViewDetails: (Appointment) -> Unit = {},
     onEditAppointment: (Appointment) -> Unit = {},
-    onMarkCompleted: (Appointment) -> Unit = {},
-    onMarkCancelled: (Appointment) -> Unit = {},
+    onMarkInProgress: (Appointment) -> Unit = {},
+    onMarkCompleted:  (Appointment) -> Unit = {},
+    onMarkCancelled:  (Appointment) -> Unit = {},
     onShare: (Appointment) -> Unit = {},
-    onDelete: (Appointment) -> Unit = {}
+    onDelete: @Composable (Appointment) -> Unit = {}
 ) {
     val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
@@ -180,35 +181,77 @@ fun AppointmentCard(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Mark as Completed button
-                    if (appointment.appointmentStatus.lowercase() != "completed") {
-                        IconButton(
-                            onClick = { onMarkCompleted(appointment) },
-                            modifier = Modifier.size(40.dp)
+                    // Mark as In Progress button (for Scheduled appointments)
+                    if (appointment.appointmentStatus.lowercase() == "scheduled") {
+                        Button(
+                            onClick = { onMarkInProgress(appointment) },
+                            modifier = Modifier.height(32.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary
+                            )
                         ) {
                             Icon(
-                                Icons.Default.CheckCircle,
-                                "Mark Completed",
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.tertiary
+                                Icons.Default.PlayArrow,
+                                "Start Appointment",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Start",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                        
+                        // Cancel button (for Scheduled appointments)
+                        Button(
+                            onClick = { onMarkCancelled(appointment) },
+                            modifier = Modifier.height(32.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Icon(
+                                Icons.Default.Cancel,
+                                "Cancel Appointment",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onError
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Cancel",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onError
                             )
                         }
                     }
                     
-                    // Mark as Cancelled button
-                    if (appointment.appointmentStatus.lowercase() != "cancelled") {
-                        IconButton(
-                            onClick = { onMarkCancelled(appointment) },
-                            modifier = Modifier.size(40.dp)
+                    // Mark as Completed button (for In Progress appointments)
+                    if (appointment.appointmentStatus.lowercase() == "in progress") {
+                        Button(
+                            onClick = { onMarkCompleted(appointment) },
+                            modifier = Modifier.height(32.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary
+                            )
                         ) {
                             Icon(
-                                Icons.Default.Cancel,
-                                "Mark Cancelled",
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.error
+                                Icons.Default.CheckCircle,
+                                "Mark Completed",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onTertiary
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Complete",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onTertiary
                             )
                         }
                     }
+                    
+                    // No action buttons for Completed appointments - only view details available
                 }
             }
             
@@ -240,7 +283,7 @@ fun AppointmentCard(
 
 @Composable
 private fun PriorityIndicator(priority: Int) {
-    val (backgroundColor, textColor, priorityText) = when {
+    val priorityConfig = when {
         priority >= 8 -> Triple(
             MaterialTheme.colorScheme.errorContainer,
             MaterialTheme.colorScheme.onErrorContainer,
@@ -262,6 +305,10 @@ private fun PriorityIndicator(priority: Int) {
             "No Priority"
         )
     }
+    
+    val backgroundColor = priorityConfig.first
+    val textColor = priorityConfig.second
+    val priorityText = priorityConfig.third
     
     Surface(
         color = backgroundColor,
@@ -309,11 +356,16 @@ private fun AppointmentTypeChip(appointmentType: String) {
 
 @Composable
 private fun AppointmentStatusChip(status: String) {
-    val (backgroundColor, textColor, icon) = when (status.lowercase()) {
+    val statusConfig = when (status.lowercase()) {
         "scheduled" -> Triple(
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer,
             Icons.Default.Schedule
+        )
+        "in progress" -> Triple(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondaryContainer,
+            Icons.Default.PlayArrow
         )
         "completed" -> Triple(
             MaterialTheme.colorScheme.tertiaryContainer,
@@ -331,6 +383,10 @@ private fun AppointmentStatusChip(status: String) {
             Icons.Default.Info
         )
     }
+    
+    val backgroundColor = statusConfig.first
+    val textColor = statusConfig.second
+    val icon = statusConfig.third
     
     Surface(
         color = backgroundColor,

@@ -14,9 +14,18 @@ class Converters {
         return date?.time
     }
 
+    @TypeConverter
+    fun fromStringList(value: String?): List<String>? {
+        return value?.split(",")?.filter { it.isNotEmpty() }
+    }
+
+    @TypeConverter
+    fun stringListToString(list: List<String>?): String? {
+        return list?.joinToString(",")
+    }
+
     // Add more type converters as needed for complex data types
     // Examples might include:
-    // - List<String> to String and vice versa
     // - Custom enums to String and vice versa
     // - JSON objects to String and vice versa
 } 

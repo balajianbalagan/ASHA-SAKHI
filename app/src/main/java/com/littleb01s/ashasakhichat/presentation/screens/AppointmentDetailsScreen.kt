@@ -23,6 +23,7 @@ fun AppointmentDetailsScreen(
     appointment: Appointment,
     onNavigateBack: () -> Unit,
     onEditAppointment: (Appointment) -> Unit = {},
+    onMarkInProgress: (Appointment) -> Unit = {},
     onMarkCompleted: (Appointment) -> Unit = {},
     onMarkCancelled: (Appointment) -> Unit = {},
     onShare: (Appointment) -> Unit = {}
@@ -258,8 +259,23 @@ fun AppointmentDetailsScreen(
                     Text("Edit")
                 }
                 
+                // Start Appointment (Mark as In Progress)
+                if (appointment.appointmentStatus.lowercase() == "scheduled") {
+                    Button(
+                        onClick = { onMarkInProgress(appointment) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Icon(Icons.Default.PlayArrow, "Start", modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Start")
+                    }
+                }
+                
                 // Mark as Completed
-                if (appointment.appointmentStatus.lowercase() != "completed") {
+                if (appointment.appointmentStatus.lowercase() == "in progress") {
                     Button(
                         onClick = { onMarkCompleted(appointment) },
                         modifier = Modifier.weight(1f),
@@ -274,7 +290,8 @@ fun AppointmentDetailsScreen(
                 }
                 
                 // Mark as Cancelled
-                if (appointment.appointmentStatus.lowercase() != "cancelled") {
+                if (appointment.appointmentStatus.lowercase() != "cancelled" && 
+                    appointment.appointmentStatus.lowercase() != "completed") {
                     Button(
                         onClick = { onMarkCancelled(appointment) },
                         modifier = Modifier.weight(1f),
@@ -387,6 +404,11 @@ private fun AppointmentStatusChip(status: String) {
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer,
             Icons.Default.Schedule
+        )
+        "in progress" -> Triple(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondaryContainer,
+            Icons.Default.PlayArrow
         )
         "completed" -> Triple(
             MaterialTheme.colorScheme.tertiaryContainer,

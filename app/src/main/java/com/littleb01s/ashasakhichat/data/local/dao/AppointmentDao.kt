@@ -44,4 +44,12 @@ interface AppointmentDao {
 
     @Query("DELETE FROM TBL_APPOINTMENT")
     suspend fun clearAllAppointments()
+    
+    // Get appointments with offline changes that need to be synced
+    @Query("SELECT * FROM TBL_APPOINTMENT WHERE offlineChangeFlags IS NOT NULL AND needsUpload = 1")
+    fun getAppointmentsWithOfflineChanges(): Flow<List<Appointment>>
+    
+    // Get appointments with specific offline change flag
+    @Query("SELECT * FROM TBL_APPOINTMENT WHERE offlineChangeFlags LIKE '%' || :flag || '%' AND needsUpload = 1")
+    fun getAppointmentsWithOfflineFlag(flag: String): Flow<List<Appointment>>
 } 

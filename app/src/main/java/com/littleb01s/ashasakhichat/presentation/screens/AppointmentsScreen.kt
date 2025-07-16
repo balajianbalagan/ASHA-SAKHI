@@ -19,6 +19,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.presentation.components.AppointmentCard
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import com.littleb01s.ashasakhichat.util.Resource
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +29,7 @@ fun AppointmentsScreen(
     onNavigateToAddAppointment: () -> Unit,
     onViewAppointmentDetails: (Appointment) -> Unit = {},
     onEditAppointment: (Appointment) -> Unit = {},
+    onMarkInProgress: (Appointment) -> Unit = {},
     onMarkCompleted: (Appointment) -> Unit = {},
     onMarkCancelled: (Appointment) -> Unit = {},
     onShare: (Appointment) -> Unit = {},
@@ -39,10 +41,94 @@ fun AppointmentsScreen(
     }
     
     val appointmentsState by viewModel.appointments.collectAsState()
+    val cancelAppointmentState by viewModel.cancelAppointmentState.collectAsState()
+    
+    // Confirm dialog state
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var appointmentToConfirm by remember { mutableStateOf<Appointment?>(null) }
+    var actionToConfirm by remember { mutableStateOf<String?>(null) }
+    var dialogTitle by remember { mutableStateOf("") }
+    var dialogMessage by remember { mutableStateOf("") }
+    var confirmButtonText by remember { mutableStateOf("") }
+    var confirmButtonColor by remember { mutableStateOf(Color.Unspecified) }
+    
+    // Handle cancel appointment result
+    LaunchedEffect(cancelAppointmentState) {
+        when (cancelAppointmentState) {
+            is Resource.Success -> {
+                // Reset the state after successful cancellation
+                viewModel.resetCancelAppointmentState()
+            }
+            is Resource.Error -> {
+                // Reset the state after error
+                viewModel.resetCancelAppointmentState()
+            }
+            else -> {}
+        }
+    }
     
     // Filter state
     val statusFilters = remember {
         mutableStateSetOf("Scheduled") // Default to show only scheduled
+    }
+    
+    // Function to show confirm dialog
+    fun showConfirmDialog(appointment: Appointment, action: String) {
+        appointmentToConfirm = appointment
+        actionToConfirm = action
+        
+        when (action) {
+            "cancel" -> {
+                dialogTitle = "Cancel Appointment"
+                dialogMessage = "Are you sure you want to cancel this appointment? This action cannot be undone."
+                confirmButtonText = "Cancel Appointment"
+                // Color will be set in the dialog
+            }
+            "start" -> {
+                dialogTitle = "Start Appointment"
+                dialogMessage = "Are you sure you want to start this appointment? This will mark it as 'In Progress'."
+                confirmButtonText = "Start Appointment"
+                // Color will be set in the dialog
+            }
+            "complete" -> {
+                dialogTitle = "Complete Appointment"
+                dialogMessage = "Are you sure you want to mark this appointment as completed?"
+                confirmButtonText = "Complete Appointment"
+                // Color will be set in the dialog
+            }
+            "delete" -> {
+                dialogTitle = "Delete Appointment"
+                dialogMessage = "Are you sure you want to delete this appointment? This action cannot be undone."
+                confirmButtonText = "Delete Appointment"
+                // Color will be set in the dialog
+            }
+        }
+        
+        showConfirmDialog = true
+    }
+    
+    // Function to handle confirm action
+    fun handleConfirmAction() {
+        if (appointmentToConfirm != null && actionToConfirm != null) {
+            when (actionToConfirm) {
+                "cancel" -> {
+                    viewModel.cancelAppointment(appointmentToConfirm!!.appointmentId)
+                    onMarkCancelled(appointmentToConfirm!!)
+                }
+                "start" -> {
+                    onMarkInProgress(appointmentToConfirm!!)
+                }
+                "complete" -> {
+                    onMarkCompleted(appointmentToConfirm!!)
+                }
+                "delete" -> {
+                    onDelete(appointmentToConfirm!!)
+                }
+            }
+        }
+        showConfirmDialog = false
+        appointmentToConfirm = null
+        actionToConfirm = null
     }
     
     Scaffold(
@@ -156,10 +242,19 @@ fun AppointmentsScreen(
                                     appointment = appointment,
                                     onViewDetails = onViewAppointmentDetails,
                                     onEditAppointment = onEditAppointment,
-                                    onMarkCompleted = onMarkCompleted,
-                                    onMarkCancelled = onMarkCancelled,
+                                    onMarkInProgress = { appointment ->
+                                        showConfirmDialog(appointment, "start")
+                                    },
+                                    onMarkCompleted = { appointment ->
+                                        showConfirmDialog(appointment, "complete")
+                                    },
+                                    onMarkCancelled = { appointment ->
+                                        showConfirmDialog(appointment, "cancel")
+                                    },
                                     onShare = onShare,
-                                    onDelete = onDelete
+                                    onDelete = { appointment ->
+                                        showConfirmDialog(appointment, "delete")
+                                    }
                                 )
                             }
                         }
@@ -168,6 +263,44 @@ fun AppointmentsScreen(
             }
         }
     }
+    
+    // Show confirm dialog
+    if (showConfirmDialog) {
+        val confirmColor = when (actionToConfirm) {
+            "cancel" -> MaterialTheme.colorScheme.error
+            "start" -> MaterialTheme.colorScheme.secondary
+            "complete" -> MaterialTheme.colorScheme.tertiary
+            "delete" -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.primary
+        }
+        
+        AlertDialog(
+            onDismissRequest = {
+                showConfirmDialog = false
+                appointmentToConfirm = null
+                actionToConfirm = null
+            },
+            title = { Text(dialogTitle) },
+            text = { Text(dialogMessage) },
+            confirmButton = {
+                Button(
+                    onClick = { handleConfirmAction() },
+                    colors = ButtonDefaults.buttonColors(containerColor = confirmColor)
+                ) {
+                    Text(confirmButtonText)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showConfirmDialog = false
+                    appointmentToConfirm = null
+                    actionToConfirm = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -175,7 +308,7 @@ private fun FilterSection(
     statusFilters: MutableSet<String>,
     modifier: Modifier = Modifier
 ) {
-    val availableStatuses = listOf("Scheduled", "Completed", "Cancelled")
+    val availableStatuses = listOf("Scheduled", "In Progress", "Completed", "Cancelled")
     
     Column(modifier = modifier) {
         Row(

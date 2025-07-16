@@ -4,7 +4,7 @@ import com.littleb01s.ashasakhichat.data.api.AuthService
 import com.littleb01s.ashasakhichat.data.api.PatientService
 import com.littleb01s.ashasakhichat.data.api.DietService
 import com.littleb01s.ashasakhichat.data.api.ModelDownloadService
-import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
+import com.littleb01s.ashasakhichat.data.api.AppointmentApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

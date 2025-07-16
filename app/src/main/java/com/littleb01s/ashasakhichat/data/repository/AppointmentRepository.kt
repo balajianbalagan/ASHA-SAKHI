@@ -7,7 +7,9 @@ import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
 import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponseWrapper
-import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
+import com.littleb01s.ashasakhichat.data.api.AppointmentApi
+import com.littleb01s.ashasakhichat.data.api.*
+import com.littleb01s.ashasakhichat.data.local.entity.AppointmentOfflineFlags
 import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -34,6 +36,11 @@ interface AppointmentRepository {
     suspend fun createAppointment(appointment: Appointment): Flow<Resource<AppointmentResponse>>
     suspend fun fetchAppointments(): Flow<Resource<AppointmentListResponse>>
     suspend fun getAppointmentById(appointmentId: Int): Appointment?
+    
+    // New appointment action functions
+    suspend fun sendReminder(appointmentId: Int): Flow<Resource<Boolean>>
+    suspend fun fetchCheckupsForAppointment(appointmentId: Int): Flow<Resource<List<com.littleb01s.ashasakhichat.data.local.entity.Checkup>>>
+    suspend fun saveOrUpdateAppointment(appointment: Appointment, checkupIds: List<Int>): Flow<Resource<Int>>
 }
 
 @Singleton
@@ -242,5 +249,79 @@ class AppointmentRepositoryImpl @Inject constructor(
         }
     }
 
+    // New appointment action functions - we'll implement these one by one
+    override suspend fun sendReminder(appointmentId: Int): Flow<Resource<Boolean>> = flow {
+        // TODO: Implement send reminder functionality
+        emit(Resource.Error("Not implemented yet"))
+    }
 
+    override suspend fun fetchCheckupsForAppointment(appointmentId: Int): Flow<Resource<List<com.littleb01s.ashasakhichat.data.local.entity.Checkup>>> = flow {
+        // TODO: Implement fetch checkups functionality
+        emit(Resource.Error("Not implemented yet"))
+    }
+
+    override suspend fun saveOrUpdateAppointment(appointment: Appointment, checkupIds: List<Int>): Flow<Resource<Int>> = flow {
+        // TODO: Implement save/update appointment functionality
+        emit(Resource.Error("Not implemented yet"))
+    }
+    
+    // Cancel appointment with offline-first approach using save-appointment endpoint
+    suspend fun cancelAppointment(appointmentId: Int): Resource<SaveAppointmentResponse> {
+        return try {
+            // Get the appointment from local database
+            val appointment = appointmentDao.getAppointmentById(appointmentId)
+            if (appointment == null) {
+                return Resource.Error("Appointment not found")
+            }
+            
+            // Create status update request with only the changing field
+            val statusUpdateRequest = AppointmentStatusUpdateRequest(
+                appointmentData = AppointmentUpdateData(
+                    appointmentId = appointment.serverId ?: 0, // Required - server ID
+                    appointmentStatus = "Cancelled" // Only the changing value
+                    )
+            )
+            
+            // Try to cancel via API using save-appointment endpoint
+            val response = api.saveOrUpdateAppointment(statusUpdateRequest)
+            
+            if (response.isSuccessful) {
+                // API call successful, update local database
+                response.body()?.let { saveResponse ->
+                    appointmentDao.updateAppointment(appointment.copy(
+                        appointmentStatus = "Cancelled",
+                        needsUpload = false,
+                        offlineChangeFlags = null, // Clear flags since sync was successful
+                        updatedAt = Date()
+                    ))
+                }
+                Resource.Success(response.body()!!)
+            } else {
+                // API call failed, save locally with offline flag
+                saveCancellationLocally(appointmentId)
+                Resource.Error("Failed to cancel appointment: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            // Network error, save locally with offline flag
+            saveCancellationLocally(appointmentId)
+            Resource.Error("Network error: ${e.message}")
+        }
+    }
+    
+    private suspend fun saveCancellationLocally(appointmentId: Int) {
+        val appointment = appointmentDao.getAppointmentById(appointmentId)
+        appointment?.let {
+            val currentFlags = it.offlineChangeFlags?.toMutableList() ?: mutableListOf()
+            if (!currentFlags.contains(AppointmentOfflineFlags.CANCELLED)) {
+                currentFlags.add(AppointmentOfflineFlags.CANCELLED)
+            }
+            
+            appointmentDao.updateAppointment(it.copy(
+                appointmentStatus = "Cancelled",
+                needsUpload = true,
+                offlineChangeFlags = currentFlags,
+                updatedAt = Date()
+            ))
+        }
+    }
 } 

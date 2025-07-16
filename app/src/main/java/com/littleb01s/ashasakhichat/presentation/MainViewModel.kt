@@ -53,16 +53,10 @@ class MainViewModel @Inject constructor(
         Log.d("MainViewModel", "Internet available: ${isInternetAvailable()}")
         Log.d("MainViewModel", "Has initial sync run: $hasInitialSyncRun")
         
-        // Auto-sync if user is logged in and internet is available and sync hasn't run yet
-        if (isUserLoggedIn() && isInternetAvailable() && !hasInitialSyncRun) {
-            Log.d("MainViewModel", "Starting auto-sync")
-            hasInitialSyncRun = true
-            performSync()
-        } else {
-            Log.d("MainViewModel", "Skipping sync - conditions not met or already run")
-            if (!isInternetAvailable()) {
-                _syncStatus.value = SyncStatus.NO_INTERNET
-            }
+        // Don't auto-sync here to avoid double calling with triggerSyncAfterLogin()
+        // The sync will be handled explicitly by triggerSyncAfterLogin() when Home screen loads
+        if (!isInternetAvailable()) {
+            _syncStatus.value = SyncStatus.NO_INTERNET
         }
     }
 
