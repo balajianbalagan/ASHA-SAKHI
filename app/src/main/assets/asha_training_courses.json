@@ -4,7 +4,7 @@
     "title": "Maternal Health Basics",
     "description": "Learn about the essentials of maternal health, including prenatal care, nutrition, and warning signs during pregnancy.",
     "type": "photo",
-    "mediaUrl": "placeholder_photo_url",
+    "mediaUrl": "https://www.who.int/images/default-source/mca/maternal-health.jpg",
     "completed": false,
     "subContent": [
       {
@@ -138,28 +138,28 @@
         "id": "sub_3_4",
         "type": "photo",
         "mediaUrl": "https://www.unicef.org/sites/default/files/styles/hero_desktop/public/UN014605.jpg",
-        "text": "Key danger signs in newborns include difficulty breathing, fever, lethargy, poor feeding, and convulsions. Seek medical help immediately if observed.",
+        "text": "Key danger signs in newborns include difficulty breathing, fever, lethargy, poor feeding, and convulsions. Seek medical help immediately if these are observed.",
         "completed": false
       }
     ],
     "quiz": [
       {
         "id": "quiz_3_1",
-        "question": "How long is exclusive breastfeeding recommended for infants?",
+        "question": "What is the recommended duration for exclusive breastfeeding for a newborn baby?",
         "options": [
-          {"text": "3 months", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
-          {"text": "6 months", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
-          {"text": "1 year", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+          {"text": "First 3 months of life", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "First 6 months of life", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "First 1 year of life", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
         ],
         "correctIndex": 1
       },
       {
         "id": "quiz_3_2",
-        "question": "Which of these is a danger sign in a newborn requiring immediate medical attention?",
+        "question": "Which of the following is a critical danger sign in a newborn that requires immediate referral to a health facility?",
         "options": [
-          {"text": "Frequent crying", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
-          {"text": "Difficulty breathing", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
-          {"text": "Sleeping a lot", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+          {"text": "Crying when hungry", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Fast breathing (more than 60 breaths per minute)", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
+          {"text": "Sleeping peacefully for a few hours", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
         ],
         "correctIndex": 1
       }
@@ -205,23 +205,23 @@
     "quiz": [
       {
         "id": "quiz_4_1",
-        "question": "Which of the following is NOT a direct benefit of family planning?",
+        "question": "According to national recommendations, what is the ideal spacing period between two childbirths for improved infant survival and population health?",
         "options": [
-          {"text": "Improved maternal health", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
-          {"text": "Reduced infant mortality", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
-          {"text": "Increased unplanned pregnancies", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"}
+          {"text": "1 year", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "2 years", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "3 years", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"}
         ],
         "correctIndex": 2
       },
       {
         "id": "quiz_4_2",
-        "question": "What is a key aspect of effective family planning counseling?",
+        "question": "Which of the following contraceptive methods can an ASHA worker directly provide at the village level?",
         "options": [
-          {"text": "Telling clients which method to use", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
-          {"text": "Providing accurate information and respecting choices", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"},
-          {"text": "Discouraging certain methods", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"}
+          {"text": "Intrauterine Contraceptive Device (IUCD)", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Female Sterilization (Laparoscopic)", "image": "https://cdn-icons-png.flaticon.com/512/1046/1046857.png"},
+          {"text": "Oral Contraceptive Pills (OCPs) and Condoms", "image": "https://cdn-icons-png.flaticon.com/512/3062/3062634.png"}
         ],
-        "correctIndex": 1
+        "correctIndex": 2
       }
     ]
   }
