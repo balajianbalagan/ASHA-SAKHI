@@ -63,6 +63,16 @@ class PatientRepository @Inject constructor(
         }
     }
 
+    // Get patient name by ID
+    suspend fun getPatientNameById(patientId: Int): String? {
+        return try {
+            val patientName = patientDao.getPatientNameById(patientId)
+            patientName?.let { "${it.firstName} ${it.lastName ?: ""}".trim() }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     // API operations with local caching
     suspend fun fetchAndCachePatients(workerId: Int?=null, updatedAt: String? = null) {
         try {

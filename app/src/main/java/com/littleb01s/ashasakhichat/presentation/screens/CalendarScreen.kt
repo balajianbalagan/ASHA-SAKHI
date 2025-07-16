@@ -24,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import com.littleb01s.ashasakhichat.util.Resource
+import com.littleb01s.ashasakhichat.presentation.components.CompactAppointmentCard
+import com.littleb01s.ashasakhichat.data.repository.PatientRepository
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -33,17 +35,12 @@ import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.*
 
-data class CalendarEvent(
-    val id: String,
-    val title: String,
-    val date: LocalDate,
-    val time: LocalTime,
-    val description: String? = null
-)
+
 
 @Composable
 fun CalendarScreen(
-    viewModel: AppointmentViewModel = hiltViewModel()
+    viewModel: AppointmentViewModel = hiltViewModel(),
+    patientRepository: PatientRepository = hiltViewModel<AppointmentViewModel>().patientRepository
 ) {
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var currentWeekStart by remember { mutableStateOf(LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong() - 1)) }
@@ -68,18 +65,22 @@ fun CalendarScreen(
         }
     }
     
-    val eventsForSelectedDate = remember(filteredAppointments) {
-        filteredAppointments.map { appointment ->
-            CalendarEvent(
-                id = appointment.appointmentId.toString(),
-                title = "Appointment with Patient ${appointment.patientId}",
-                date = appointment.appointmentDate.toInstant().atZone(ZoneId.systemDefault())
-                    .toLocalDate(),
-                time = appointment.appointmentDate.toInstant().atZone(ZoneId.systemDefault()).toLocalTime(),
-                description = "Status: ${appointment.appointmentStatus}"
-            )
+    // State to store patient names
+    var patientNames by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
+    
+    // Fetch patient names for filtered appointments
+    LaunchedEffect(filteredAppointments) {
+        val names = mutableMapOf<Int, String>()
+        filteredAppointments.forEach { appointment ->
+            val patientName = patientRepository.getPatientNameById(appointment.patientId)
+            if (patientName != null) {
+                names[appointment.patientId] = patientName
+            }
         }
+        patientNames = names
     }
+    
+
     
     LaunchedEffect(Unit) {
         viewModel.fetchAppointments()
@@ -266,10 +267,16 @@ fun CalendarScreen(
                 }
             }
             else -> {
-                items(eventsForSelectedDate) { event ->
-                    EventCard(
-                        event = event,
-                        onClick = { /* Handle event click */ }
+                items(filteredAppointments) { appointment ->
+                    CompactAppointmentCard(
+                        appointment = appointment,
+                        patientName = patientNames[appointment.patientId],
+                        onViewDetails = { /* TODO: Navigate to appointment details */ },
+                        onMarkInProgress = { /* TODO: Mark as in progress */ },
+                        onMarkCompleted = { /* TODO: Mark as completed */ },
+                        onMarkCancelled = { /* TODO: Mark as cancelled */ },
+                        onSendReminder = { /* TODO: Send reminder */ },
+                        onAddCheckup = { /* TODO: Add checkup */ }
                     )
                 }
             }
@@ -483,53 +490,3 @@ private fun MonthView(
     }
 }
 
-@Composable
-private fun EventCard(
-    event: CalendarEvent,
-    onClick: () -> Unit
-) {
-    val customGreen = Color(0xFF1BBF69)
-    
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = customGreen.copy(alpha = 0.1f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = event.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = customGreen
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = event.time.toString(),
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-                event.description?.let {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = it,
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                }
-            }
-        }
-    }
-}

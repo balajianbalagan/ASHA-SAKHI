@@ -86,6 +86,15 @@ interface PatientDao {
     @Query("SELECT * FROM TBL_PROFILE_PATIENT WHERE firstName = :firstName AND (lastName = :lastName OR (:lastName IS NULL AND lastName IS NULL)) ORDER BY patientId DESC LIMIT 1")
     suspend fun getPatientByName(firstName: String, lastName: String?): Patient?
 
+    @Query("SELECT firstName, lastName FROM TBL_PROFILE_PATIENT WHERE patientId = :patientId")
+    suspend fun getPatientNameById(patientId: Int): PatientName?
+
     @Query("DELETE FROM TBL_PROFILE_PATIENT")
     suspend fun clearAllPatients()
-} 
+}
+
+// Data class for patient name only
+data class PatientName(
+    val firstName: String,
+    val lastName: String?
+) 

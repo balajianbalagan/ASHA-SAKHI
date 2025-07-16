@@ -32,7 +32,7 @@ fun AppointmentsScreen(
     onMarkInProgress: (Appointment) -> Unit = {},
     onMarkCompleted: (Appointment) -> Unit = {},
     onMarkCancelled: (Appointment) -> Unit = {},
-    onShare: (Appointment) -> Unit = {},
+    onSendReminder: (Appointment) -> Unit = {},
     onDelete: (Appointment) -> Unit = {},
     viewModel: AppointmentViewModel = hiltViewModel()
 ) {
@@ -42,6 +42,8 @@ fun AppointmentsScreen(
     
     val appointmentsState by viewModel.appointments.collectAsState()
     val cancelAppointmentState by viewModel.cancelAppointmentState.collectAsState()
+    val markInProgressState by viewModel.markInProgressState.collectAsState()
+    val markCompletedState by viewModel.markCompletedState.collectAsState()
     
     // Confirm dialog state
     var showConfirmDialog by remember { mutableStateOf(false) }
@@ -52,24 +54,33 @@ fun AppointmentsScreen(
     var confirmButtonText by remember { mutableStateOf("") }
     var confirmButtonColor by remember { mutableStateOf(Color.Unspecified) }
     
-    // Handle cancel appointment result
-    LaunchedEffect(cancelAppointmentState) {
-        when (cancelAppointmentState) {
-            is Resource.Success -> {
-                // Reset the state after successful cancellation
+    // Handle appointment status update results
+    LaunchedEffect(cancelAppointmentState, markInProgressState, markCompletedState) {
+        when {
+            cancelAppointmentState is Resource.Success -> {
                 viewModel.resetCancelAppointmentState()
             }
-            is Resource.Error -> {
-                // Reset the state after error
+            cancelAppointmentState is Resource.Error -> {
                 viewModel.resetCancelAppointmentState()
             }
-            else -> {}
+            markInProgressState is Resource.Success -> {
+                viewModel.resetMarkInProgressState()
+            }
+            markInProgressState is Resource.Error -> {
+                viewModel.resetMarkInProgressState()
+            }
+            markCompletedState is Resource.Success -> {
+                viewModel.resetMarkCompletedState()
+            }
+            markCompletedState is Resource.Error -> {
+                viewModel.resetMarkCompletedState()
+            }
         }
     }
     
     // Filter state
     val statusFilters = remember {
-        mutableStateSetOf("Scheduled") // Default to show only scheduled
+        mutableStateSetOf("Scheduled", "In Progress") // Default to show Scheduled and In Progress
     }
     
     // Function to show confirm dialog
@@ -96,6 +107,12 @@ fun AppointmentsScreen(
                 confirmButtonText = "Complete Appointment"
                 // Color will be set in the dialog
             }
+            "reminder" -> {
+                dialogTitle = "Send Reminder"
+                dialogMessage = "Are you sure you want to send a reminder to the patient for this appointment?"
+                confirmButtonText = "Send Reminder"
+                // Color will be set in the dialog
+            }
             "delete" -> {
                 dialogTitle = "Delete Appointment"
                 dialogMessage = "Are you sure you want to delete this appointment? This action cannot be undone."
@@ -116,10 +133,15 @@ fun AppointmentsScreen(
                     onMarkCancelled(appointmentToConfirm!!)
                 }
                 "start" -> {
+                    viewModel.markInProgress(appointmentToConfirm!!.appointmentId)
                     onMarkInProgress(appointmentToConfirm!!)
                 }
                 "complete" -> {
+                    viewModel.markCompleted(appointmentToConfirm!!.appointmentId)
                     onMarkCompleted(appointmentToConfirm!!)
+                }
+                "reminder" -> {
+                    onSendReminder(appointmentToConfirm!!)
                 }
                 "delete" -> {
                     onDelete(appointmentToConfirm!!)
@@ -193,9 +215,21 @@ fun AppointmentsScreen(
                         .filter { appointment ->
                             statusFilters.contains(appointment.appointmentStatus)
                         }
-                        .sortedBy { appointment ->
-                            appointment.appointmentDate
-                        }
+                        .sortedWith(
+                            compareBy<Appointment> { appointment ->
+                                // Priority order: In Progress (1), Scheduled (2), Completed (3), Cancelled (4)
+                                when (appointment.appointmentStatus.lowercase()) {
+                                    "in progress" -> 1
+                                    "completed" -> 2
+                                    "scheduled" -> 3
+                                    "cancelled" -> 4
+                                    else -> 5
+                                }
+                            }.thenBy { appointment ->
+                                // Within each status group, sort by date (earliest first)
+                                appointment.appointmentDate
+                            }
+                        )
                     
                     if (filteredAppointments.isEmpty()) {
                         Box(
@@ -251,7 +285,7 @@ fun AppointmentsScreen(
                                     onMarkCancelled = { appointment ->
                                         showConfirmDialog(appointment, "cancel")
                                     },
-                                    onShare = onShare,
+                                    onSendReminder = onSendReminder,
                                     onDelete = { appointment ->
                                         showConfirmDialog(appointment, "delete")
                                     }
@@ -270,6 +304,7 @@ fun AppointmentsScreen(
             "cancel" -> MaterialTheme.colorScheme.error
             "start" -> MaterialTheme.colorScheme.secondary
             "complete" -> MaterialTheme.colorScheme.tertiary
+            "reminder" -> MaterialTheme.colorScheme.primary
             "delete" -> MaterialTheme.colorScheme.error
             else -> MaterialTheme.colorScheme.primary
         }

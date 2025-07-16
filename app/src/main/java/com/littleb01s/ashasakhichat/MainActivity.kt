@@ -29,6 +29,7 @@ import com.littleb01s.ashasakhichat.presentation.screens.*
 import com.littleb01s.ashasakhichat.presentation.HomeContent
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentDetailsViewModel
+import com.littleb01s.ashasakhichat.data.repository.AppointmentRepository
 import java.util.Date
 import com.littleb01s.ashasakhichat.presentation.LoginScreen
 import com.littleb01s.ashasakhichat.presentation.MainScaffold
@@ -378,6 +379,7 @@ class MainActivity : ComponentActivity() {
                                 ) { backStackEntry ->
                                     val appointmentId = backStackEntry.arguments?.getInt("appointmentId") ?: return@composable
                                     val viewModel: AppointmentDetailsViewModel = hiltViewModel()
+                                    val appointmentRepository: AppointmentRepository = viewModel.repository
                                     LaunchedEffect(appointmentId) {
                                         viewModel.fetchAppointmentById(appointmentId)
                                     }
@@ -404,9 +406,15 @@ class MainActivity : ComponentActivity() {
                                             }
                                         }
                                         is Resource.Success -> {
+                                            val patientName by viewModel.patientName.collectAsState()
                                             AppointmentDetailsScreen(
                                                 appointment = state.data!!,
-                                                onNavigateBack = { navController.navigateUp() }
+                                                patientName = patientName,
+                                                onNavigateBack = { navController.navigateUp() },
+                                                onNavigateToPatient = { patientId ->
+                                                    navController.navigate(Screen.PatientDetails.createRoute(patientId))
+                                                },
+                                                appointmentRepository = appointmentRepository
                                             )
                                         }
                                     }

@@ -41,6 +41,11 @@ interface AppointmentRepository {
     suspend fun sendReminder(appointmentId: Int): Flow<Resource<Boolean>>
     suspend fun fetchCheckupsForAppointment(appointmentId: Int): Flow<Resource<List<com.littleb01s.ashasakhichat.data.local.entity.Checkup>>>
     suspend fun saveOrUpdateAppointment(appointment: Appointment, checkupIds: List<Int>): Flow<Resource<Int>>
+    
+    // Status update functions
+    suspend fun cancelAppointment(appointmentId: Int): Resource<SaveAppointmentResponse>
+    suspend fun markInProgress(appointmentId: Int): Resource<SaveAppointmentResponse>
+    suspend fun markCompleted(appointmentId: Int): Resource<SaveAppointmentResponse>
 }
 
 @Singleton
@@ -265,8 +270,8 @@ class AppointmentRepositoryImpl @Inject constructor(
         emit(Resource.Error("Not implemented yet"))
     }
     
-    // Cancel appointment with offline-first approach using save-appointment endpoint
-    suspend fun cancelAppointment(appointmentId: Int): Resource<SaveAppointmentResponse> {
+    // Reusable function to update appointment status with offline-first approach
+    suspend fun updateAppointmentStatus(appointmentId: Int, newStatus: String): Resource<SaveAppointmentResponse> {
         return try {
             // Get the appointment from local database
             val appointment = appointmentDao.getAppointmentById(appointmentId)
@@ -274,22 +279,27 @@ class AppointmentRepositoryImpl @Inject constructor(
                 return Resource.Error("Appointment not found")
             }
             
+            // Validate status transition
+            if (!isValidStatusTransition(appointment.appointmentStatus, newStatus)) {
+                return Resource.Error("Invalid status transition from ${appointment.appointmentStatus} to $newStatus")
+            }
+            
             // Create status update request with only the changing field
             val statusUpdateRequest = AppointmentStatusUpdateRequest(
                 appointmentData = AppointmentUpdateData(
                     appointmentId = appointment.serverId ?: 0, // Required - server ID
-                    appointmentStatus = "Cancelled" // Only the changing value
-                    )
+                    appointmentStatus = newStatus // Only the changing value
+                )
             )
             
-            // Try to cancel via API using save-appointment endpoint
+            // Try to update via API using save-appointment endpoint
             val response = api.saveOrUpdateAppointment(statusUpdateRequest)
             
             if (response.isSuccessful) {
                 // API call successful, update local database
                 response.body()?.let { saveResponse ->
                     appointmentDao.updateAppointment(appointment.copy(
-                        appointmentStatus = "Cancelled",
+                        appointmentStatus = newStatus,
                         needsUpload = false,
                         offlineChangeFlags = null, // Clear flags since sync was successful
                         updatedAt = Date()
@@ -298,30 +308,64 @@ class AppointmentRepositoryImpl @Inject constructor(
                 Resource.Success(response.body()!!)
             } else {
                 // API call failed, save locally with offline flag
-                saveCancellationLocally(appointmentId)
-                Resource.Error("Failed to cancel appointment: ${response.message()}")
+                saveStatusChangeLocally(appointmentId, newStatus)
+                Resource.Error("Failed to update appointment status: ${response.message()}")
             }
         } catch (e: Exception) {
             // Network error, save locally with offline flag
-            saveCancellationLocally(appointmentId)
+            saveStatusChangeLocally(appointmentId, newStatus)
             Resource.Error("Network error: ${e.message}")
         }
     }
     
-    private suspend fun saveCancellationLocally(appointmentId: Int) {
+    private suspend fun saveStatusChangeLocally(appointmentId: Int, newStatus: String) {
         val appointment = appointmentDao.getAppointmentById(appointmentId)
         appointment?.let {
             val currentFlags = it.offlineChangeFlags?.toMutableList() ?: mutableListOf()
-            if (!currentFlags.contains(AppointmentOfflineFlags.CANCELLED)) {
-                currentFlags.add(AppointmentOfflineFlags.CANCELLED)
+            val flagToAdd = getOfflineFlagForStatus(newStatus)
+            
+            if (flagToAdd != null && !currentFlags.contains(flagToAdd)) {
+                currentFlags.add(flagToAdd)
             }
             
             appointmentDao.updateAppointment(it.copy(
-                appointmentStatus = "Cancelled",
+                appointmentStatus = newStatus,
                 needsUpload = true,
                 offlineChangeFlags = currentFlags,
                 updatedAt = Date()
             ))
         }
+    }
+    
+    private fun isValidStatusTransition(currentStatus: String, newStatus: String): Boolean {
+        return when (currentStatus.lowercase()) {
+            "scheduled" -> newStatus.lowercase() in listOf("in progress", "cancelled")
+            "in progress" -> newStatus.lowercase() == "completed"
+            "completed" -> false // Cannot change from completed
+            "cancelled" -> false // Cannot change from cancelled
+            else -> true // Allow other transitions
+        }
+    }
+    
+    private fun getOfflineFlagForStatus(status: String): String? {
+        return when (status.lowercase()) {
+            "cancelled" -> AppointmentOfflineFlags.CANCELLED
+            "in progress" -> AppointmentOfflineFlags.IN_PROGRESS
+            "completed" -> AppointmentOfflineFlags.COMPLETED
+            else -> null
+        }
+    }
+    
+    // Convenience functions for specific status changes
+    override suspend fun cancelAppointment(appointmentId: Int): Resource<SaveAppointmentResponse> {
+        return updateAppointmentStatus(appointmentId, "Cancelled")
+    }
+    
+    override suspend fun markInProgress(appointmentId: Int): Resource<SaveAppointmentResponse> {
+        return updateAppointmentStatus(appointmentId, "In Progress")
+    }
+    
+    override suspend fun markCompleted(appointmentId: Int): Resource<SaveAppointmentResponse> {
+        return updateAppointmentStatus(appointmentId, "Completed")
     }
 } 

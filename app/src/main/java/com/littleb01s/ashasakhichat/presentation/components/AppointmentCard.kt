@@ -21,10 +21,10 @@ fun AppointmentCard(
     onViewDetails: (Appointment) -> Unit = {},
     onEditAppointment: (Appointment) -> Unit = {},
     onMarkInProgress: (Appointment) -> Unit = {},
-    onMarkCompleted:  (Appointment) -> Unit = {},
-    onMarkCancelled:  (Appointment) -> Unit = {},
-    onShare: (Appointment) -> Unit = {},
-    onDelete: @Composable (Appointment) -> Unit = {}
+    onMarkCompleted: (Appointment) -> Unit = {},
+    onMarkCancelled: (Appointment) -> Unit = {},
+    onSendReminder: (Appointment) -> Unit = {},
+    onDelete: (Appointment) -> Unit = {}
 ) {
     val formatter = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     val timeFormatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
@@ -132,16 +132,33 @@ fun AppointmentCard(
                                     Icon(Icons.Default.Visibility, "View")
                                 }
                             )
-                            DropdownMenuItem(
-                                text = { Text("Share") },
-                                onClick = {
-                                    onShare(appointment)
-                                    showMenu = false
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.Share, "Share")
-                                }
-                            )
+                            // Show Send Reminder only for Scheduled appointments
+                            if (appointment.appointmentStatus.lowercase() == "scheduled") {
+                                DropdownMenuItem(
+                                    text = { Text("Send Reminder") },
+                                    onClick = {
+                                        onSendReminder(appointment)
+                                        showMenu = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.Notifications, "Send Reminder")
+                                    }
+                                )
+                            }
+                            // Show Add Checkup for In Progress and Completed appointments
+                            if (appointment.appointmentStatus.lowercase() == "in progress" || 
+                                appointment.appointmentStatus.lowercase() == "completed") {
+                                DropdownMenuItem(
+                                    text = { Text("Add Checkup") },
+                                    onClick = {
+                                        // TODO: Navigate to add checkup screen
+                                        showMenu = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(Icons.Default.Add, "Add Checkup")
+                                    }
+                                )
+                            }
                         }
                     }
                 }

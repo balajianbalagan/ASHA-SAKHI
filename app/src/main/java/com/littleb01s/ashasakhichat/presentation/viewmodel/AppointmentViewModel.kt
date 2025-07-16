@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AppointmentViewModel @Inject constructor(
     private val repository: AppointmentRepository,
-    private val patientRepository: PatientRepository,
+    val patientRepository: PatientRepository,
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
@@ -32,6 +32,12 @@ class AppointmentViewModel @Inject constructor(
 
     private val _cancelAppointmentState = MutableStateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>>(Resource.Loading())
     val cancelAppointmentState: StateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>> = _cancelAppointmentState
+
+    private val _markInProgressState = MutableStateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>>(Resource.Loading())
+    val markInProgressState: StateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>> = _markInProgressState
+
+    private val _markCompletedState = MutableStateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>>(Resource.Loading())
+    val markCompletedState: StateFlow<Resource<com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse>> = _markCompletedState
 
     fun fetchAppointments() {
         viewModelScope.launch {
@@ -73,7 +79,7 @@ class AppointmentViewModel @Inject constructor(
         viewModelScope.launch {
             _cancelAppointmentState.value = Resource.Loading()
             try {
-                val result = (repository as com.littleb01s.ashasakhichat.data.repository.AppointmentRepositoryImpl).cancelAppointment(appointmentId)
+                val result = repository.cancelAppointment(appointmentId)
                 _cancelAppointmentState.value = result
                 
                 // If successful, refetch appointments to show the updated status
@@ -87,12 +93,56 @@ class AppointmentViewModel @Inject constructor(
         }
     }
 
+    fun markInProgress(appointmentId: Int) {
+        viewModelScope.launch {
+            _markInProgressState.value = Resource.Loading()
+            try {
+                val result = repository.markInProgress(appointmentId)
+                _markInProgressState.value = result
+                
+                // If successful, refetch appointments to show the updated status
+                if (result is Resource.Success) {
+                    // Refetch all appointments to show the updated status
+                    fetchAppointments()
+                }
+            } catch (e: Exception) {
+                _markInProgressState.value = Resource.Error(e.message ?: "Failed to mark appointment as In Progress")
+            }
+        }
+    }
+
+    fun markCompleted(appointmentId: Int) {
+        viewModelScope.launch {
+            _markCompletedState.value = Resource.Loading()
+            try {
+                val result = repository.markCompleted(appointmentId)
+                _markCompletedState.value = result
+                
+                // If successful, refetch appointments to show the updated status
+                if (result is Resource.Success) {
+                    // Refetch all appointments to show the updated status
+                    fetchAppointments()
+                }
+            } catch (e: Exception) {
+                _markCompletedState.value = Resource.Error(e.message ?: "Failed to mark appointment as Completed")
+            }
+        }
+    }
+
     fun resetCreateAppointmentState() {
         _createAppointmentState.value = Resource.Loading()
     }
 
     fun resetCancelAppointmentState() {
         _cancelAppointmentState.value = Resource.Loading()
+    }
+
+    fun resetMarkInProgressState() {
+        _markInProgressState.value = Resource.Loading()
+    }
+
+    fun resetMarkCompletedState() {
+        _markCompletedState.value = Resource.Loading()
     }
 
     fun getWorkerId(): Int? {
