@@ -35,4 +35,7 @@ interface DietDao {
 
     @Query("UPDATE TBL_PATIENT_DIET SET needsDownload = 0, lastDownloadedAt = :timestamp WHERE dietId = :dietId")
     suspend fun markAsDownloaded(dietId: Int, timestamp: Date = Date())
+
+    @Query("DELETE FROM TBL_PATIENT_DIET")
+    suspend fun clearAllDiets()
 } 

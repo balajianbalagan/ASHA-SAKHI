@@ -64,13 +64,9 @@ class PatientRepository @Inject constructor(
     }
 
     // API operations with local caching
-    suspend fun fetchAndCachePatients(workerId: Int?) {
+    suspend fun fetchAndCachePatients(workerId: Int?=null, updatedAt: String? = null) {
         try {
-            val response = if (workerId != null) {
-                patientService.getPatientsByWorkerId(workerId)
-            } else {
-                patientService.getAllPatients()
-            }
+            val response = patientService.getAllPatients(workerId, updatedAt)
 
             if (response.isSuccessful) {
                 response.body()?.data?.forEach { patientResponse ->
@@ -136,6 +132,9 @@ class PatientRepository @Inject constructor(
                             appointmentDate = parseIsoDate(appointmentResponse.appointmentDate) ?: Date(),
                             appointmentStatus = appointmentResponse.appointmentStatus,
                             appointmentType = appointmentResponse.appointmentType ?: "Regular",
+                            appointmentName = appointmentResponse.appointmentName,
+                            appointmentDescription = appointmentResponse.appointmentDescription,
+                            appointmentPriority = appointmentResponse.appointmentPriority,
                             needsUpload = false,
                             needsDownload = false,
                             lastDownloadedAt = Date(),
@@ -270,7 +269,7 @@ class PatientRepository @Inject constructor(
     }
 
     // Sync operations
-    suspend fun syncPatients() {
+    suspend fun syncPatients(updatedAt: String? = null) {
         // First, upload any local changes
         val patientsToUpload = patientDao.getPatientsToUploadImmediate()
         patientsToUpload.forEach { patient ->
@@ -315,8 +314,8 @@ class PatientRepository @Inject constructor(
             }
         }
 
-        // Then fetch and cache all patients from server
-        fetchAndCachePatients(null)
+        // Then fetch and cache patients from server (with optional incremental sync)
+        fetchAndCachePatients(null, updatedAt)
     }
 
     // Get appointments for a specific patient from local database
@@ -332,9 +331,13 @@ class PatientRepository @Inject constructor(
                     appointmentDate = appointment.appointmentDate,
                     appointmentType = appointment.appointmentType,
                     appointmentStatus = appointment.appointmentStatus,
+                    appointmentName = appointment.appointmentName,
+                    appointmentDescription = appointment.appointmentDescription,
+                    appointmentPriority = appointment.appointmentPriority,
                     needsUpload = appointment.needsUpload,
                     needsDownload = appointment.needsDownload,
-                    lastDownloadedAt = appointment.lastDownloadedAt
+                    lastDownloadedAt = appointment.lastDownloadedAt,
+                    serverId = appointment.serverId
                 )
             }
             emit(Resource.Success(AppointmentListResponse(appointments = appointmentModels)))

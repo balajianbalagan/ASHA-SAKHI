@@ -13,6 +13,9 @@ data class Appointment(
     val appointmentDate: Date,
     val appointmentStatus: String,
     val appointmentType: String?,
+    val appointmentDescription: String? = null,
+    val appointmentName: String? = null,
+    val appointmentPriority: Int? = null,
     // Sync fields
     val needsUpload: Boolean = true,
     val needsDownload: Boolean = false,

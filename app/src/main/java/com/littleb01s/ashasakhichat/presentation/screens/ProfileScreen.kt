@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,15 +22,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.presentation.DetailScaffold
 import com.littleb01s.ashasakhichat.presentation.ProfileViewModel
+import com.littleb01s.ashasakhichat.presentation.MainViewModel
 
 @Composable
 fun ProfileScreen(
     onNavigateBack: () -> Unit,
     onSignOut: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     val showSignOutDialog by viewModel.showSignOutDialog.collectAsState()
+    val shouldResetSync by viewModel.shouldResetSync.collectAsState()
+
+    // Observe shouldResetSync and call MainViewModel's reset method
+    LaunchedEffect(shouldResetSync) {
+        if (shouldResetSync) {
+            mainViewModel.resetSyncStatus()
+            viewModel.resetSyncSignal()
+        }
+    }
 
     if (showSignOutDialog) {
         AlertDialog(

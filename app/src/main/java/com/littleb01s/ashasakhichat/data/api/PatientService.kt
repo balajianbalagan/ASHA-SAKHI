@@ -9,10 +9,10 @@ import java.util.Date
 
 interface PatientService {
     @GET("api/patient/patient-list")
-    suspend fun getAllPatients(): Response<PatientListResponse>
-
-    @GET("api/patient/patient-list/{workerId}")
-    suspend fun getPatientsByWorkerId(@Path("workerId") workerId: Int): Response<PatientListResponse>
+    suspend fun getAllPatients(
+        @retrofit2.http.Query("workerId") workerId: Int? = null,
+        @retrofit2.http.Query("updatedAt") updatedAt: String? = null
+    ): Response<PatientListResponse>
 
     @POST("api/patient/save-patient")
     suspend fun savePatient(@Body request: SavePatientRequest): Response<SavePatientResponse>
@@ -71,7 +71,10 @@ data class PatientAppointmentResponse(
     val patientId: Int,
     val appointmentDate: String,
     val appointmentStatus: String,
-    val appointmentType: String?
+    val appointmentType: String?,
+    val appointmentName: String?,
+    val appointmentDescription: String?,
+    val appointmentPriority: Int?
 )
 
 data class SavePatientRequest(

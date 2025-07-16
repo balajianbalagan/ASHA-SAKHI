@@ -35,4 +35,7 @@ interface PhotoDao {
 
     @Query("UPDATE TBL_CHECKUP_PHOTOS SET needsDownload = 0, lastDownloadedAt = :timestamp WHERE photoId = :photoId")
     suspend fun markAsDownloaded(photoId: Int, timestamp: Date = Date())
+
+    @Query("DELETE FROM TBL_CHECKUP_PHOTOS")
+    suspend fun clearAllPhotos()
 } 

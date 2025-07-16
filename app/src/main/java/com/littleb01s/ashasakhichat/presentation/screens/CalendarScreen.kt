@@ -61,10 +61,10 @@ fun CalendarScreen(
 
     val filteredAppointments = remember(selectedDate, appointmentsList) {
         appointmentsList.filter { appointment ->
-            val appointmentLocalDate = appointment.appointmentDate.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-            appointmentLocalDate == selectedDate
+        val appointmentLocalDate = appointment.appointmentDate.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+        appointmentLocalDate == selectedDate
         }
     }
     
@@ -375,110 +375,110 @@ private fun MonthView(
     customBlue: Color,
     customGreen: Color
 ) {
-    Column {
-        // Weekday Headers
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            DayOfWeek.values().forEach { dayOfWeek ->
-                Text(
-                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                    textAlign = TextAlign.Center,
+            Column {
+                // Weekday Headers
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    DayOfWeek.values().forEach { dayOfWeek ->
+                        Text(
+                            text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                            textAlign = TextAlign.Center,
                     color = customBlue,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Calendar Days
-        val firstDayOfMonth = currentMonth.atDay(1)
-        val lastDayOfMonth = currentMonth.atEndOfMonth()
-        val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
-        val daysInMonth = lastDayOfMonth.dayOfMonth
-        
-        var currentDay = 1
-        var currentWeek = 0
-        
-        while (currentDay <= daysInMonth) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                for (dayOfWeek in 0..6) {
-                    if (currentWeek == 0 && dayOfWeek < firstDayOfWeek) {
-                        // Empty space before first day of month
-                        Box(modifier = Modifier.weight(1f))
-                    } else if (currentDay <= daysInMonth) {
-                        val date = currentMonth.atDay(currentDay)
-                        val isSelected = date == selectedDate
-                        val isToday = date == LocalDate.now()
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Calendar Days
+                val firstDayOfMonth = currentMonth.atDay(1)
+                val lastDayOfMonth = currentMonth.atEndOfMonth()
+                val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
+                val daysInMonth = lastDayOfMonth.dayOfMonth
+                
+                var currentDay = 1
+                var currentWeek = 0
+                
+                while (currentDay <= daysInMonth) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        for (dayOfWeek in 0..6) {
+                            if (currentWeek == 0 && dayOfWeek < firstDayOfWeek) {
+                                // Empty space before first day of month
+                                Box(modifier = Modifier.weight(1f))
+                            } else if (currentDay <= daysInMonth) {
+                                val date = currentMonth.atDay(currentDay)
+                                val isSelected = date == selectedDate
+                                val isToday = date == LocalDate.now()
                         val hasEvents = remember(date, appointmentsList) {
                             appointmentsList.any { 
-                                it.appointmentDate.toInstant()
-                                    .atZone(ZoneId.systemDefault())
-                                    .toLocalDate() == date 
+                                    it.appointmentDate.toInstant()
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDate() == date 
                             }
-                        }
-                        
+                                }
+                                
                         Column(
                             modifier = Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             // Date number
-                            Box(
-                                modifier = Modifier
+                                Box(
+                                    modifier = Modifier
                                     .size(28.dp)
-                                    .background(
-                                        color = when {
-                                            isSelected -> customBlue
-                                            isToday -> customGreen.copy(alpha = 0.2f)
-                                            else -> Color.Transparent
-                                        },
+                                        .background(
+                                            color = when {
+                                                isSelected -> customBlue
+                                                isToday -> customGreen.copy(alpha = 0.2f)
+                                                else -> Color.Transparent
+                                            },
                                         shape = RoundedCornerShape(14.dp)
-                                    )
+                                        )
                                     .clickable { onDateSelected(date) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = currentDay.toString(),
-                                    color = when {
-                                        isSelected -> Color.White
-                                        isToday -> customGreen
-                                        else -> Color.Black
-                                    },
+                                    contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = currentDay.toString(),
+                                            color = when {
+                                                isSelected -> Color.White
+                                                isToday -> customGreen
+                                                else -> Color.Black
+                                            },
                                     fontSize = 12.sp,
-                                    fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
-                                )
+                                            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
+                                        )
                             }
                             
                             Spacer(modifier = Modifier.height(2.dp))
-                            
+                                        
                             // Event indicator
-                            if (hasEvents) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(4.dp)
-                                        .background(
-                                            color = customGreen,
-                                            shape = RoundedCornerShape(2.dp)
-                                        )
-                                )
+                                        if (hasEvents) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(4.dp)
+                                                    .background(
+                                                        color = customGreen,
+                                                        shape = RoundedCornerShape(2.dp)
+                                                    )
+                                            )
                             } else {
                                 Spacer(modifier = Modifier.height(4.dp))
+                                    }
+                                }
+                                currentDay++
+                            } else {
+                                // Empty space after last day of month
+                                Box(modifier = Modifier.weight(1f))
                             }
                         }
-                        currentDay++
-                    } else {
-                        // Empty space after last day of month
-                        Box(modifier = Modifier.weight(1f))
                     }
-                }
-            }
-            currentWeek++
+                    currentWeek++
         }
     }
 }

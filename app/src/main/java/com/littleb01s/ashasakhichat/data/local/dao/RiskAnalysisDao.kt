@@ -54,4 +54,7 @@ interface RiskAnalysisDao {
     // Batch operations
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnalyses(analyses: List<RiskAnalysisResult>)
+
+    @Query("DELETE FROM TBL_RISK_ANALYSIS")
+    suspend fun clearAllRiskAnalyses()
 } 

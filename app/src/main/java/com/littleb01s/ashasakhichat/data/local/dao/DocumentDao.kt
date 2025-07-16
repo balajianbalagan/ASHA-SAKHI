@@ -33,4 +33,7 @@ interface DocumentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDocuments(documents: List<Document>)
+
+    @Query("DELETE FROM TBL_DOCUMENTS")
+    suspend fun clearAllDocuments()
 } 

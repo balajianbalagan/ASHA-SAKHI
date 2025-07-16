@@ -33,4 +33,7 @@ interface DoctorVerificationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertVerifications(verifications: List<DoctorVerification>)
+
+    @Query("DELETE FROM TBL_DOCTOR_VERIFICATION")
+    suspend fun clearAllVerifications()
 } 

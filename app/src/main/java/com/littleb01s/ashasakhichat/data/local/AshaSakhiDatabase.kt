@@ -20,9 +20,10 @@ import com.littleb01s.ashasakhichat.data.local.entity.*
         Photo::class,
         Doctor::class,
         Infant::class,
-        RiskAnalysisResult::class
+        RiskAnalysisResult::class,
+        SyncTimestamp::class
     ],
-    version = 9,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,6 +38,7 @@ abstract class AshaSakhiDatabase : RoomDatabase() {
     abstract fun doctorDao(): DoctorDao
     abstract fun infantDao(): InfantDao
     abstract fun riskAnalysisDao(): RiskAnalysisDao
+    abstract fun syncTimestampDao(): SyncTimestampDao
 
     companion object {
         private const val DATABASE_NAME = "asha_sakhi_db"

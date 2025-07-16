@@ -30,12 +30,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.ui.theme.AshaTheme
+import com.littleb01s.ashasakhichat.presentation.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val loginState by viewModel.loginState.collectAsStateWithLifecycle()
     
@@ -51,6 +53,7 @@ fun LoginScreen(
                 dialogMessage = (loginState as LoginState.Success).message
                 isError = false
                 showDialog = true
+                
                 // Navigate after showing success message
                 onLoginSuccess()
             }

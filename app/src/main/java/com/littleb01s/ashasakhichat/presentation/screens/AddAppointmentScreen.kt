@@ -41,7 +41,9 @@ fun AddAppointmentScreen(
     }.time) }
     var appointmentType by remember { mutableStateOf("Regular") }
     var appointmentStatus by remember { mutableStateOf("Scheduled") }
-    var notes by remember { mutableStateOf("") }
+    var appointmentName by remember { mutableStateOf("") }
+    var appointmentPriority by remember { mutableStateOf(5) }
+    var appointmentDescription by remember { mutableStateOf("") }
     
     // UI state
     var showDatePicker by remember { mutableStateOf(false) }
@@ -107,6 +109,18 @@ fun AddAppointmentScreen(
     // Function to shuffle form values
     fun shuffleFormValues() {
         val appointmentTypes = listOf("Regular", "Emergency", "Follow-up", "Check-up", "Vaccination")
+        val appointmentNames = listOf(
+            "Routine Check-up",
+            "Emergency Consultation",
+            "Follow-up Visit",
+            "Vaccination Appointment",
+            "Health Assessment",
+            "Prenatal Care",
+            "Postnatal Visit",
+            "Child Immunization",
+            "Health Screening",
+            "Medical Consultation"
+        )
         val sampleNotes = listOf(
             "Patient requested follow-up",
             "Routine check-up appointment",
@@ -119,8 +133,10 @@ fun AddAppointmentScreen(
         selectedDate = randomDate
         selectedTime = randomTime
         appointmentType = appointmentTypes.random()
+        appointmentName = appointmentNames.random()
+        appointmentPriority = (1..10).random() // Random priority between 1-10
+        appointmentDescription = sampleNotes.random() // Use notes as description
         // Status remains "Scheduled" - no need to randomize
-        notes = sampleNotes.random()
     }
     
     // Combine date and time
@@ -228,6 +244,73 @@ fun AddAppointmentScreen(
                 }
             }
             
+            // Appointment Name
+            OutlinedTextField(
+                value = appointmentName,
+                onValueChange = { appointmentName = it },
+                label = { Text("Appointment Name (Optional)") },
+                placeholder = { Text("e.g., Routine Check-up, Emergency Consultation") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            // Appointment Description
+            OutlinedTextField(
+                value = appointmentDescription,
+                onValueChange = { appointmentDescription = it },
+                label = { Text("Description (Optional)") },
+                placeholder = { Text("Detailed description of the appointment") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2,
+                maxLines = 3
+            )
+            
+            // Appointment Priority
+            Text(
+                text = "Priority Level",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Low",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                Slider(
+                    value = appointmentPriority.toFloat(),
+                    onValueChange = { appointmentPriority = it.toInt() },
+                    valueRange = 0f..10f,
+                    steps = 9,
+                    modifier = Modifier.weight(3f)
+                )
+                
+                Text(
+                    text = "High",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            // Priority display
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Priority: $appointmentPriority/10",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            
             // Status (Fixed to Scheduled)
             OutlinedTextField(
                 value = appointmentStatus,
@@ -238,16 +321,7 @@ fun AddAppointmentScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Notes
-            OutlinedTextField(
-                value = notes,
-                onValueChange = { notes = it },
-                label = { Text("Notes (Optional)") },
-                placeholder = { Text("Add any notes or special instructions") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 2,
-                maxLines = 3
-            )
+
 
 
 
@@ -274,7 +348,10 @@ fun AddAppointmentScreen(
                         patientId = patientId,
                         appointmentDate = combinedDateTime,
                         appointmentType = appointmentType,
-                        appointmentStatus = appointmentStatus
+                        appointmentStatus = appointmentStatus,
+                        appointmentName = appointmentName.takeIf { it.isNotBlank() },
+                        appointmentDescription = appointmentDescription.takeIf { it.isNotBlank() },
+                        appointmentPriority = appointmentPriority.takeIf { it > 0 }
                     )
                     viewModel.createAppointment(appointment)
                 },

@@ -6,11 +6,13 @@ import com.littleb01s.ashasakhichat.data.local.dao.AppointmentDao
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
 import com.littleb01s.ashasakhichat.data.api.AppointmentResponse
+import com.littleb01s.ashasakhichat.data.api.AppointmentListResponseWrapper
 import com.littleb01s.ashasakhichat.data.remote.AppointmentApi
 import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -22,12 +24,16 @@ data class CreateAppointmentRequest(
     val patientId: Int,
     val appointmentDate: String, // Formatted date string
     val appointmentStatus: String,
-    val appointmentType: String?
+    val appointmentType: String?,
+    val appointmentName: String?,
+    val appointmentDescription: String?,
+    val appointmentPriority: Int?
 )
 
 interface AppointmentRepository {
     suspend fun createAppointment(appointment: Appointment): Flow<Resource<AppointmentResponse>>
     suspend fun fetchAppointments(): Flow<Resource<AppointmentListResponse>>
+    suspend fun getAppointmentById(appointmentId: Int): Appointment?
 }
 
 @Singleton
@@ -72,7 +78,10 @@ class AppointmentRepositoryImpl @Inject constructor(
                     patientId = appointment.patientId,
                     appointmentDate = formatDateForApi(appointment.appointmentDate),
                     appointmentStatus = appointment.appointmentStatus,
-                    appointmentType = appointment.appointmentType
+                    appointmentType = appointment.appointmentType,
+                    appointmentName = appointment.appointmentName,
+                    appointmentDescription = appointment.appointmentDescription,
+                    appointmentPriority = appointment.appointmentPriority
                 )
                 Log.d("AppointmentRepository", "Making API call with request: $request")
                 val responseWrapper = api.createAppointment(request)
@@ -89,15 +98,38 @@ class AppointmentRepositoryImpl @Inject constructor(
                         patientId = appointmentData.patientId,
                         appointmentDate = appointmentData.appointmentDate,
                         appointmentStatus = appointmentData.appointmentStatus,
-                        needsUpload = false,
+                        needsUpload = false, // Successfully synced to server
                         needsDownload = false,
                         lastDownloadedAt = Date(),
-                        appointmentType = appointmentData.appointmentType ?: "Regular",
+                        lastUploadedAt = Date(), // Mark as uploaded
+                        appointmentType = appointmentData.appointmentType ?: appointment.appointmentType ?: "Regular",
+                        appointmentName = appointment.appointmentName,
+                        appointmentDescription = appointment.appointmentDescription,
+                        appointmentPriority = appointment.appointmentPriority,
                         serverId = appointmentData.appointmentId
                     )
                     Log.d("AppointmentRepository", "Appointment saved to server: $localAppointment")
                     val insertedId = appointmentDao.insertAppointment(localAppointment)
                     Log.d("AppointmentRepository", "Appointment saved to local database with ID: $insertedId")
+                } ?: run {
+                    // If no appointment data in response, still save locally with sync pending
+                    val localAppointment = Appointment(
+                        appointmentId = appointment.appointmentId,
+                        workerId = workerId.toInt(),
+                        patientId = appointment.patientId,
+                        appointmentDate = appointment.appointmentDate,
+                        appointmentStatus = appointment.appointmentStatus,
+                        needsUpload = true, // Still needs upload since response was empty
+                        needsDownload = false,
+                        lastDownloadedAt = null,
+                        appointmentType = appointment.appointmentType ?: "Regular",
+                        appointmentName = appointment.appointmentName,
+                        appointmentDescription = appointment.appointmentDescription,
+                        appointmentPriority = appointment.appointmentPriority,
+                        serverId = null
+                    )
+                    val insertedId = appointmentDao.insertAppointment(localAppointment)
+                    Log.d("AppointmentRepository", "Appointment saved locally (no server data): $insertedId")
                 }
                 emit(Resource.Success(response))
             } catch (e: Exception) {
@@ -113,6 +145,9 @@ class AppointmentRepositoryImpl @Inject constructor(
                     needsDownload = false,
                     lastDownloadedAt = null,
                     appointmentType = appointment.appointmentType ?: "Regular",
+                    appointmentName = appointment.appointmentName,
+                    appointmentDescription = appointment.appointmentDescription,
+                    appointmentPriority = appointment.appointmentPriority,
                     serverId = null
                 )
                 val insertedId = appointmentDao.insertAppointment(localAppointment)
@@ -130,51 +165,29 @@ class AppointmentRepositoryImpl @Inject constructor(
             val workerId = preferencesManager.getWorkerId()?.toString() 
                 ?: throw IllegalStateException("Worker ID not found")
             
-            // First try to fetch from server
-            try {
-                val response = api.fetchAppointments(workerId)
-                // Cache the appointments in local database
-                response.appointments.forEach { appointment ->
-                    val localAppointment = com.littleb01s.ashasakhichat.data.local.entity.Appointment(
-                        appointmentId = 0, // Will be auto-generated
-                        workerId = workerId.toInt(),
+            // Only fetch from local database - server sync is handled by CentralSyncService
+            val localAppointments = appointmentDao.getAllAppointments().first()
+            val filteredAppointments = localAppointments.filter { it.workerId == workerId.toInt() }
+            val response = AppointmentListResponse(
+                appointments = filteredAppointments.map { appointment ->
+                    Appointment(
+                        appointmentId = appointment.serverId ?: 0,
+                        workerId = appointment.workerId,
                         patientId = appointment.patientId,
                         appointmentDate = appointment.appointmentDate,
+                        appointmentType = appointment.appointmentType,
                         appointmentStatus = appointment.appointmentStatus,
-                        needsUpload = false,
-                        needsDownload = false,
-                        lastDownloadedAt = Date(),
-                        appointmentType = appointment.appointmentType ?: "Regular",
-                        serverId = appointment.appointmentId
-
+                        appointmentName = appointment.appointmentName,
+                        appointmentDescription = appointment.appointmentDescription,
+                        appointmentPriority = appointment.appointmentPriority,
+                        needsUpload = appointment.needsUpload,
+                        needsDownload = appointment.needsDownload,
+                        lastDownloadedAt = appointment.lastDownloadedAt,
+                        serverId = appointment.serverId
                     )
-                    appointmentDao.insertAppointment(localAppointment)
                 }
-                emit(Resource.Success(response))
-            } catch (e: Exception) {
-                // If server fetch fails, return local data
-                val localAppointments = appointmentDao.getAllAppointments()
-                    .collect { appointments ->
-                        val filteredAppointments = appointments.filter { it.workerId == workerId.toInt() }
-                        val response = AppointmentListResponse(
-                            appointments = filteredAppointments.map { appointment ->
-                                Appointment(
-                                    appointmentId = appointment.serverId ?: 0,
-                                    workerId = appointment.workerId,
-                                    patientId = appointment.patientId,
-                                    appointmentDate = appointment.appointmentDate,
-                                    appointmentType = appointment.appointmentType,
-                                    appointmentStatus = appointment.appointmentStatus,
-                                    needsUpload = appointment.needsUpload,
-                                    needsDownload = appointment.needsDownload,
-                                    lastDownloadedAt = appointment.lastDownloadedAt,
-                                    serverId = appointment.serverId
-                                )
-                            }
-                        )
-                        emit(Resource.Success(response))
-                    }
-            }
+            )
+            emit(Resource.Success(response))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "An unexpected error occurred"))
         }
@@ -191,11 +204,41 @@ class AppointmentRepositoryImpl @Inject constructor(
                     appointmentDate = appointment.appointmentDate,
                     appointmentType = appointment.appointmentType,
                     appointmentStatus = appointment.appointmentStatus,
+                    appointmentName = appointment.appointmentName,
+                    appointmentDescription = appointment.appointmentDescription,
+                    appointmentPriority = appointment.appointmentPriority,
                     needsUpload = appointment.needsUpload,
                     needsDownload = appointment.needsDownload,
-                    lastDownloadedAt = appointment.lastDownloadedAt
+                    lastDownloadedAt = appointment.lastDownloadedAt,
+                    serverId = appointment.serverId
                 )
             }
+        }
+    }
+
+    // Get single appointment by ID
+    override suspend fun getAppointmentById(appointmentId: Int): Appointment? {
+        return try {
+            val localAppointment = appointmentDao.getAppointmentById(appointmentId)
+            localAppointment?.let { appointment ->
+                Appointment(
+                    appointmentId = appointment.serverId ?: appointment.appointmentId,
+                    workerId = appointment.workerId,
+                    patientId = appointment.patientId,
+                    appointmentDate = appointment.appointmentDate,
+                    appointmentType = appointment.appointmentType,
+                    appointmentStatus = appointment.appointmentStatus,
+                    appointmentName = appointment.appointmentName,
+                    appointmentDescription = appointment.appointmentDescription,
+                    appointmentPriority = appointment.appointmentPriority,
+                    needsUpload = appointment.needsUpload,
+                    needsDownload = appointment.needsDownload,
+                    lastDownloadedAt = appointment.lastDownloadedAt,
+                    serverId = appointment.serverId
+                )
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

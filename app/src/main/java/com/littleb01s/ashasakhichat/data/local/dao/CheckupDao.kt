@@ -40,4 +40,7 @@ interface CheckupDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCheckups(checkups: List<Checkup>)
+
+    @Query("DELETE FROM TBL_CHECKUP")
+    suspend fun clearAllCheckups()
 } 

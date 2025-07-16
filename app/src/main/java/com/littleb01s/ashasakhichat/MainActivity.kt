@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -26,6 +27,9 @@ import com.littleb01s.ashasakhichat.presentation.ChatScreen
 import com.littleb01s.ashasakhichat.presentation.navigation.Screen
 import com.littleb01s.ashasakhichat.presentation.screens.*
 import com.littleb01s.ashasakhichat.presentation.HomeContent
+import com.littleb01s.ashasakhichat.data.local.entity.Appointment
+import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentDetailsViewModel
+import java.util.Date
 import com.littleb01s.ashasakhichat.presentation.LoginScreen
 import com.littleb01s.ashasakhichat.presentation.MainScaffold
 import com.littleb01s.ashasakhichat.presentation.MainViewModel
@@ -51,6 +55,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CircularProgressIndicator
+import com.littleb01s.ashasakhichat.util.Resource
 
 
 @AndroidEntryPoint
@@ -130,6 +136,11 @@ class MainActivity : ComponentActivity() {
 
                                 // Bottom Navigation Screens
                                 composable(Screen.Home.route) {
+                                    // Trigger sync after login when Home screen is first loaded
+                                    LaunchedEffect(Unit) {
+                                        mainViewModel.triggerSyncAfterLogin()
+                                    }
+                                    
                                     MainScaffold(
                                         currentRoute = Screen.Home.route,
                                         onNavigate = { route -> navController.navigate(route) },
@@ -341,6 +352,9 @@ class MainActivity : ComponentActivity() {
                                         onNavigateBack = { navController.navigateUp() },
                                         onNavigateToAddAppointment = { 
                                             navController.navigate(Screen.AddAppointment.createRoute(patientId))
+                                        },
+                                        onViewAppointmentDetails = { appointment ->
+                                            navController.navigate(Screen.AppointmentDetails.createRoute(appointment.appointmentId))
                                         }
                                     )
                                 }
@@ -355,6 +369,47 @@ class MainActivity : ComponentActivity() {
                                         patientId = patientId,
                                         onNavigateBack = { navController.navigateUp() }
                                     )
+                                }
+                                composable(
+                                    route = Screen.AppointmentDetails.route,
+                                    arguments = listOf(
+                                        navArgument("appointmentId") { type = NavType.IntType }
+                                    )
+                                ) { backStackEntry ->
+                                    val appointmentId = backStackEntry.arguments?.getInt("appointmentId") ?: return@composable
+                                    val viewModel: AppointmentDetailsViewModel = hiltViewModel()
+                                    LaunchedEffect(appointmentId) {
+                                        viewModel.fetchAppointmentById(appointmentId)
+                                    }
+                                    val appointmentState by viewModel.appointment.collectAsState()
+                                    
+                                    when (val state = appointmentState) {
+                                        is Resource.Loading -> {
+                                            Box(
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                CircularProgressIndicator()
+                                            }
+                                        }
+                                        is Resource.Error -> {
+                                            Box(
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = state.message ?: "Error loading appointment",
+                                                    color = MaterialTheme.colorScheme.error
+                                                )
+                                            }
+                                        }
+                                        is Resource.Success -> {
+                                            AppointmentDetailsScreen(
+                                                appointment = state.data!!,
+                                                onNavigateBack = { navController.navigateUp() }
+                                            )
+                                        }
+                                    }
                                 }
                                 composable(
                                     route = Screen.CourseDetail.route,

@@ -84,8 +84,8 @@ fun HomeContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp).padding(bottom = 0.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             items(dashboardButtons) { button ->
                 DashboardButtonItem(
@@ -192,7 +192,7 @@ fun DashboardButtonItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(120.dp).padding(bottom = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonColor

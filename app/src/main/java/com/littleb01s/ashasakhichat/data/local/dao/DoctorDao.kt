@@ -35,4 +35,7 @@ interface DoctorDao {
 
     @Query("UPDATE TBL_PROFILE_DOCTOR SET needsDownload = 0, lastDownloadedAt = :timestamp WHERE doctorId = :doctorId")
     suspend fun markAsDownloaded(doctorId: Int, timestamp: Date = Date())
+
+    @Query("DELETE FROM TBL_PROFILE_DOCTOR")
+    suspend fun clearAllDoctors()
 } 

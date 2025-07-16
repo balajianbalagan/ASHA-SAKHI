@@ -38,4 +38,7 @@ interface InfantDao {
 
     @Query("UPDATE TBL_INFANT SET needsDownload = 0, lastDownloadedAt = :timestamp WHERE infantId = :infantId")
     suspend fun markAsDownloaded(infantId: Int, timestamp: Date = Date())
+
+    @Query("DELETE FROM TBL_INFANT")
+    suspend fun clearAllInfants()
 } 

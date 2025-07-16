@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.littleb01s.ashasakhichat.data.local.PreferencesManager
 import com.littleb01s.ashasakhichat.data.repository.PatientRepository
+import com.littleb01s.ashasakhichat.data.repository.CentralSyncService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,11 +24,13 @@ enum class SyncStatus {
 class MainViewModel @Inject constructor(
     private val preferencesManager: PreferencesManager,
     private val patientRepository: PatientRepository,
+    private val centralSyncService: CentralSyncService,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     companion object {
         private var hasInitialSyncRun = false
+        private var hasPostLoginSyncRun = false
     }
 
     private val _userName = MutableStateFlow<String>("User")
@@ -66,9 +69,12 @@ class MainViewModel @Inject constructor(
     private fun performSync() {
         viewModelScope.launch {
             try {
-                Log.d("MainViewModel", "Calling syncPatients")
+                Log.d("MainViewModel", "Starting central sync")
                 _syncStatus.value = SyncStatus.SYNCING
-                patientRepository.syncPatients()
+                
+                // Perform full sync using CentralSyncService (includes patients, appointments, checkups)
+                centralSyncService.performFullSync()
+                
                 Log.d("MainViewModel", "Sync successful, setting toast")
                 _syncStatus.value = SyncStatus.SUCCESS
                 _toastMessage.value = "Data synced successfully!"
@@ -97,6 +103,20 @@ class MainViewModel @Inject constructor(
 
     fun resetSyncFlag() {
         hasInitialSyncRun = false
+    }
+
+    fun resetSyncStatus() {
+        _syncStatus.value = SyncStatus.IDLE
+        hasInitialSyncRun = false
+        hasPostLoginSyncRun = false
+        _toastMessage.value = null
+    }
+
+    fun triggerSyncAfterLogin() {
+        if (!hasPostLoginSyncRun) {
+            hasPostLoginSyncRun = true
+            performSync()
+        }
     }
 
     fun manualSync() {

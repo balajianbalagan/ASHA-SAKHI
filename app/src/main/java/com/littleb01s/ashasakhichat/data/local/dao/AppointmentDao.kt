@@ -17,6 +17,9 @@ interface AppointmentDao {
     @Query("SELECT * FROM TBL_APPOINTMENT WHERE appointmentId = :id")
     suspend fun getAppointmentById(id: Int): Appointment?
 
+    @Query("SELECT * FROM TBL_APPOINTMENT WHERE serverId = :serverId")
+    suspend fun getAppointmentByServerId(serverId: Int): Appointment?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppointment(appointment: Appointment): Long
 
@@ -38,4 +41,7 @@ interface AppointmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAppointments(appointments: List<Appointment>)
+
+    @Query("DELETE FROM TBL_APPOINTMENT")
+    suspend fun clearAllAppointments()
 } 

@@ -50,5 +50,41 @@ object DatabaseModule {
         return database.riskAnalysisDao()
     }
     
+    @Provides
+    @Singleton
+    fun provideSyncTimestampDao(database: AshaSakhiDatabase): SyncTimestampDao {
+        return database.syncTimestampDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideDoctorDao(database: AshaSakhiDatabase): DoctorDao {
+        return database.doctorDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideDoctorVerificationDao(database: AshaSakhiDatabase): DoctorVerificationDao {
+        return database.doctorVerificationDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideDietDao(database: AshaSakhiDatabase): DietDao {
+        return database.dietDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun providePhotoDao(database: AshaSakhiDatabase): PhotoDao {
+        return database.photoDao()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideInfantDao(database: AshaSakhiDatabase): InfantDao {
+        return database.infantDao()
+    }
+    
     // We'll add more providers here as needed (DAOs, Repositories, etc.)
 } 
