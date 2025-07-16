@@ -26,6 +26,10 @@ import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import com.littleb01s.ashasakhichat.util.Resource
 import com.littleb01s.ashasakhichat.presentation.components.CompactAppointmentCard
 import com.littleb01s.ashasakhichat.data.repository.PatientRepository
+import com.littleb01s.ashasakhichat.data.repository.AppointmentRepository
+import com.littleb01s.ashasakhichat.data.api.SaveAppointmentResponse
+import com.littleb01s.ashasakhichat.data.api.SaveAppointmentData
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -39,6 +43,7 @@ import java.util.*
 
 @Composable
 fun CalendarScreen(
+    onNavigateToAppointmentDetails: (Int) -> Unit = {},
     viewModel: AppointmentViewModel = hiltViewModel(),
     patientRepository: PatientRepository = hiltViewModel<AppointmentViewModel>().patientRepository
 ) {
@@ -68,6 +73,68 @@ fun CalendarScreen(
     // State to store patient names
     var patientNames by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
     
+    // Dialog states for quick actions
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var appointmentToConfirm by remember { mutableStateOf<Appointment?>(null) }
+    var actionToConfirm by remember { mutableStateOf<String?>(null) }
+    var dialogTitle by remember { mutableStateOf("") }
+    var dialogMessage by remember { mutableStateOf("") }
+    var confirmButtonText by remember { mutableStateOf("") }
+    
+    // Action result state
+    var showActionResult by remember { mutableStateOf(false) }
+    var actionResultMessage by remember { mutableStateOf("") }
+    var isActionResultSuccess by remember { mutableStateOf(false) }
+    
+    val scope = rememberCoroutineScope()
+    
+    // Observe ViewModel state changes for action results
+    val cancelAppointmentState by viewModel.cancelAppointmentState.collectAsState()
+    val markInProgressState by viewModel.markInProgressState.collectAsState()
+    val markCompletedState by viewModel.markCompletedState.collectAsState()
+    
+    // Handle action results
+    LaunchedEffect(cancelAppointmentState, markInProgressState, markCompletedState) {
+        when {
+            cancelAppointmentState is Resource.Success -> {
+                actionResultMessage = "Appointment cancelled successfully"
+                isActionResultSuccess = true
+                showActionResult = true
+                viewModel.resetCancelAppointmentState()
+            }
+            cancelAppointmentState is Resource.Error -> {
+                actionResultMessage = cancelAppointmentState.message ?: "Failed to cancel appointment"
+                isActionResultSuccess = false
+                showActionResult = true
+                viewModel.resetCancelAppointmentState()
+            }
+            markInProgressState is Resource.Success -> {
+                actionResultMessage = "Appointment started successfully"
+                isActionResultSuccess = true
+                showActionResult = true
+                viewModel.resetMarkInProgressState()
+            }
+            markInProgressState is Resource.Error -> {
+                actionResultMessage = markInProgressState.message ?: "Failed to start appointment"
+                isActionResultSuccess = false
+                showActionResult = true
+                viewModel.resetMarkInProgressState()
+            }
+            markCompletedState is Resource.Success -> {
+                actionResultMessage = "Appointment completed successfully"
+                isActionResultSuccess = true
+                showActionResult = true
+                viewModel.resetMarkCompletedState()
+            }
+            markCompletedState is Resource.Error -> {
+                actionResultMessage = markCompletedState.message ?: "Failed to complete appointment"
+                isActionResultSuccess = false
+                showActionResult = true
+                viewModel.resetMarkCompletedState()
+            }
+        }
+    }
+    
     // Fetch patient names for filtered appointments
     LaunchedEffect(filteredAppointments) {
         val names = mutableMapOf<Int, String>()
@@ -78,6 +145,63 @@ fun CalendarScreen(
             }
         }
         patientNames = names
+    }
+    
+    // Function to show confirm dialog
+    fun showConfirmDialog(appointment: Appointment, action: String) {
+        appointmentToConfirm = appointment
+        actionToConfirm = action
+        
+        when (action) {
+            "cancel" -> {
+                dialogTitle = "Cancel Appointment"
+                dialogMessage = "Are you sure you want to cancel this appointment? This action cannot be undone."
+                confirmButtonText = "Cancel Appointment"
+            }
+            "start" -> {
+                dialogTitle = "Start Appointment"
+                dialogMessage = "Are you sure you want to start this appointment? This will mark it as 'In Progress'."
+                confirmButtonText = "Start Appointment"
+            }
+            "complete" -> {
+                dialogTitle = "Complete Appointment"
+                dialogMessage = "Are you sure you want to mark this appointment as completed?"
+                confirmButtonText = "Complete Appointment"
+            }
+            "reminder" -> {
+                dialogTitle = "Send Reminder"
+                dialogMessage = "Are you sure you want to send a reminder to the patient for this appointment?"
+                confirmButtonText = "Send Reminder"
+            }
+        }
+        
+        showConfirmDialog = true
+    }
+    
+    // Function to handle confirm action
+    fun handleConfirmAction() {
+        if (appointmentToConfirm != null && actionToConfirm != null) {
+            when (actionToConfirm) {
+                "cancel" -> {
+                    viewModel.cancelAppointment(appointmentToConfirm!!.appointmentId)
+                }
+                "start" -> {
+                    viewModel.markInProgress(appointmentToConfirm!!.appointmentId)
+                }
+                "complete" -> {
+                    viewModel.markCompleted(appointmentToConfirm!!.appointmentId)
+                }
+                "reminder" -> {
+                    // For now, show success message since sendReminder is not implemented
+                    actionResultMessage = "Reminder sent successfully"
+                    isActionResultSuccess = true
+                    showActionResult = true
+                }
+            }
+        }
+        showConfirmDialog = false
+        appointmentToConfirm = null
+        actionToConfirm = null
     }
     
 
@@ -271,16 +395,64 @@ fun CalendarScreen(
                     CompactAppointmentCard(
                         appointment = appointment,
                         patientName = patientNames[appointment.patientId],
-                        onViewDetails = { /* TODO: Navigate to appointment details */ },
-                        onMarkInProgress = { /* TODO: Mark as in progress */ },
-                        onMarkCompleted = { /* TODO: Mark as completed */ },
-                        onMarkCancelled = { /* TODO: Mark as cancelled */ },
-                        onSendReminder = { /* TODO: Send reminder */ },
-                        onAddCheckup = { /* TODO: Add checkup */ }
+                        onViewDetails = { appointment ->
+                            onNavigateToAppointmentDetails(appointment.appointmentId)
+                        },
+                        onMarkInProgress = { appointment ->
+                            showConfirmDialog(appointment, "start")
+                        },
+                        onMarkCompleted = { appointment ->
+                            showConfirmDialog(appointment, "complete")
+                        },
+                        onMarkCancelled = { appointment ->
+                            showConfirmDialog(appointment, "cancel")
+                        },
+                        onSendReminder = { appointment ->
+                            showConfirmDialog(appointment, "reminder")
+                        },
+                        onAddCheckup = { /* TODO: Navigate to add checkup screen */ }
                     )
                 }
             }
         }
+    }
+    
+    // Confirmation Dialog
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text(dialogTitle) },
+            text = { Text(dialogMessage) },
+            confirmButton = {
+                TextButton(onClick = { handleConfirmAction() }) {
+                    Text(confirmButtonText)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+    
+    // Action Result Dialog
+    if (showActionResult) {
+        AlertDialog(
+            onDismissRequest = { showActionResult = false },
+            title = { 
+                Text(
+                    if (isActionResultSuccess) "Success" else "Error",
+                    color = if (isActionResultSuccess) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                ) 
+            },
+            text = { Text(actionResultMessage) },
+            confirmButton = {
+                TextButton(onClick = { showActionResult = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 

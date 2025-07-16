@@ -202,7 +202,11 @@ class MainActivity : ComponentActivity() {
                                         onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                                         mainViewModel = mainViewModel
                                     ) {
-                                        CalendarScreen()
+                                        CalendarScreen(
+                                            onNavigateToAppointmentDetails = { appointmentId ->
+                                                navController.navigate(Screen.AppointmentDetails.createRoute(appointmentId))
+                                            }
+                                        )
                                     }
                                 }
                                 composable(Screen.Settings.route) {

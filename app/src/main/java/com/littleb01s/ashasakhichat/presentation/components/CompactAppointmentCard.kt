@@ -136,6 +136,19 @@ fun CompactAppointmentCard(
                             )
                         }
                         
+                        // Send Reminder button (for Scheduled appointments)
+                        IconButton(
+                            onClick = { onSendReminder(appointment) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Notifications,
+                                "Send Reminder",
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        
                         // Cancel button (for Scheduled appointments)
                         IconButton(
                             onClick = { onMarkCancelled(appointment) },
