@@ -4,28 +4,28 @@
     "title": "Maternal Health Basics",
     "description": "Learn about the essentials of maternal health, including prenatal care, nutrition, and warning signs during pregnancy.",
     "type": "photo",
-    "mediaUrl": "https://www.who.int/images/default-source/mca/maternal-health.jpg",
+    "mediaUrl": "https://www.unicef.org/india/sites/unicef.org.india/files/styles/hero_extended/public/UN0687946.jpg.webp",
     "completed": false,
     "subContent": [
       {
         "id": "sub_1_1",
         "type": "photo",
-        "mediaUrl": "https://www.who.int/images/default-source/mca/maternal-health.jpg",
-        "text": "Prenatal care is essential for monitoring the health of both mother and baby. Regular checkups help detect and prevent potential complications.",
+        "mediaUrl": "https://www.ihat.in/wp-content/uploads/2022/04/Resource-Featured-Image-600-X-340.png",
+        "text": "Prenatal care is essential for monitoring the health of both mother and baby. Regular checkups include measuring blood pressure, weight, fetal growth, and blood tests to detect conditions such as anemia, gestational diabetes, or infections early on. Consistent antenatal visits greatly reduce health risks for both mother and baby.",
         "completed": false
       },
       {
         "id": "sub_1_2",
         "type": "video",
-        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-        "text": "Watch this video to understand the importance of nutrition during pregnancy.",
+        "mediaUrl": "https://www.youtube.com/watch?v=pw0eJZkmPYM",
+        "text": "Watch this expert-led video to understand the importance of nutrition during pregnancy. Learn about key nutrients like folic acid, iron, calcium, and protein, and how they support fetal development and maternal health, as explained by healthcare professionals.",
         "completed": false
       },
       {
         "id": "sub_1_3",
         "type": "photo",
-        "mediaUrl": "https://www.cdc.gov/reproductivehealth/maternalinfanthealth/images/pregnancy-graphic.jpg",
-        "text": "Be aware of warning signs such as severe headaches, vision changes, or swelling. Seek medical attention if these occur.",
+        "mediaUrl": "https://my.clevelandclinic.org/-/scassets/images/org/health/articles/24333-eclampsia",
+        "text": "Be aware of warning signs during pregnancy such as severe headaches, vision changes, sudden swelling, reduced fetal movement, or bleeding. These can indicate serious conditions like preeclampsia or fetal distress. Immediate medical attention should be sought if these occur.",
         "completed": false
       }
     ],
@@ -57,28 +57,28 @@
     "title": "Immunization Schedule",
     "description": "Understand the national immunization schedule for children and mothers, including timing and importance of each vaccine.",
     "type": "photo",
-    "mediaUrl": "https://www.who.int/images/default-source/campaigns/immunization-week-2023/immunization-week-2023-banner.jpg",
+    "mediaUrl": "https://www.cry.org/wp-content/uploads/Why-childhood-immunization-is-important.jpg",
     "completed": false,
     "subContent": [
       {
         "id": "sub_2_1",
         "type": "photo",
         "mediaUrl": "https://www.cdc.gov/vaccines/parents/images/why-immunize-graphic.jpg",
-        "text": "Immunization protects children and mothers from serious diseases, preventing illness, disability, and death. It's a cornerstone of public health.",
+        "text": "Immunization protects children and mothers from serious diseases like measles, polio, and tetanus. Vaccines stimulate the immune system to build defenses before exposure to these diseases, reducing illness, complications, and mortality.",
         "completed": false
       },
       {
         "id": "sub_2_2",
         "type": "photo",
         "mediaUrl": "https://www.mohfw.gov.in/assets/images/immunization-schedule.jpg",
-        "text": "Follow the national immunization schedule for children from birth to 5 years, including vaccines like BCG, DPT, Polio, Measles, and more.",
+        "text": "Follow the national immunization schedule in India, which includes BCG at birth; DPT, OPV, Hepatitis B, Hib, and Rotavirus at 6, 10, and 14 weeks; and measles, JE, and booster doses through age 5. Adhering to the schedule is vital to build timely immunity.",
         "completed": false
       },
       {
         "id": "sub_2_3",
         "type": "video",
-        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-        "text": "Pregnant women should receive Tetanus-Diphtheria (Td) or Tdap vaccine to protect themselves and their newborns from life-threatening diseases.",
+        "mediaUrl": "https://www.youtube.com/watch?v=TLyeQ-9f5yY",
+        "text": "Pregnant women should receive the Tetanus‑Diphtheria (Td/Tdap) vaccine during the third trimester (between weeks 27 and 36) to protect themselves and their newborns from life-threatening diseases like neonatal tetanus.",
         "completed": false
       }
     ],
@@ -110,35 +110,35 @@
     "title": "Newborn Care",
     "description": "Best practices for newborn care, breastfeeding, hygiene, and early danger signs to watch for in infants.",
     "type": "video",
-    "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+    "mediaUrl": "https://www.youtube.com/watch?v=hpgjwK_oQe0",
     "completed": false,
     "subContent": [
       {
         "id": "sub_3_1",
         "type": "photo",
-        "mediaUrl": "https://www.who.int/images/default-source/mca/newborn-care.jpg",
-        "text": "Essential care immediately after birth includes ensuring warmth, drying the baby, promoting skin-to-skin contact, and initiating breastfeeding early.",
+        "mediaUrl": "https://www.pregnancybirthbaby.org.au/bathing-your-newborn-infographic",
+        "text": "Essential care immediately after birth includes ensuring warmth with skin-to-skin contact (kangaroo care), drying the baby, promoting breastfeeding within the first hour, and ensuring clear airway and stable temperature.",
         "completed": false
       },
       {
         "id": "sub_3_2",
         "type": "video",
-        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-        "text": "Exclusive breastfeeding for the first six months provides optimal nutrition, strengthens immunity, and fosters bonding between mother and baby.",
+        "mediaUrl": "https://www.youtube.com/watch?v=WQuX_Yw3yIg",
+        "text": "Exclusive breastfeeding for the first six months provides optimal nutrition, strengthens immunity, supports brain development, and fosters bonding. Watch this pediatrician-led guide for latch techniques, feeding cues, and common challenges.",
         "completed": false
       },
       {
         "id": "sub_3_3",
         "type": "photo",
-        "mediaUrl": "https://www.cdc.gov/ncbddd/images/newborn-safety.jpg",
-        "text": "Learn about proper umbilical cord care, safe bathing techniques, and ensuring a safe sleeping environment to prevent infections and accidents.",
+        "mediaUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Newborn_care_infographic.png",
+        "text": "Learn about proper umbilical cord care (keep it dry), safe bathing, and ensuring a smoke-free, supine sleep environment (flat back on firm mattress, no loose bedding) to prevent infections and SIDS.",
         "completed": false
       },
       {
         "id": "sub_3_4",
         "type": "photo",
-        "mediaUrl": "https://www.unicef.org/sites/default/files/styles/hero_desktop/public/UN014605.jpg",
-        "text": "Key danger signs in newborns include difficulty breathing, fever, lethargy, poor feeding, and convulsions. Seek medical help immediately if these are observed.",
+        "mediaUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Kangaroo_care_diagram.png",
+        "text": "Key danger signs in newborns include fast breathing (over 60 breaths per minute), difficulty feeding, fever, lethargy, convulsions, or central cyanosis. Immediate medical attention is essential if these occur.",
         "completed": false
       }
     ],
@@ -170,35 +170,35 @@
     "title": "Family Planning",
     "description": "Overview of family planning methods, counseling techniques, and addressing common myths and misconceptions.",
     "type": "photo",
-    "mediaUrl": "https://www.who.int/images/default-source/campaigns/family-planning.jpg",
+    "mediaUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Stamp_of_India_-_1989_-_Colnect_1017640_-_1_-_Indian_Family.jpeg/250px-Stamp_of_India_-_1989_-_Colnect_1017640_-_1_-_Indian_Family.jpeg",
     "completed": false,
     "subContent": [
       {
         "id": "sub_4_1",
         "type": "photo",
         "mediaUrl": "https://www.unfpa.org/sites/default/files/styles/hero_desktop/public/news/family-planning-banner.jpg",
-        "text": "Family planning empowers individuals to decide the number, spacing, and timing of their children, significantly improving maternal and child health outcomes.",
+        "text": "Family planning empowers individuals and couples to decide the number, spacing, and timing of their children, which enhances maternal and child health, reduces unintended pregnancies, and supports economic well‑being.",
         "completed": false
       },
       {
         "id": "sub_4_2",
         "type": "photo",
         "mediaUrl": "https://www.cdc.gov/reproductivehealth/contraception/images/contraception-methods.jpg",
-        "text": "Explore various modern contraceptive methods like pills, injectables, IUDs, condoms, and permanent methods, understanding their effectiveness and proper usage.",
+        "text": "Explore various contraceptive methods—such as pills, injectables, implants, IUDs, condoms, and sterilization—learning about their effectiveness, side‑effects, duration, and suitability for different reproductive goals.",
         "completed": false
       },
       {
         "id": "sub_4_3",
         "type": "video",
-        "mediaUrl": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-        "text": "Effective counseling involves active listening, providing accurate and unbiased information, and respecting the client's informed choices regarding family planning.",
+        "mediaUrl": "https://www.youtube.com/watch?v=kC6UqDb3ZiY",
+        "text": "Effective counseling involves active listening, building trust, providing accurate and unbiased information, and respecting clients' informed choices without judgement. This video demonstrates practical tips for community health workers.",
         "completed": false
       },
       {
         "id": "sub_4_4",
         "type": "photo",
         "mediaUrl": "https://www.who.int/images/default-source/reproductive-health/family-planning-myths.jpg",
-        "text": "Learn to identify and address common myths and misconceptions about family planning methods to ensure that individuals make informed decisions based on facts.",
+        "text": "Learn to identify and address myths like 'contraceptives cause infertility' or 'IUDs move around the body', providing evidence-based responses to help individuals make informed decisions.",
         "completed": false
       }
     ],

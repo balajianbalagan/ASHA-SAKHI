@@ -36,6 +36,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.ashasakhichat.presentation.screens.TrainingViewModel
 import androidx.navigation.NavController
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import androidx.compose.ui.viewinterop.AndroidView
+import com.littleb01s.ashasakhichat.presentation.screens.extractYouTubeVideoId
+
 
 @Composable
 fun TrainingScreen(
@@ -104,14 +110,33 @@ fun TrainingScreen(
                                 contentScale = ContentScale.Crop
                             )
                         } else if (course.type == "video") {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(180.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                // Placeholder for video
-                                Text("[Video Placeholder]", color = Color.Gray)
+                            val youTubeId = extractYouTubeVideoId(course.mediaUrl)
+                            if (youTubeId != null) {
+                                val context = LocalContext.current
+                                AndroidView(
+                                    factory = {
+                                        YouTubePlayerView(context).apply {
+                                            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                                                override fun onReady(youTubePlayer: YouTubePlayer) {
+                                                    youTubePlayer.cueVideo(youTubeId, 0f)
+                                                }
+                                            })
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(180.dp)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(180.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    // Placeholder for video
+                                    Text("[Video Placeholder]", color = Color.Gray)
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))
@@ -144,4 +169,4 @@ fun TrainingScreen(
             }
         }
     }
-} 
+}

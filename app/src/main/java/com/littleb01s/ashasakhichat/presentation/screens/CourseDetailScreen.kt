@@ -44,6 +44,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.filled.VolumeUp
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.littleb01s.ashasakhichat.presentation.screens.extractYouTubeVideoId
 
 @Composable
 fun CourseDetailScreen(
@@ -131,31 +135,51 @@ fun CourseDetailScreen(
                                     )
                                 } else if (sub.type == "video") {
                                     val context = LocalContext.current
-                                    val exoPlayer = remember {
-                                        ExoPlayer.Builder(context).build().apply {
-                                            val mediaItem = MediaItem.fromUri(sub.mediaUrl)
-                                            setMediaItem(mediaItem)
-                                            prepare()
-                                            playWhenReady = false
-                                        }
-                                    }
-                                    DisposableEffect(Unit) {
-                                        onDispose { exoPlayer.release() }
-                                    }
-                                    AndroidView(
-                                        factory = {
-                                            PlayerView(context).apply {
-                                                player = exoPlayer
-                                                layoutParams = android.view.ViewGroup.LayoutParams(
-                                                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                                                    600
-                                                )
+                                    val youTubeId = extractYouTubeVideoId(sub.mediaUrl)
+                                    if (youTubeId != null) {
+                                        // Use YouTubePlayerView for YouTube videos
+                                        AndroidView(
+                                            factory = {
+                                                YouTubePlayerView(context).apply {
+                                                    addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                                                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                                                            youTubePlayer.loadVideo(youTubeId, 0f)
+                                                        }
+                                                    })
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(180.dp)
+                                        )
+                                    } else {
+                                        // Use ExoPlayer for direct video links
+                                        val exoPlayer = remember {
+                                            ExoPlayer.Builder(context).build().apply {
+                                                val mediaItem = MediaItem.fromUri(sub.mediaUrl)
+                                                setMediaItem(mediaItem)
+                                                prepare()
+                                                playWhenReady = false
                                             }
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(180.dp)
-                                    )
+                                        }
+                                        DisposableEffect(Unit) {
+                                            onDispose { exoPlayer.release() }
+                                        }
+                                        AndroidView(
+                                            factory = {
+                                                PlayerView(context).apply {
+                                                    player = exoPlayer
+                                                    layoutParams = android.view.ViewGroup.LayoutParams(
+                                                        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                                        600
+                                                    )
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(180.dp)
+                                        )
+                                    }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
