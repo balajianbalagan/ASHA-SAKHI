@@ -46,6 +46,7 @@ data class PatientResponse(
     val checkupData: List<CheckupResponse>,
     val appointmentData: List<PatientAppointmentResponse>,
     val schemeData: List<SchemeResponse>? = null,
+    val riskData: List<RiskAssessmentResponse>? = null,
     val lmp: String?,
     val latitude: String?,
     val longtitude: String?,
@@ -145,5 +146,15 @@ data class SchemeResponse(
     val description: String,
     val eligibility: String,
     val howToApply: String
+)
+
+data class RiskAssessmentResponse(
+    val riskId: Int,
+    val patientId: Int,
+    val checkupId: Int,
+    val riskValue: String,
+    val comments: String?,
+    val createdAt: String?,
+    val updatedAt: String?
 )
 

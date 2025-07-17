@@ -11,10 +11,12 @@ import com.littleb01s.ashasakhichat.data.local.dao.CheckupDao
 import com.littleb01s.ashasakhichat.data.local.dao.DocumentDao
 import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
 import com.littleb01s.ashasakhichat.data.local.dao.SchemeDao
+import com.littleb01s.ashasakhichat.data.local.dao.RiskAnalysisDao
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
 import com.littleb01s.ashasakhichat.data.local.entity.Scheme
+import com.littleb01s.ashasakhichat.data.local.entity.RiskAnalysisResult
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
 import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +37,8 @@ class PatientRepository @Inject constructor(
     private val checkupDao: CheckupDao,
     private val appointmentDao: AppointmentDao,
     private val documentDao: DocumentDao,
-    private val schemeDao: SchemeDao
+    private val schemeDao: SchemeDao,
+    private val riskAnalysisDao: RiskAnalysisDao
 ) {
     private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
@@ -179,6 +182,18 @@ class PatientRepository @Inject constructor(
                         )
                         schemeDao.insertScheme(scheme)
                     }
+                    
+                    // Convert and save risk assessments
+                    patientResponse.riskData?.forEach { riskResponse ->
+                        val riskAnalysis = RiskAnalysisResult(
+                            patientId = riskResponse.patientId,
+                            checkupId = riskResponse.checkupId,
+                            riskValue = riskResponse.riskValue,
+                            comments = riskResponse.comments ?: "",
+                            serverId = riskResponse.riskId
+                        )
+                        riskAnalysisDao.insertAnalysis(riskAnalysis)
+                    }
                 }
             } else {
                 throw Exception("Failed to fetch patients: ${response.message()}")
@@ -280,6 +295,22 @@ class PatientRepository @Inject constructor(
                         }
                         if (schemesToSave.isNotEmpty()) {
                             schemeDao.insertSchemes(schemesToSave)
+                        }
+                    }
+                    
+                    // Save risk assessments if they come back with the response
+                    patientResponse.patientData.riskData?.let { riskAssessments ->
+                        val riskAnalysesToSave = riskAssessments.map { riskResponse ->
+                            RiskAnalysisResult(
+                                patientId = patient.patientId,
+                                checkupId = riskResponse.checkupId,
+                                riskValue = riskResponse.riskValue,
+                                comments = riskResponse.comments ?: "",
+                                serverId = riskResponse.riskId
+                            )
+                        }
+                        if (riskAnalysesToSave.isNotEmpty()) {
+                            riskAnalysisDao.insertAnalyses(riskAnalysesToSave)
                         }
                     }
                 }

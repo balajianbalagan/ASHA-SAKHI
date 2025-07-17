@@ -25,7 +25,7 @@ import com.littleb01s.ashasakhichat.data.local.entity.*
         AppointmentCheckupMap::class,
         Scheme::class
     ],
-    version = 14,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

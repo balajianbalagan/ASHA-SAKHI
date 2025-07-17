@@ -8,11 +8,13 @@ import com.google.gson.Gson
 import com.littleb01s.ashasakhichat.data.local.dao.CheckupDao
 import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
 import com.littleb01s.ashasakhichat.data.local.dao.RiskAnalysisDao
+import com.littleb01s.ashasakhichat.data.repository.RiskAssessmentRepository
 import com.littleb01s.ashasakhichat.data.local.entity.CheckupType
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.data.local.entity.RiskAnalysisResult
 import com.littleb01s.ashasakhichat.data.onnx.RiskAssessmentResult
 import com.littleb01s.ashasakhichat.data.onnx.RiskPredictor
+import com.littleb01s.ashasakhichat.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,8 @@ class PregnancyRiskViewModel @Inject constructor(
     application: Application,
     private val checkupDao: CheckupDao,
     private val patientDao: PatientDao,
-    private val riskAnalysisDao: RiskAnalysisDao
+    private val riskAnalysisDao: RiskAnalysisDao,
+    private val riskAssessmentRepository: RiskAssessmentRepository
 ) : AndroidViewModel(application) {
     private val riskPredictor = RiskPredictor(application)
     
@@ -192,6 +195,13 @@ class PregnancyRiskViewModel @Inject constructor(
                     )
                 }
                 
+                // Get the latest checkup ID for this patient
+                val latestCheckup = checkupDao.getLatestCheckupByType(
+                    patientId = patientId,
+                    checkupType = CheckupType.VITALS.name
+                )
+                val checkupId = latestCheckup?.checkupId ?: 0
+                
                 // Save the risk analysis result with all input values and observations
                 val details = RiskAnalysisDetails(
                     age = age,
@@ -202,18 +212,31 @@ class PregnancyRiskViewModel @Inject constructor(
                     heartRate = heartRate,
                     observations = result.observations
                 )
-                val riskAnalysis = RiskAnalysisResult(
-                    patientId = patientId,
-                    riskLevel = result.riskLevel,
-                    analysisData = Gson().toJson(details)
-                )
-                riskAnalysisDao.insertAnalysis(riskAnalysis)
-                Log.d("PregnancyRiskViewModel", "Risk analysis saved in local DB.")
                 
-                _riskLevel.value = result.riskLevel
-                _observations.value = result.observations
-                _latestRiskAnalysis.value = riskAnalysis
-                _success.value = "Risk analysed and saved in local DB."
+                // Use repository to save with server-first approach
+                riskAssessmentRepository.saveRiskAnalysisWithServerFirst(
+                    patientId = patientId,
+                    checkupId = checkupId,
+                    riskValue = result.riskLevel,
+                    comments = Gson().toJson(details),
+                    riskId = null
+                ).collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            Log.d("PregnancyRiskViewModel", "Risk analysis saved successfully with ID: ${resource.data}")
+                            _riskLevel.value = result.riskLevel
+                            _observations.value = result.observations
+                            _success.value = "Risk analysis completed and saved successfully."
+                        }
+                        is Resource.Error -> {
+                            Log.e("PregnancyRiskViewModel", "Error saving risk analysis: ${resource.message}")
+                            _error.value = "Error saving risk analysis: ${resource.message}"
+                        }
+                        is Resource.Loading -> {
+                            // Loading state is already handled by _isLoading
+                        }
+                    }
+                }
             } catch (e: Exception) {
                 _error.value = "Error assessing risk: ${e.message}"
                 _success.value = null
@@ -226,12 +249,12 @@ class PregnancyRiskViewModel @Inject constructor(
     fun loadLatestRiskAnalysis(patientId: Int) {
         viewModelScope.launch {
             try {
-                val analysis = riskAnalysisDao.getLatestAnalysisForPatient(patientId)
+                val analysis = riskAssessmentRepository.getLatestRiskAnalysisForPatient(patientId)
                 _latestRiskAnalysis.value = analysis
                 if (analysis != null) {
-                    _riskLevel.value = analysis.riskLevel
-                    // Parse analysis.analysisData back to RiskAnalysisDetails
-                    val details = Gson().fromJson(analysis.analysisData, RiskAnalysisDetails::class.java)
+                    _riskLevel.value = analysis.riskValue
+                    // Parse analysis.comments back to RiskAnalysisDetails
+                    val details = Gson().fromJson(analysis.comments, RiskAnalysisDetails::class.java)
                     // Set all fields in formData as String
                     val formMap = mutableMapOf<String, String>()
                     formMap["age"] = details.age.toString()
