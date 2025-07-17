@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.littleb01s.ashasakhichat.data.api.PatientData
 import com.littleb01s.ashasakhichat.data.api.VitalsData
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
+import com.littleb01s.ashasakhichat.data.local.entity.Scheme
 import com.littleb01s.ashasakhichat.data.local.PreferencesManager
 import com.littleb01s.ashasakhichat.data.repository.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,5 +70,9 @@ class PatientsViewModel @Inject constructor(
         return patientRepository.getPatientWithDetails(patientId).map { patientWithDetails ->
             patientWithDetails?.patient
         }
+    }
+
+    fun getSchemesForPatient(patientId: Int): Flow<List<Scheme>> {
+        return patientRepository.getSchemesByPatientId(patientId)
     }
 } 

@@ -170,7 +170,7 @@ fun AppointmentDetailsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            PriorityIndicator(priority = appointment.appointmentPriority ?: 0)
+                        PriorityIndicator(priority = appointment.appointmentPriority ?: 0)
                             
                             // Sync Status Icon
                             Icon(
@@ -278,41 +278,41 @@ fun AppointmentDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 32.dp), // Space for the chip
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Appointment Name
-                        appointment.appointmentName?.let { name ->
-                            if (name.isNotBlank()) {
-                                DetailSection(
-                                    title = "Appointment Name",
-                                    content = name,
-                                    icon = Icons.Default.EventNote
-                                )
-                            }
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Appointment Name
+                    appointment.appointmentName?.let { name ->
+                        if (name.isNotBlank()) {
+                            DetailSection(
+                                title = "Appointment Name",
+                                content = name,
+                                icon = Icons.Default.EventNote
+                            )
                         }
-                        
-                        // Description
-                        appointment.appointmentDescription?.let { description ->
-                            if (description.isNotBlank()) {
-                                DetailSection(
-                                    title = "Description",
-                                    content = description,
-                                    icon = Icons.Default.Description,
-                                    isMultiline = true
-                                )
-                            }
+                    }
+                    
+                    // Description
+                    appointment.appointmentDescription?.let { description ->
+                        if (description.isNotBlank()) {
+                            DetailSection(
+                                title = "Description",
+                                content = description,
+                                icon = Icons.Default.Description,
+                                isMultiline = true
+                            )
                         }
-                        
-                        // Priority
-                        DetailSection(
-                            title = "Priority Level",
-                            content = "${appointment.appointmentPriority ?: 0}/10",
-                            icon = Icons.Default.PriorityHigh
-                        )
-                        
+                    }
+                    
+                    // Priority
+                    DetailSection(
+                        title = "Priority Level",
+                        content = "${appointment.appointmentPriority ?: 0}/10",
+                        icon = Icons.Default.PriorityHigh
+                    )
+                    
                         // Created/Updated timestamps in same row - much smaller
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -333,9 +333,9 @@ fun AppointmentDetailsScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
-                            }
-                            
-                            appointment.updatedAt?.let { updatedAt ->
+                    }
+                    
+                    appointment.updatedAt?.let { updatedAt ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -372,7 +372,7 @@ fun AppointmentDetailsScreen(
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
+            ) {
                             // Start Appointment button
                             Button(
                                 onClick = { showConfirmDialog("start") },
@@ -401,17 +401,17 @@ fun AppointmentDetailsScreen(
                         }
                         
                         // Row 2: Send Reminder button
-                        OutlinedButton(
+                OutlinedButton(
                             onClick = { showConfirmDialog("reminder") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary
                             )
-                        ) {
+                ) {
                             Icon(Icons.Default.Notifications, "Send Reminder", modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                             Text("Send Reminder")
-                        }
+                }
                     }
                     
                     "in progress" -> {
@@ -421,17 +421,17 @@ fun AppointmentDetailsScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             // Complete button
-                            Button(
+                    Button(
                                 onClick = { showConfirmDialog("complete") },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary
-                                )
-                            ) {
-                                Icon(Icons.Default.CheckCircle, "Complete", modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Complete")
-                            }
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary
+                        )
+                    ) {
+                        Icon(Icons.Default.CheckCircle, "Complete", modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Complete")
+                    }
                             
                             // Add Checkup button
                             Button(
@@ -450,15 +450,15 @@ fun AppointmentDetailsScreen(
                     
                     "completed" -> {
                         // Add Checkup button for completed appointments
-                        Button(
+                    Button(
                             onClick = { /* TODO: Navigate to add checkup screen */ },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
+                        colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
+                        )
+                    ) {
                             Icon(Icons.Default.Add, "Add Checkup", modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                             Text("Add Checkup")
                         }
                     }

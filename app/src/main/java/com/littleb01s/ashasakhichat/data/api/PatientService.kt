@@ -16,6 +16,9 @@ interface PatientService {
 
     @POST("api/patient/save-patient")
     suspend fun savePatient(@Body request: SavePatientRequest): Response<SavePatientResponse>
+
+    @GET("api/patient/fetch-schemes")
+    suspend fun fetchSchemes(@retrofit2.http.Query("patientId") patientId: Int): Response<SchemeListResponse>
 }
 
 data class PatientListResponse(
@@ -42,6 +45,7 @@ data class PatientResponse(
     val updatedAt: String,
     val checkupData: List<CheckupResponse>,
     val appointmentData: List<PatientAppointmentResponse>,
+    val schemeData: List<SchemeResponse>? = null,
     val lmp: String?,
     val latitude: String?,
     val longtitude: String?,
@@ -121,10 +125,25 @@ data class VitalsData(
 
 data class AddPatientResponse(
     val message: String,
-    val patientData: PatientResponse
+    val patientData: PatientResponse,
+    val schemeData: List<SchemeResponse>? = null
 )
 
 data class SavePatientResponse(
     val data: AddPatientResponse
+)
+
+data class SchemeListResponse(
+    val data: List<SchemeResponse>
+)
+
+data class SchemeResponse(
+    val schemeId: Int?,
+    val patientId: Int,
+    val schemeName: String,
+    val state: String,
+    val description: String,
+    val eligibility: String,
+    val howToApply: String
 )
 

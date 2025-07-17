@@ -435,6 +435,19 @@ class MainActivity : ComponentActivity() {
                                         navController = navController
                                     )
                                 }
+                                composable(
+                                    route = Screen.PatientSchemes.route,
+                                    arguments = listOf(
+                                        navArgument("patientId") { type = NavType.IntType }
+                                    )
+                                ) { backStackEntry ->
+                                    val patientId = backStackEntry.arguments?.getInt("patientId") ?: return@composable
+                                    PatientSchemesScreen(
+                                        patientId = patientId,
+                                        navController = navController,
+                                        onNavigateBack = { navController.navigateUp() }
+                                    )
+                                }
                             }
                         }
                     }
