@@ -58,4 +58,19 @@
     <string name="download_complete">Download Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="cancel">Cancel</string>
+    <!-- Chat Settings -->
+    <string name="ask_random_question">சீரற்ற கேள்வியைக் கேள்வி</string>
+    <string name="preset_questions">முன்னரே தீர்மானிக்கப்பட்ட கேள்விகள்</string>
+    <string name="select_language">மொழியைத் தேர்ந்தெடுக்கவும்</string>
+    <!-- Tamil Preset Questions -->
+    <string name="preset_question_1">பிரசவ அறிகுறிகள் என்ன?</string>
+    <string name="preset_question_2">கர்ப்ப காலத்தில் நான் எவ்வளவு எடை கூட்ட வேண்டும்?</string>
+    <string name="preset_question_3">கர்ப்ப காலத்தில் நான் எந்த உணவுகளைத் தவிர்க்க வேண்டும்?</string>
+    <string name="preset_question_4">நான் எத்தனை முறை மருத்துவரை சந்திக்க வேண்டும்?</string>
+    <string name="preset_question_5">கர்ப்ப காலத்தில் எந்த பயிற்சிகள் பாதுகாப்பானவை?</string>
+    <string name="preset_question_6">நான் கவனிக்க வேண்டிய எச்சரிக்கை அறிகுறிகள் என்ன?</string>
+    <string name="preset_question_7">நான் மார்பக ஊட்டத்திற்கு எப்படி தயாராகலாம்?</string>
+    <string name="preset_question_8">மருத்துவமனைக்கு நான் என்ன பொதிய வேண்டும்?</string>
+    <string name="preset_question_9">காலை நோயை நான் எப்படி நிர்வகிக்க முடியும்?</string>
+    <string name="preset_question_10">கர்ப்ப முன் வைட்டமின்களின் நன்மைகள் என்ன?</string>
 </resources> 

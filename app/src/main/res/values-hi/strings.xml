@@ -58,4 +58,19 @@
     <string name="download_complete">Download Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="cancel">Cancel</string>
+    <!-- Chat Settings -->
+    <string name="ask_random_question">यादृच्छिक प्रश्न पूछें</string>
+    <string name="preset_questions">पूर्व निर्धारित प्रश्न</string>
+    <string name="select_language">भाषा चुनें</string>
+    <!-- Hindi Preset Questions -->
+    <string name="preset_question_1">प्रसव के लक्षण क्या हैं?</string>
+    <string name="preset_question_2">गर्भावस्था के दौरान मुझे कितना वजन बढ़ाना चाहिए?</string>
+    <string name="preset_question_3">गर्भावस्था के दौरान मुझे कौन से खाद्य पदार्थों से बचना चाहिए?</string>
+    <string name="preset_question_4">मुझे कितनी बार डॉक्टर से मिलना चाहिए?</string>
+    <string name="preset_question_5">गर्भावस्था के दौरान कौन से व्यायाम सुरक्षित हैं?</string>
+    <string name="preset_question_6">मुझे कौन से चेतावनी संकेतों पर ध्यान देना चाहिए?</string>
+    <string name="preset_question_7">मैं स्तनपान के लिए कैसे तैयारी कर सकती हूं?</string>
+    <string name="preset_question_8">मुझे अस्पताल के लिए क्या पैक करना चाहिए?</string>
+    <string name="preset_question_9">मैं मॉर्निंग सिकनेस का प्रबंधन कैसे कर सकती हूं?</string>
+    <string name="preset_question_10">प्रसव पूर्व विटामिन के क्या लाभ हैं?</string>
 </resources>

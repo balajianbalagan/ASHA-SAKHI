@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -60,6 +61,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -75,6 +77,10 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val isProcessing by viewModel.isProcessing.collectAsState()
     val messages by viewModel.messages.collectAsState()
     val hasShownWelcome by viewModel.hasShownWelcome.collectAsState()
+    var showSettings by remember { mutableStateOf(false) }
+    var selectedLanguage by remember { mutableStateOf("English") }
+    var currentQuestionIndex by remember { mutableStateOf(0) }
+    var chatInputText by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -87,7 +93,9 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 .navigationBarsPadding()
         ) {
             // Header
-            ChatHeader()
+            ChatHeader(
+                onSettingsClick = { showSettings = true }
+            )
             
             if (messages.isEmpty() && !hasShownWelcome) {
                 WelcomeScreen()
@@ -148,9 +156,34 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                     onSendMessageClicked = { message ->
                         viewModel.sendMessage(message)
                     },
-                    isProcessing = isProcessing
+                    isProcessing = isProcessing,
+                    initialText = chatInputText
                 )
             }
+        }
+    }
+
+    // Settings Dialog
+    if (showSettings) {
+        ChatSettingsDialog(
+            selectedLanguage = selectedLanguage,
+            onLanguageChange = { selectedLanguage = it },
+            onAskRandomQuestion = {
+                val questions = getPresetQuestions(selectedLanguage)
+                val question = questions[currentQuestionIndex]
+                chatInputText = question
+                currentQuestionIndex = (currentQuestionIndex + 1) % questions.size
+                showSettings = false
+            },
+            onDismiss = { showSettings = false }
+        )
+    }
+    
+    // Clear chatInputText after it's been used
+    LaunchedEffect(chatInputText) {
+        if (chatInputText.isNotEmpty()) {
+            delay(100) // Small delay to ensure the text is set
+            chatInputText = ""
         }
     }
 
@@ -163,7 +196,9 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun ChatHeader() {
+fun ChatHeader(
+    onSettingsClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -188,7 +223,7 @@ fun ChatHeader() {
                 color = Color.White
             )
         }
-        IconButton(onClick = { /* TODO: Implement settings */ }) {
+        IconButton(onClick = onSettingsClick) {
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = stringResource(R.string.settings),
@@ -397,9 +432,17 @@ fun ChatBox(
     modifier: Modifier,
     onSendMessageClicked: (String) -> Unit,
     onTextFieldClicked: () -> Unit,
-    isProcessing: Boolean
+    isProcessing: Boolean,
+    initialText: String = ""
 ) {
-    var chatBoxValue by remember { mutableStateOf(TextFieldValue("")) }
+    var chatBoxValue by remember { mutableStateOf(TextFieldValue(initialText)) }
+    
+    // Update chatBoxValue when initialText changes
+    LaunchedEffect(initialText) {
+        if (initialText.isNotEmpty()) {
+            chatBoxValue = TextFieldValue(initialText)
+        }
+    }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val context = LocalContext.current
@@ -579,5 +622,146 @@ fun WelcomeScreen() {
 fun ChatPreview() {
     AshaTheme {
         ChatScreen(hiltViewModel<ChatViewModel>())
+    }
+}
+
+@Composable
+fun ChatSettingsDialog(
+    selectedLanguage: String,
+    onLanguageChange: (String) -> Unit,
+    onAskRandomQuestion: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.settings),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Language Selection
+                Column {
+                    Text(
+                        text = stringResource(R.string.select_language),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("English", "हिंदी", "தமிழ்").forEach { language ->
+                            val isSelected = selectedLanguage == language
+                            Button(
+                                onClick = { onLanguageChange(language) },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isSelected) 
+                                        MaterialTheme.colorScheme.primary 
+                                    else 
+                                        MaterialTheme.colorScheme.surface,
+                                    contentColor = if (isSelected) 
+                                        Color.White 
+                                    else 
+                                        MaterialTheme.colorScheme.onSurface
+                                ),
+                                border = if (!isSelected) {
+                                    BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                                } else null
+                            ) {
+                                Text(
+                                    text = language,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Random Question Button
+                Column {
+                    Text(
+                        text = stringResource(R.string.preset_questions),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = onAskRandomQuestion,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.ask_random_question),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.dismiss))
+            }
+        }
+    )
+}
+
+fun getPresetQuestions(language: String): List<String> {
+    return when (language) {
+        "हिंदी" -> listOf(
+            "प्रसव के लक्षण क्या हैं?",
+            "गर्भावस्था के दौरान मुझे कितना वजन बढ़ाना चाहिए?",
+            "गर्भावस्था के दौरान मुझे कौन से खाद्य पदार्थों से बचना चाहिए?",
+            "मुझे कितनी बार डॉक्टर से मिलना चाहिए?",
+            "गर्भावस्था के दौरान कौन से व्यायाम सुरक्षित हैं?",
+            "मुझे कौन से चेतावनी संकेतों पर ध्यान देना चाहिए?",
+            "मैं स्तनपान के लिए कैसे तैयारी कर सकती हूं?",
+            "मुझे अस्पताल के लिए क्या पैक करना चाहिए?",
+            "मैं मॉर्निंग सिकनेस का प्रबंधन कैसे कर सकती हूं?",
+            "प्रसव पूर्व विटामिन के क्या लाभ हैं?"
+        )
+        "தமிழ்" -> listOf(
+            "பிரசவ அறிகுறிகள் என்ன?",
+            "கர்ப்ப காலத்தில் நான் எவ்வளவு எடை கூட்ட வேண்டும்?",
+            "கர்ப்ப காலத்தில் நான் எந்த உணவுகளைத் தவிர்க்க வேண்டும்?",
+            "நான் எத்தனை முறை மருத்துவரை சந்திக்க வேண்டும்?",
+            "கர்ப்ப காலத்தில் எந்த பயிற்சிகள் பாதுகாப்பானவை?",
+            "நான் கவனிக்க வேண்டிய எச்சரிக்கை அறிகுறிகள் என்ன?",
+            "நான் மார்பக ஊட்டத்திற்கு எப்படி தயாராகலாம்?",
+            "மருத்துவமனைக்கு நான் என்ன பொதிய வேண்டும்?",
+            "காலை நோயை நான் எப்படி நிர்வகிக்க முடியும்?",
+            "கர்ப்ப முன் வைட்டமின்களின் நன்மைகள் என்ன?"
+        )
+        else -> listOf(
+            "What are the signs of labor?",
+            "How much weight should I gain during pregnancy?",
+            "What foods should I avoid during pregnancy?",
+            "How often should I visit the doctor?",
+            "What exercises are safe during pregnancy?",
+            "What are the warning signs I should watch for?",
+            "How can I prepare for breastfeeding?",
+            "What should I pack for the hospital?",
+            "How can I manage morning sickness?",
+            "What are the benefits of prenatal vitamins?"
+        )
     }
 }
