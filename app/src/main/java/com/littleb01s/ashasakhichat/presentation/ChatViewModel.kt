@@ -338,10 +338,11 @@ class ChatViewModel @Inject constructor(
                 // Phase 1: Generate instant response without vector search (immediate)
                 Log.d("ChatViewModel", "Generating instant response immediately")
                 val instantResponse = try {
-                    llmDataSource.generateInstantResponse(messageForLLM)
+                    val llmResponse = llmDataSource.generateInstantResponse(messageForLLM)
+                    translationService.translate(llmResponse) // Translate LLM response back to selected language
                 } catch (e: Exception) {
                     Log.e("ChatViewModel", "Error generating instant response: ${e.message}")
-                    "I'm here to help with ASHA guidelines. Let me search for specific details for you.\n\n**💡 AI Generated Response**"
+                    translationService.translate("I'm here to help with ASHA guidelines. Let me search for specific details for you.\n\n**💡 AI Generated Response**")
                 }
 
                 // Update UI with instant response immediately
@@ -384,15 +385,16 @@ class ChatViewModel @Inject constructor(
                         }
 
                         val detailedResponse = llmDataSource.generateDetailedResponse(messageForLLM)
+                        val translatedDetailedResponse = translationService.translate(detailedResponse)
                         
                         // Update UI with detailed response when ready
                         val finalMessages = _messages.value.toMutableList()
                         if (finalMessages.isNotEmpty()) {
                             val lastMessage = finalMessages.last()
                             // Only update if the detailed response is different and more comprehensive
-                            if (lastMessage.text != detailedResponse && detailedResponse.length > lastMessage.text.length) {
+                            if (lastMessage.text != translatedDetailedResponse && translatedDetailedResponse.length > lastMessage.text.length) {
                                 finalMessages[finalMessages.lastIndex] = lastMessage.copy(
-                                    text = detailedResponse,
+                                    text = translatedDetailedResponse,
                                     status = MessageStatus.COMPLETED
                                 )
                                 _messages.value = finalMessages
@@ -484,10 +486,11 @@ class ChatViewModel @Inject constructor(
                 // Phase 1: Generate quick response without vector search
                 Log.d("ChatViewModel", "Generating quick response")
                 val quickResponse = try {
-                    llmDataSource.generateQuickResponse(messageForLLM)
+                    val llmResponse = llmDataSource.generateQuickResponse(messageForLLM)
+                    translationService.translate(llmResponse)
                 } catch (e: Exception) {
                     Log.e("ChatViewModel", "Error generating quick response: ${e.message}")
-                    "I'm processing your request. Please wait for a detailed response based on ASHA guidelines."
+                    translationService.translate("I'm processing your request. Please wait for a detailed response based on ASHA guidelines.")
                 }
 
                 // Update UI with quick response
@@ -513,8 +516,8 @@ class ChatViewModel @Inject constructor(
                                     val updatedText = if (partialResult.isNullOrBlank()) {
                                         lastMessage.text
                                     } else {
-                                        // Replace the quick response with the detailed streaming response
-                                        partialResult.toString()
+                                        // Translate each partial result before displaying
+                                        translationService.translate(partialResult.toString())
                                     }
                                     currentMessages[currentMessages.lastIndex] = lastMessage.copy(
                                         text = updatedText
