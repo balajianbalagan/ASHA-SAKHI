@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.littleb01s.R
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
+import com.littleb01s.ashasakhichat.data.local.dao.RiskAnalysisDao
 import com.littleb01s.ashasakhichat.presentation.PatientsViewModel
 import com.littleb01s.ashasakhichat.presentation.viewmodel.AppointmentViewModel
 import kotlinx.coroutines.launch
@@ -53,11 +54,13 @@ import kotlin.math.abs
 import android.util.Base64
 import androidx.compose.material.icons.filled.Refresh
 import androidx.core.graphics.createBitmap
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 
 // Define colors at the top level to match PatientDetailsScreen
 private val CustomBlue = Color(0xFF0174B3)
 private val CustomGreen = Color(0xFF1BBF69)
-private val CustomOrange = Color(0xFFFF5151)
+private val CustomOrange = Color(0xFFFF8C00) // Changed to darker orange to distinguish from red
+private val CustomRed = Color(0xFFFF5151) // Keep original red for high risk
 private val BackgroundColor = Color(0xFFFFF5EE)
 private val GradientBrush = Brush.horizontalGradient(colors = listOf(CustomBlue, CustomGreen))
 
@@ -70,9 +73,23 @@ fun PatientsScreen(
     appointmentViewModel: AppointmentViewModel = hiltViewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var sortOption by remember { mutableStateOf("EDD") }
     val patients by viewModel.filteredPatients(searchQuery).collectAsState(initial = emptyList())
+    val context = LocalContext.current
+    val db = remember(context) { com.littleb01s.ashasakhichat.data.local.AshaSakhiDatabase.getInstance(context) }
+    val riskAnalysisDao = remember(db) { db.riskAnalysisDao() }
+    val riskStatusMap = remember { mutableStateMapOf<Int, String>() }
+    val coroutineScope = rememberCoroutineScope()
 
-
+    // Fetch risk status for each patient
+    LaunchedEffect(patients) {
+        patients.forEach { patient ->
+            coroutineScope.launch {
+                val latest = riskAnalysisDao.getLatestAnalysisForPatient(patient.patientId)
+                riskStatusMap[patient.patientId] = latest?.riskValue ?: "Risk not assessed"
+            }
+        }
+    }
 
     Scaffold(
         containerColor = BackgroundColor,
@@ -91,23 +108,21 @@ fun PatientsScreen(
                 .fillMaxSize()
                 .padding(0.dp)
         ) {
-
+            // Compact Search Bar
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(2.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 1.dp
-                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -132,15 +147,90 @@ fun PatientsScreen(
                     )
                 }
             }
-
+            // Sort Option Dropdown and Legend
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Sort dropdown
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Sort by:", fontSize = 13.sp, color = Color.Gray)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        Button(
+                            onClick = { expanded = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = CustomBlue.copy(alpha = 0.08f)),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp),
+                            modifier = Modifier.height(32.dp)
+                        ) {
+                            Text(sortOption, fontSize = 13.sp, color = CustomBlue)
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = CustomBlue)
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("EDD", fontSize = 13.sp) },
+                                onClick = {
+                                    sortOption = "EDD"
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Priority", fontSize = 13.sp) },
+                                onClick = {
+                                    sortOption = "Priority"
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+                
+                // Color Legend
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PatientRiskLegendItem("High", CustomRed)
+                    PatientRiskLegendItem("Medium", CustomOrange)
+                    PatientRiskLegendItem("Low", CustomGreen)
+                }
+            }
             // Patients List
+            val sortedPatients = when (sortOption) {
+                "Priority" -> patients.sortedWith(compareBy(
+                    { patient ->
+                        when (riskStatusMap[patient.patientId]?.lowercase()) {
+                            "high risk" -> 0
+                            "medium risk", "mid risk" -> 1
+                            "low risk" -> 2
+                            else -> 3 // not assessed
+                        }
+                    },
+                    { patient -> patient.deliveryDate ?: Date(Long.MAX_VALUE) }
+                ))
+                else -> patients.sortedBy { it.deliveryDate ?: Date(Long.MAX_VALUE) }
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(patients) { patient ->
-                    PatientCard(patient = patient, onClick = { onPatientClick(patient) })
+                items(sortedPatients) { patient ->
+                    val riskStatus = riskStatusMap[patient.patientId] ?: "Risk not assessed"
+                    PatientCard(
+                        patient = patient, 
+                        riskStatus = riskStatus,
+                        onClick = { onPatientClick(patient) }
+                    )
                 }
             }
         }
@@ -148,15 +238,32 @@ fun PatientsScreen(
 }
 
 @Composable
-fun PatientCard(patient: Patient, onClick: () -> Unit) {
+fun PatientCard(
+    patient: Patient, 
+    riskStatus: String = "Risk not assessed",
+    onClick: () -> Unit
+) {
     val context = LocalContext.current
     val profileImage = getProfileImage(patient.profilePhoto)
+    
+    // Get risk color based on status
+    val riskColor = when (riskStatus.lowercase()) {
+        "high risk" -> CustomRed
+        "medium risk", "mid risk" -> CustomOrange
+        "low risk" -> CustomGreen
+        else -> Color.Gray
+    }
     
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .border(
+                width = 4.dp,
+                color = riskColor,
+                shape = RoundedCornerShape(8.dp)
+            ),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -398,6 +505,26 @@ private fun decodeBase64Image(base64String: String?): ImageBitmap? {
         bitmap?.asImageBitmap()
     } catch (e: Exception) {
         null
+    }
+}
+
+@Composable
+fun PatientRiskLegendItem(text: String, color: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(color, CircleShape)
+        )
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            color = color,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 

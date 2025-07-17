@@ -55,8 +55,8 @@ class MainViewModel @Inject constructor(
         
         // Don't auto-sync here to avoid double calling with triggerSyncAfterLogin()
         // The sync will be handled explicitly by triggerSyncAfterLogin() when Home screen loads
-        if (!isInternetAvailable()) {
-            _syncStatus.value = SyncStatus.NO_INTERNET
+            if (!isInternetAvailable()) {
+                _syncStatus.value = SyncStatus.NO_INTERNET
         }
     }
 

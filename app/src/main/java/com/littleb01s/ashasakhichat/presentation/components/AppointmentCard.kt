@@ -148,16 +148,16 @@ fun AppointmentCard(
                             // Show Add Checkup for In Progress and Completed appointments
                             if (appointment.appointmentStatus.lowercase() == "in progress" || 
                                 appointment.appointmentStatus.lowercase() == "completed") {
-                                DropdownMenuItem(
+                            DropdownMenuItem(
                                     text = { Text("Add Checkup") },
-                                    onClick = {
+                                onClick = {
                                         // TODO: Navigate to add checkup screen
-                                        showMenu = false
-                                    },
-                                    leadingIcon = {
+                                    showMenu = false
+                                },
+                                leadingIcon = {
                                         Icon(Icons.Default.Add, "Add Checkup")
-                                    }
-                                )
+                                }
+                            )
                             }
                         }
                     }

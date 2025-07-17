@@ -190,7 +190,7 @@ fun CalendarScreen(
                 }
                 "complete" -> {
                     viewModel.markCompleted(appointmentToConfirm!!.appointmentId)
-                }
+        }
                 "reminder" -> {
                     // For now, show success message since sendReminder is not implemented
                     actionResultMessage = "Reminder sent successfully"

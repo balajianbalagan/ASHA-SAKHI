@@ -42,7 +42,8 @@ import androidx.core.graphics.createBitmap
 
 private val CustomBlue = Color(0xFF0174B3)
 private val CustomGreen = Color(0xFF1BBF69)
-private val CustomOrange = Color(0xFFFF5151)
+private val CustomOrange = Color(0xFFFF8C00) // Darker orange
+private val CustomRed = Color(0xFFFF5151) // Original red for high risk
 private val BackgroundColor = Color(0xFFFFF5EE)
 
 @Composable
@@ -66,17 +67,17 @@ fun RiskAnalysisScreen(
         patients.forEach { patient ->
             coroutineScope.launch(Dispatchers.IO) {
                 val latest = riskAnalysisDao.getLatestAnalysisForPatient(patient.patientId)
-                riskStatusMap[patient.patientId] = latest?.riskLevel ?: "Risk not assessed"
+                riskStatusMap[patient.patientId] = latest?.riskValue ?: "Risk not assessed"
             }
         }
     }
 
-    // Sort patients by risk and EDD
+    // Sort patients by risk (High → Medium → Low → Not Assessed) and then by EDD
     val sortedPatients = patients.sortedWith(compareBy(
         { patient ->
             when (riskStatusMap[patient.patientId]?.lowercase()) {
                 "high risk" -> 0
-                "medium risk" -> 1
+                "medium risk", "mid risk" -> 1
                 "low risk" -> 2
                 else -> 3 // not assessed
             }
@@ -94,19 +95,54 @@ fun RiskAnalysisScreen(
                 .background(BackgroundColor)
                 .padding(0.dp)
         ) {
+            // Risk Level Legend
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = "Risk Levels",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = CustomBlue
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        RiskLegendItem("High Risk", CustomRed)
+                        RiskLegendItem("Medium Risk", CustomOrange)
+                        RiskLegendItem("Low Risk", CustomGreen)
+                    }
+                }
+            }
+            
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(sortedPatients) { patient ->
-                    RiskPatientCard(
-                        patient = patient,
-                        riskStatus = riskStatusMap[patient.patientId] ?: "Risk not assessed",
-                        eddFormatter = eddFormatter,
-                        onClick = { onNavigateToPregnancyRisk(patient.patientId) }
-                    )
-                }
+                                    items(sortedPatients) { patient ->
+                        val riskStatus = riskStatusMap[patient.patientId] ?: "Risk not assessed"
+                        val normalizedRiskStatus = when (riskStatus.lowercase()) {
+                            "mid risk" -> "Medium Risk"
+                            else -> riskStatus.replaceFirstChar { it.uppercase() }
+                        }
+                        RiskPatientCard(
+                            patient = patient,
+                            riskStatus = normalizedRiskStatus,
+                            eddFormatter = eddFormatter,
+                            onClick = { onNavigateToPregnancyRisk(patient.patientId) }
+                        )
+                    }
             }
         }
     }
@@ -121,9 +157,9 @@ fun RiskPatientCard(
 ) {
     val profileImage = getProfileImage(patient.profilePhoto)
     val riskColor = when (riskStatus.lowercase()) {
-        "high risk" -> CustomOrange
+        "high risk" -> CustomRed
+        "medium risk", "mid risk" -> CustomOrange // Orange text for better contrast
         "low risk" -> CustomGreen
-        "medium risk" -> Color(0xFFFFC107) // Amber
         else -> Color.Gray
     }
     Card(
@@ -175,14 +211,30 @@ fun RiskPatientCard(
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = riskStatus.replaceFirstChar { it.uppercase() },
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = riskColor,
-                textAlign = TextAlign.End,
+            Column(
+                horizontalAlignment = Alignment.End,
                 modifier = Modifier.widthIn(min = 90.dp)
-            )
+            ) {
+                // Risk level chip
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = when (riskStatus.lowercase()) {
+                            "medium risk", "mid risk" -> Color(0xFFFFEB3B) // Yellow background
+                            else -> riskColor.copy(alpha = 0.2f)
+                        }
+                    ),
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) {
+                    Text(
+                        text = riskStatus.replaceFirstChar { it.uppercase() },
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = riskColor,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -204,6 +256,26 @@ private fun getProfileImage(profilePhoto: String?): ImageBitmap {
 
     return remember(profilePhoto) {
         decodeBase64Image(profilePhoto) ?: placeholderBitmap!!
+    }
+}
+
+@Composable
+fun RiskLegendItem(text: String, color: Color) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(color, CircleShape)
+        )
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            color = color,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 

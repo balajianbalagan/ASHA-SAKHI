@@ -4,13 +4,19 @@ import com.littleb01s.ashasakhichat.data.api.PatientService
 import com.littleb01s.ashasakhichat.data.api.SavePatientRequest
 import com.littleb01s.ashasakhichat.data.api.PatientData
 import com.littleb01s.ashasakhichat.data.api.VitalsData
+import com.littleb01s.ashasakhichat.data.api.SchemeListResponse
+import com.littleb01s.ashasakhichat.data.api.SchemeResponse
 import com.littleb01s.ashasakhichat.data.local.dao.AppointmentDao
 import com.littleb01s.ashasakhichat.data.local.dao.CheckupDao
 import com.littleb01s.ashasakhichat.data.local.dao.DocumentDao
 import com.littleb01s.ashasakhichat.data.local.dao.PatientDao
+import com.littleb01s.ashasakhichat.data.local.dao.SchemeDao
+import com.littleb01s.ashasakhichat.data.local.dao.RiskAnalysisDao
 import com.littleb01s.ashasakhichat.data.local.entity.Patient
 import com.littleb01s.ashasakhichat.data.local.entity.Checkup
 import com.littleb01s.ashasakhichat.data.local.entity.Appointment
+import com.littleb01s.ashasakhichat.data.local.entity.Scheme
+import com.littleb01s.ashasakhichat.data.local.entity.RiskAnalysisResult
 import com.littleb01s.ashasakhichat.data.api.AppointmentListResponse
 import com.littleb01s.ashasakhichat.util.Resource
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +36,9 @@ class PatientRepository @Inject constructor(
     private val patientDao: PatientDao,
     private val checkupDao: CheckupDao,
     private val appointmentDao: AppointmentDao,
-    private val documentDao: DocumentDao
+    private val documentDao: DocumentDao,
+    private val schemeDao: SchemeDao,
+    private val riskAnalysisDao: RiskAnalysisDao
 ) {
     private val isoDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
         timeZone = TimeZone.getTimeZone("UTC")
@@ -71,6 +79,11 @@ class PatientRepository @Inject constructor(
         } catch (e: Exception) {
             null
         }
+    }
+
+    // Get schemes for a patient
+    fun getSchemesByPatientId(patientId: Int): Flow<List<Scheme>> {
+        return schemeDao.getSchemesByPatientId(patientId)
     }
 
     // API operations with local caching
@@ -151,6 +164,35 @@ class PatientRepository @Inject constructor(
                             serverId = appointmentResponse.appointmentId
                         )
                         appointmentDao.insertAppointment(appointment)
+                    }
+
+                    // Convert and save schemes
+                    patientResponse.schemeData?.forEach { schemeResponse ->
+                        val scheme = Scheme(
+                            patientId = schemeResponse.patientId,
+                            schemeName = schemeResponse.schemeName,
+                            state = schemeResponse.state,
+                            description = schemeResponse.description,
+                            eligibility = schemeResponse.eligibility,
+                            howToApply = schemeResponse.howToApply,
+                            needsUpload = false,
+                            needsDownload = false,
+                            lastDownloadedAt = Date(),
+                            serverId = schemeResponse.schemeId
+                        )
+                        schemeDao.insertScheme(scheme)
+                    }
+                    
+                    // Convert and save risk assessments
+                    patientResponse.riskData?.forEach { riskResponse ->
+                        val riskAnalysis = RiskAnalysisResult(
+                            patientId = riskResponse.patientId,
+                            checkupId = riskResponse.checkupId,
+                            riskValue = riskResponse.riskValue,
+                            comments = riskResponse.comments ?: "",
+                            serverId = riskResponse.riskId
+                        )
+                        riskAnalysisDao.insertAnalysis(riskAnalysis)
                     }
                 }
             } else {
@@ -234,6 +276,43 @@ class PatientRepository @Inject constructor(
                         pregnancyStage = patientResponse.patientData.pregnancyStage
                     )
                     patientDao.insertPatient(patient)
+                    
+                    // Save schemes if they come back with the response
+                    patientResponse.schemeData?.let { schemes ->
+                        val schemesToSave = schemes.map { schemeResponse ->
+                            Scheme(
+                                patientId = patient.patientId,
+                                schemeName = schemeResponse.schemeName,
+                                state = schemeResponse.state,
+                                description = schemeResponse.description,
+                                eligibility = schemeResponse.eligibility,
+                                howToApply = schemeResponse.howToApply,
+                                needsUpload = false,
+                                needsDownload = false,
+                                lastDownloadedAt = Date(),
+                                serverId = schemeResponse.schemeId
+                            )
+                        }
+                        if (schemesToSave.isNotEmpty()) {
+                            schemeDao.insertSchemes(schemesToSave)
+                        }
+                    }
+                    
+                    // Save risk assessments if they come back with the response
+                    patientResponse.patientData.riskData?.let { riskAssessments ->
+                        val riskAnalysesToSave = riskAssessments.map { riskResponse ->
+                            RiskAnalysisResult(
+                                patientId = patient.patientId,
+                                checkupId = riskResponse.checkupId,
+                                riskValue = riskResponse.riskValue,
+                                comments = riskResponse.comments ?: "",
+                                serverId = riskResponse.riskId
+                            )
+                        }
+                        if (riskAnalysesToSave.isNotEmpty()) {
+                            riskAnalysisDao.insertAnalyses(riskAnalysesToSave)
+                        }
+                    }
                 }
                 return true // Successfully synced with server
             } else {
@@ -353,6 +432,66 @@ class PatientRepository @Inject constructor(
             emit(Resource.Success(AppointmentListResponse(appointments = appointmentModels)))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Failed to fetch appointments"))
+        }
+    }
+
+    // Fetch schemes for a patient
+    suspend fun fetchSchemesForPatient(patientId: Int): Flow<Resource<SchemeListResponse>> = flow {
+        try {
+            emit(Resource.Loading())
+            
+            // First check if schemes already exist in local database
+            val existingSchemes = schemeDao.getSchemesByPatientId(patientId).first()
+            
+            if (existingSchemes.isNotEmpty()) {
+                // Return existing schemes from local database
+                val schemeResponses = existingSchemes.map { scheme ->
+                    SchemeResponse(
+                        schemeId = scheme.serverId,
+                        patientId = scheme.patientId,
+                        schemeName = scheme.schemeName,
+                        state = scheme.state,
+                        description = scheme.description,
+                        eligibility = scheme.eligibility,
+                        howToApply = scheme.howToApply
+                    )
+                }
+                emit(Resource.Success(SchemeListResponse(data = schemeResponses)))
+                return@flow
+            }
+
+            // If no schemes exist locally, fetch from server
+            val response = patientService.fetchSchemes(patientId)
+            
+            if (response.isSuccessful) {
+                response.body()?.let { schemeListResponse ->
+                    // Save schemes to local database
+                    val schemesToSave = schemeListResponse.data.map { schemeResponse ->
+                        Scheme(
+                            patientId = schemeResponse.patientId,
+                            schemeName = schemeResponse.schemeName,
+                            state = schemeResponse.state,
+                            description = schemeResponse.description,
+                            eligibility = schemeResponse.eligibility,
+                            howToApply = schemeResponse.howToApply,
+                            needsUpload = false,
+                            needsDownload = false,
+                            lastDownloadedAt = Date(),
+                            serverId = schemeResponse.schemeId
+                        )
+                    }
+                    
+                    if (schemesToSave.isNotEmpty()) {
+                        schemeDao.insertSchemes(schemesToSave)
+                    }
+                    
+                    emit(Resource.Success(schemeListResponse))
+                } ?: emit(Resource.Error("Empty response from server"))
+            } else {
+                emit(Resource.Error("Failed to fetch schemes: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            emit(Resource.Error("Failed to fetch schemes: ${e.message}"))
         }
     }
 }

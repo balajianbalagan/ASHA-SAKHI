@@ -86,5 +86,11 @@ object DatabaseModule {
         return database.infantDao()
     }
     
+    @Provides
+    @Singleton
+    fun provideSchemeDao(database: AshaSakhiDatabase): SchemeDao {
+        return database.schemeDao()
+    }
+    
     // We'll add more providers here as needed (DAOs, Repositories, etc.)
 } 

@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -185,9 +186,10 @@ fun PatientDetailsScreen(
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
+                    // First Row: Medical History, Risk Analysis, Suggest Diet
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Button(
                             onClick = { navController.navigate("${Screen.MedicalHistory.route}/${patientId}") },
@@ -202,13 +204,12 @@ fun PatientDetailsScreen(
                                 Icon(
                                     Icons.Default.Favorite,
                                     contentDescription = "Medical History",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text("Medical History")
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Medical History", fontSize = 15.sp, textAlign = TextAlign.Center)
                             }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = { navController.navigate("${Screen.PregnancyRiskAssessment.route}/$patientId") },
                             modifier = Modifier.weight(1f),
@@ -222,18 +223,12 @@ fun PatientDetailsScreen(
                                 Icon(
                                     Icons.Default.Warning,
                                     contentDescription = "Risk Analysis",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text("Risk Analysis")
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Risk Analysis", fontSize = 15.sp, textAlign = TextAlign.Center)
                             }
                         }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
                         Button(
                             onClick = { navController.navigate("${Screen.DietSuggestions.route}/${patientId}/${patient!!.mobileNumber}") },
                             modifier = Modifier.weight(1f),
@@ -247,13 +242,38 @@ fun PatientDetailsScreen(
                                 Icon(
                                     Icons.Default.List,
                                     contentDescription = "Suggest Diet",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text("Suggest Diet")
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Suggest Diet", fontSize = 15.sp, textAlign = TextAlign.Center)
                             }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    // Second Row: Schemes, Appointments
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Button(
+                            onClick = { navController.navigate(Screen.PatientSchemes.createRoute(patientId)) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CustomGreen
+                            )
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.Assignment,
+                                    contentDescription = "Schemes",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Schemes", fontSize = 15.sp, textAlign = TextAlign.Center)
+                            }
+                        }
                         Button(
                             onClick = { navController.navigate(Screen.Appointments.createRoute(patientId)) },
                             modifier = Modifier.weight(1f),
@@ -267,10 +287,10 @@ fun PatientDetailsScreen(
                                 Icon(
                                     Icons.Default.CalendarToday,
                                     contentDescription = "Appointments",
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(20.dp)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text("Appointments")
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text("Appointments", fontSize = 15.sp, textAlign = TextAlign.Center)
                             }
                         }
                     }

@@ -67,4 +67,19 @@
     <string name="download_complete">Download Completed</string>
     <string name="cancelled">Cancelled</string>
     <string name="cancel">Cancel</string>
+    <!-- Chat Settings -->
+    <string name="ask_random_question">Ask Random Question</string>
+    <string name="preset_questions">Preset Questions</string>
+    <string name="select_language">Select Language</string>
+    <!-- English Preset Questions -->
+    <string name="preset_question_1">What are the signs of labor?</string>
+    <string name="preset_question_2">How much weight should I gain during pregnancy?</string>
+    <string name="preset_question_3">What foods should I avoid during pregnancy?</string>
+    <string name="preset_question_4">How often should I visit the doctor?</string>
+    <string name="preset_question_5">What exercises are safe during pregnancy?</string>
+    <string name="preset_question_6">What are the warning signs I should watch for?</string>
+    <string name="preset_question_7">How can I prepare for breastfeeding?</string>
+    <string name="preset_question_8">What should I pack for the hospital?</string>
+    <string name="preset_question_9">How can I manage morning sickness?</string>
+    <string name="preset_question_10">What are the benefits of prenatal vitamins?</string>
 </resources> 
