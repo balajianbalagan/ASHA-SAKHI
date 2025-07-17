@@ -61,7 +61,7 @@ fun RegionalMapScreen(
             mapLocations = locations
             // Update map with new locations if map is initialized
             if (mapInitialized && webView != null) {
-                updateMapWithLocations(webView, mapLocations)
+                updateMapWithLocations(webView, mapLocations, userLocation)
             }
         }
     }
@@ -220,7 +220,7 @@ fun RegionalMapScreen(
                                             )
                                             
                                             // Add locations to the map
-                                            updateMapWithLocations(this@apply, mapLocations)
+                                            updateMapWithLocations(this@apply, mapLocations, userLocation)
                                         }
                                     }
                                 }
@@ -316,26 +316,45 @@ fun RegionalMapScreen(
 }
 
 // Helper function to update map with locations
-private fun updateMapWithLocations(webView: WebView?, locations: List<MapLocation>) {
-    if (webView == null || locations.isEmpty()) return
-    
-    // Convert locations to JSON
-    val locationsJson = locations.joinToString(",") { location ->
+private fun updateMapWithLocations(webView: WebView?, locations: List<MapLocation>, userLocation: Location?) {
+    if (webView == null) return
+
+    val locationsJson = locations.map { location ->
+        val type = location.type?.name ?: "PATIENT"
         """
         {
-            "id": "${location.id}",
-            "name": "${location.name}",
-            "latitude": ${location.latitude},
-            "longitude": ${location.longitude},
-            "type": "${location.type}",
-            "description": "${location.description}",
-            "riskLevel": "${location.riskLevel}"
+            \"id\": \"${location.id}\",
+            \"name\": \"${location.name}\",
+            \"latitude\": ${location.latitude},
+            \"longitude\": ${location.longitude},
+            \"type\": \"$type\",
+            \"description\": \"${location.description}\",
+            \"riskLevel\": \"${location.riskLevel}\"
+        }
+        """.trimIndent()
+    }.joinToString(",")
+
+    val userLocationJson = userLocation?.let {
+        """
+        {
+            \"id\": \"user_location\",
+            \"name\": \"You\",
+            \"latitude\": ${it.latitude},
+            \"longitude\": ${it.longitude},
+            \"type\": \"USER\",
+            \"description\": \"Current Location\",
+            \"riskLevel\": \"\"
         }
         """.trimIndent()
     }
-    
-    // Call JavaScript function to add locations
-    val script = "addLocations([$locationsJson]);"
+
+    val allLocationsJson = if (userLocationJson != null) {
+        "[$locationsJson,$userLocationJson]"
+    } else {
+        "[$locationsJson]"
+    }
+
+    val script = "addLocations($allLocationsJson);"
     webView.evaluateJavascript(
         "if (typeof addLocations === 'function') { $script }",
         null
@@ -463,9 +482,37 @@ private fun getMapHtml(): String {
                 .location-button:hover {
                     background: #f0f0f0;
                 }
+                .map-legend {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: black;
+                    border: 1px solid #ccc;
+                    padding: 10px;
+                    font-size: 14px;
+                    border-radius: 4px;
+                    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+                    color: white;
+                    z-index: 2000;
+                }
+                .legend-dot {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    margin-right: 6px;
+                    vertical-align: middle;
+                }
             </style>
         </head>
         <body>
+            <div class="map-legend">
+              <div><span class="legend-dot" style="background-color: red;"></span> Hospital</div>
+              <div><span class="legend-dot" style="background-color: blue;"></span> Patient</div>
+              <div><span class="legend-dot" style="background-color: purple;"></span> College</div>
+              <div><span class="legend-dot" style="background-color: gray;"></span> Other</div>
+              <div><span class="legend-dot" style="background-color: green;"></span> You</div>
+            </div>
             <div id="map" class="map"></div>
             <script>
                 // Global map variable
@@ -597,7 +644,7 @@ private fun getMapHtml(): String {
                             image: new ol.style.Circle({
                                 radius: 8,
                                 fill: new ol.style.Fill({
-                                    color: red
+                                    color: 'green' // Changed to green for user location
                                 }),
                                 stroke: new ol.style.Stroke({
                                     color: '#ffffff',
@@ -665,7 +712,7 @@ private fun getMapHtml(): String {
                     // Add a popup with location info
                     const popup = document.createElement('div');
                     popup.className = 'ol-popup';
-                    popup.innerHTML = '<div class="popup-content">' + icon + ' ' + location.name + '<br>' + location.description + '</div>';
+                    popup.innerHTML = '<div class="popup-content">' + '👤 ' + 'You' + '<br>' + 'Current Location' + '</div>';
                     document.body.appendChild(popup);
                     
                     locationOverlay = new ol.Overlay({

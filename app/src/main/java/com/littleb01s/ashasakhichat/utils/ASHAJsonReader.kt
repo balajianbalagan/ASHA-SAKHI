@@ -53,16 +53,19 @@ object ASHAJsonReader {
         
         // Parse different sections of ASHA guidelines
         parsePregnancyCare(jsonObject, chunks)
-        parseDeliveryCare(jsonObject, chunks)
-        parsePostpartumCare(jsonObject, chunks)
         parseNewbornCare(jsonObject, chunks)
         parseImmunization(jsonObject, chunks)
         parseNutrition(jsonObject, chunks)
-        parseEmergencyCare(jsonObject, chunks)
-        parseGeneralGuidelines(jsonObject, chunks)
         parsePregnancySchemes(jsonObject, chunks)
+        parseFinancialSupportSchemes(jsonObject, chunks)
         parseClinicalProtocols(jsonObject, chunks)
-        parseHealthcareInfrastructure(jsonObject, chunks)
+
+        Log.d(TAG, "Total chunks created: ${chunks.size}")
+        if (chunks.isNotEmpty()) {
+            Log.d(TAG, "Sample chunk: ${chunks[0]}")
+        } else {
+            Log.w(TAG, "No chunks created from JSON!")
+        }
         
         return chunks
     }
@@ -76,7 +79,7 @@ object ASHAJsonReader {
                 ancVisits.keys().forEach { key ->
                     val visit = ancVisits.getJSONObject(key)
                     val chunk = createPregnancyChunk(visit, "anc_visit_$key")
-                    chunks.add(chunk)
+                    addChunkWithSizeLimit(chunk, chunks)
                 }
             }
 
@@ -86,7 +89,7 @@ object ASHAJsonReader {
                 complications.keys().forEach { key ->
                     val complication = complications.getJSONObject(key)
                     val chunk = createComplicationChunk(complication, "complication_$key")
-                    chunks.add(chunk)
+                    addChunkWithSizeLimit(chunk, chunks)
                 }
             }
 
@@ -94,14 +97,14 @@ object ASHAJsonReader {
             val general = pregnancySection.optJSONObject("general_care")
             if (general != null) {
                 val chunk = createGeneralPregnancyChunk(general)
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
 
             // Parse abortion care
             val abortion = pregnancySection.optJSONObject("abortion_care")
             if (abortion != null) {
                 val chunk = createAbortionCareChunk(abortion)
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -112,7 +115,7 @@ object ASHAJsonReader {
             deliverySection.keys().forEach { key ->
                 val procedure = deliverySection.getJSONObject(key)
                 val chunk = createDeliveryChunk(procedure, "delivery_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -123,7 +126,7 @@ object ASHAJsonReader {
             postpartumSection.keys().forEach { key ->
                 val care = postpartumSection.getJSONObject(key)
                 val chunk = createPostpartumChunk(care, "postpartum_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -134,7 +137,7 @@ object ASHAJsonReader {
             newbornSection.keys().forEach { key ->
                 val care = newbornSection.getJSONObject(key)
                 val chunk = createNewbornChunk(care, "newborn_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -145,7 +148,7 @@ object ASHAJsonReader {
             immunizationSection.keys().forEach { key ->
                 val item = immunizationSection.getJSONObject(key)
                 val chunk = createImmunizationChunk(item, "immunization_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -156,7 +159,7 @@ object ASHAJsonReader {
             nutritionSection.keys().forEach { key ->
                 val guideline = nutritionSection.getJSONObject(key)
                 val chunk = createNutritionChunk(guideline, "nutrition_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -169,7 +172,7 @@ object ASHAJsonReader {
                 emergencies.keys().forEach { key ->
                     val emergency = emergencies.getJSONObject(key)
                     val chunk = createEmergencyChunk(emergency, "emergency_$key")
-                    chunks.add(chunk)
+                    addChunkWithSizeLimit(chunk, chunks)
                 }
             }
         }
@@ -181,7 +184,7 @@ object ASHAJsonReader {
             generalSection.keys().forEach { key ->
                 val guideline = generalSection.getJSONObject(key)
                 val chunk = createGeneralGuidelineChunk(guideline, "general_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -194,7 +197,21 @@ object ASHAJsonReader {
                 category.keys().forEach { schemeKey ->
                     val scheme = category.getJSONObject(schemeKey)
                     val chunk = createPregnancySchemeChunk(scheme, "scheme_${schemeCategory}_$schemeKey")
-                    chunks.add(chunk)
+                    addChunkWithSizeLimit(chunk, chunks)
+                }
+            }
+        }
+    }
+
+    private fun parseFinancialSupportSchemes(jsonObject: JSONObject, chunks: MutableList<String>) {
+        val pregnancySchemesSection = jsonObject.optJSONObject("pregnancy_schemes")
+        if (pregnancySchemesSection != null) {
+            val financialSupportSection = pregnancySchemesSection.optJSONObject("financial_support_schemes")
+            if (financialSupportSection != null) {
+                financialSupportSection.keys().forEach { schemeKey ->
+                    val scheme = financialSupportSection.getJSONObject(schemeKey)
+                    val chunk = createFinancialSupportSchemeChunk(scheme, "financial_support_$schemeKey")
+                    addChunkWithSizeLimit(chunk, chunks)
                 }
             }
         }
@@ -206,7 +223,7 @@ object ASHAJsonReader {
             protocolsSection.keys().forEach { key ->
                 val protocol = protocolsSection.getJSONObject(key)
                 val chunk = createClinicalProtocolChunk(protocol, "protocol_$key")
-                chunks.add(chunk)
+                addChunkWithSizeLimit(chunk, chunks)
             }
         }
     }
@@ -215,7 +232,7 @@ object ASHAJsonReader {
         val infrastructureSection = jsonObject.optJSONObject("healthcare_infrastructure")
         if (infrastructureSection != null) {
             val chunk = createHealthcareInfrastructureChunk(infrastructureSection)
-            chunks.add(chunk)
+            addChunkWithSizeLimit(chunk, chunks)
         }
     }
 
@@ -257,9 +274,9 @@ object ASHAJsonReader {
             })
             put("procedures", JSONArray())
             put("warnings", JSONArray())
-            put("section_type", "pregnancy_complication")
+            put("section_type", "pregnancy_care")
             put("chunk_id", id)
-            put("complication_type", "hypertension")
+            put("complication_type", id.removePrefix("complication_"))
         }.toString()
     }
 
@@ -454,7 +471,22 @@ object ASHAJsonReader {
             put("warnings", JSONArray())
             put("section_type", "pregnancy_scheme")
             put("chunk_id", id)
-            put("scheme_type", "maternal")
+            // Extract scheme type from id, e.g., "scheme_maternal_schemes_jssk" -> "maternal_schemes"
+            val schemeType = id.removePrefix("scheme_").substringBefore("_")
+            put("scheme_type", schemeType)
+        }.toString()
+    }
+
+    private fun createFinancialSupportSchemeChunk(scheme: JSONObject, id: String): String {
+        return JSONObject().apply {
+            put("title", scheme.optString("title", "Financial Support Scheme"))
+            put("content", scheme.optString("description", ""))
+            put("key_points", JSONArray())
+            put("guidelines", JSONArray())
+            put("procedures", JSONArray())
+            put("warnings", JSONArray())
+            put("section_type", "financial_support_scheme")
+            put("chunk_id", id)
         }.toString()
     }
 
@@ -553,5 +585,28 @@ object ASHAJsonReader {
             put("section_type", "healthcare_infrastructure")
             put("chunk_id", "healthcare_infrastructure")
         }.toString()
+    }
+
+    // Helper to split oversized chunks based on character count (hard 1000 char limit)
+    private fun addChunkWithSizeLimit(chunk: String, chunks: MutableList<String>, maxChars: Int = 1000) {
+        val obj = JSONObject(chunk)
+        val content = obj.optString("content", "")
+        if (content.length <= maxChars) {
+            chunks.add(chunk)
+        } else {
+            var start = 0
+            var partIdx = 1
+            while (start < content.length) {
+                val end = minOf(start + maxChars, content.length)
+                val partContent = content.substring(start, end)
+                val partObj = JSONObject(obj.toString())
+                partObj.put("content", partContent)
+                partObj.put("chunk_id", obj.optString("chunk_id") + "_part$partIdx")
+                chunks.add(partObj.toString())
+                start = end
+                partIdx++
+            }
+            Log.w(TAG, "Chunk too large, split into ${partIdx - 1} parts: ${obj.optString("title")}")
+        }
     }
 } 

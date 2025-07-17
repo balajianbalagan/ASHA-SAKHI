@@ -187,24 +187,33 @@ class ChatViewModel @Inject constructor(
                     _showDownloadDialog.value = true
                     _isLLMInitialized.value = false
                 } else {
-                    Log.d("ChatViewModel", "All files present, initializing LLM")
+                    Log.d("ChatViewModel", "All files present, initializing LLM and memory")
                     try {
-                        // Initialize LLM
+                        // 1. Initialize LLM
                         _initializationMessage.value = "Initializing AI model..."
                         llmDataSource.setLLMInference(context)
-                        
-                        // Initialize models and memorize content
-                        _initializationMessage.value = "Loading ASHA guidelines..."
+                        Log.d("ChatViewModel", "LLM inference initialized")
+                        // 2. Initialize embedder and semantic memory
+                        _initializationMessage.value = "Initializing semantic memory..."
                         llmDataSource.initializeModels()
-                        val jsonFile = File(llmDir, "asha_guidelines.json")
-                        val pdfFile = File(llmDir, "asha-kb.pdf")
-                        llmDataSource.memorizeContent(jsonFile.path, pdfFile.path)
-                        
-                        _isLLMInitialized.value = true
-                        Log.d("ChatViewModel", "LLM initialization successful, navigating to chat")
-                        navController?.navigate(Screen.Chat.route)
+                        Log.d("ChatViewModel", "Semantic memory initialized")
+                        // 3. Memorize content
+                        _initializationMessage.value = "Loading ASHA guidelines..."
+                        Log.d("ChatViewModel", "Calling memorizeContent()...")
+                        llmDataSource.memorizeContent()
+                        Log.d("ChatViewModel", "Content memorized in vector store")
+                        // 4. Check memory readiness
+                        if (llmDataSource.isMemoryReady()) {
+                            _isLLMInitialized.value = true
+                            Log.d("ChatViewModel", "LLM and memory ready, navigating to chat")
+                            navController?.navigate(Screen.Chat.route)
+                        } else {
+                            Log.e("ChatViewModel", "LLM or memory not ready after initialization!")
+                            _isLLMInitialized.value = false
+                            _showDownloadDialog.value = true
+                        }
                     } catch (e: Exception) {
-                        Log.e("ChatViewModel", "Error initializing LLM", e)
+                        Log.e("ChatViewModel", "Error initializing LLM or memory", e)
                         _isLLMInitialized.value = false
                         _showDownloadDialog.value = true
                     }
@@ -237,7 +246,7 @@ class ChatViewModel @Inject constructor(
                 val llmDir = context.getExternalFilesDir("llm")
                 val jsonFile = File(llmDir, "asha_guidelines.json")
                 val pdfFile = File(llmDir, "asha-kb.pdf")
-                llmDataSource.memorizeContent(jsonFile.path, pdfFile.path)
+//                llmDataSource.memorizeContent(jsonFile.path, pdfFile.path)
                 Log.d("ChatViewModel", "Successfully initialized ASHA guidelines content")
             } catch (e: Exception) {
                 Log.e("ChatViewModel", "Error initializing guidelines content: ${e.message}")

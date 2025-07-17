@@ -51,12 +51,14 @@ class MediapipeLLMDataSource @Inject constructor(
         if (isInitialized) return
 
         try {
+            Log.d(TAG, "Initializing embedder and semantic memory...")
             val llmDir = File(context.getExternalFilesDir(null), "llm")
             val geckoModelFile = File(llmDir, "Gecko_1024_quant.tflite")
             val sentencepieceFile = File(llmDir, "sentencepiece.model")
 
             // Verify files exist
             if (!geckoModelFile.exists() || !sentencepieceFile.exists()) {
+                Log.e(TAG, "Required model files not found: ${geckoModelFile.path}, ${sentencepieceFile.path}")
                 throw IllegalStateException("Required model files not found")
             }
 
@@ -74,9 +76,9 @@ class MediapipeLLMDataSource @Inject constructor(
             }
 
             isInitialized = true
-            Log.d("MediapipeLLMDataSource", "Successfully initialized models")
+            Log.d(TAG, "Successfully initialized embedder and semantic memory")
         } catch (e: Exception) {
-            Log.e("MediapipeLLMDataSource", "Error initializing models: ${e.message}")
+            Log.e(TAG, "Error initializing models: ${e.message}")
             throw e
         }
     }
@@ -108,24 +110,55 @@ class MediapipeLLMDataSource @Inject constructor(
         }
     }
 
-    suspend fun memorizeContent(jsonPath: String, pdfFallbackPath: String) {
+    /**
+     * Memorizes the ASHA guidelines content from the default app storage location.
+     * This should be called after initializeModels() and LLM inference are ready.
+     */
+    suspend fun memorizeContent() {
         if (!isInitialized) {
+            Log.e(TAG, "Models not initialized. Call initializeModels() first.")
             throw IllegalStateException("Models not initialized. Call initializeModels() first.")
         }
-
         try {
-            // Try JSON first, with PDF fallback
-            val chunks = ASHAJsonReader.readASHAGuidelines(context, jsonPath, pdfFallbackPath)
+            val llmDir = File(context.getExternalFilesDir(null), "llm")
+            val jsonFile = File(llmDir, "asha_guidelines.json")
+            val pdfFile = File(llmDir, "asha-kb.pdf")
+            Log.d(TAG, "Reading ASHA guidelines for memorization from ${jsonFile.path} and ${pdfFile.path} ...")
+            val chunks = ASHAJsonReader.readASHAGuidelines(context, jsonFile.path, pdfFile.path)
+            Log.d(TAG, "Number of chunks to memorize: ${chunks.size}")
             if (chunks.isEmpty()) {
+                Log.e(TAG, "No content chunks extracted from JSON or PDF")
                 throw IllegalStateException("No content chunks extracted from JSON or PDF")
             }
-
-            // Memorize the structured chunks
-            semanticMemory.recordBatchedMemoryItems(ImmutableList.copyOf(chunks))
+            Log.d(TAG, "Sample chunk for memorization: ${chunks[0]}")
+            // Ensure all chunks are at most 1000 characters
+            val limitedChunks = mutableListOf<String>()
+            for (chunk in chunks) {
+                if (chunk.length <= 1000) {
+                    limitedChunks.add(chunk)
+                } else {
+                    var start = 0
+                    var partIdx = 1
+                    while (start < chunk.length) {
+                        val end = minOf(start + 1000, chunk.length)
+                        val part = chunk.substring(start, end)
+                        // Optionally, add a suffix to indicate part number
+                        // But since these are JSON strings, chunk_id is inside the JSON
+                        limitedChunks.add(part)
+                        start = end
+                        partIdx++
+                    }
+                }
+            }
+            limitedChunks.forEach { chunk ->
+                Log.d(TAG, "Chunk size': ${chunk.length}")
+            }
+            Log.d(TAG, "Starting embedding and storing chunks in vector store...");
+            semanticMemory.recordBatchedMemoryItems(ImmutableList.copyOf(limitedChunks))
             isContentMemorized = true
-            Log.d("MediapipeLLMDataSource", "Successfully memorized ${chunks.size} structured chunks from JSON/PDF")
+            Log.d(TAG, "Successfully memorized ${chunks.size} structured chunks from JSON/PDF")
         } catch (e: Exception) {
-            Log.e("MediapipeLLMDataSource", "Error memorizing content: ${e.message}")
+            Log.e(TAG, "Error memorizing content: ${e.message}")
             throw e
         }
     }
@@ -142,8 +175,8 @@ class MediapipeLLMDataSource @Inject constructor(
             val retrievalRequest = RetrievalRequest.create(
                 query,
                 RetrievalConfig.create(
-                    1, // topK - increased to get more context
-                    0.7f, // minSimilarityScore - slightly lowered to get more matches
+                    5, // topK - increased to get more context
+                    0.3f, // minSimilarityScore - slightly lowered to get more matches
                     RetrievalConfig.TaskType.RETRIEVAL_QUERY
                 )
             )
@@ -158,7 +191,7 @@ class MediapipeLLMDataSource @Inject constructor(
             // Log the retrieved context
             Log.d("MediapipeLLMDataSource", "Retrieved ${relevantContext.size} relevant chunks for query: $query")
             relevantContext.forEachIndexed { index, context ->
-                Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(200)}...")
+                Log.d("MediapipeLLMDataSource", "Relevant chunk $index: ${context.take(400)}...")
             }
             
             // Parse JSON chunks and extract relevant information
@@ -272,12 +305,14 @@ class MediapipeLLMDataSource @Inject constructor(
                     appendLine("Content: ${chunk["content"]}")
                 }
             }
+
+            val trimmedContext = contextText.take(200);
             
             val prompt = """
                 $systemPrompt
                 
                 Relevant context from ASHA guidelines (structured):
-                $contextText
+                $trimmedContext
                 
                 User's query: $query
                 
@@ -290,7 +325,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
             """.trimIndent()
             
-            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(200)}...")
             
             val response = withContext(Dispatchers.IO) {
                 try {
@@ -537,7 +572,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
             """.trimIndent()
             
-            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+            Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(200)}...")
             
             val response = withContext(Dispatchers.IO) {
                 try {
@@ -623,6 +658,7 @@ class MediapipeLLMDataSource @Inject constructor(
     }
 
     fun setLLMInference(@ApplicationContext context: Context)  {
+        
             Log.d(TAG, "Starting LLM initialization...")
             val llmDir = File(context.getExternalFilesDir(null), "llm")
             if (!llmDir.exists()) {
@@ -642,7 +678,7 @@ class MediapipeLLMDataSource @Inject constructor(
             try {
                 Log.d(TAG, "Creating LLM options...")
                 val options = LlmInference.LlmInferenceOptions.builder()
-                    .setModelPath(modelFile.path)
+                    .setModelPath(modelFile.path).setMaxTopK(1024)
 
                     .build()
 
@@ -651,6 +687,7 @@ class MediapipeLLMDataSource @Inject constructor(
                 val llm = LlmInference.createFromOptions(context, options)
                 Log.d(TAG, "LLM instance created successfully")
                 llmInference = llm
+                // Do NOT call memorizeContent() here; it must be called after initializeModels() externally
             } catch (e: Exception) {
                 Log.e(TAG, "Error initializing LLM", e)
                 throw e
@@ -815,7 +852,7 @@ class MediapipeLLMDataSource @Inject constructor(
                     If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
                 """.trimIndent()
                 
-                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(200)}...")
                 
                 llmInference?.generateResponseAsync(prompt, progressListener)
                     ?: throw IllegalStateException("LLM not initialized")
@@ -985,7 +1022,7 @@ class MediapipeLLMDataSource @Inject constructor(
                     If the context doesn't contain relevant information, say so. Provide a complete response with proper conclusion. Do not cut off mid-sentence.
                 """.trimIndent()
                 
-                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(500)}...")
+                Log.d("MediapipeLLMDataSource", "Sending prompt to LLM: ${prompt.take(200)}...")
                 
                 llmInference?.generateResponseAsync(prompt, progressListener)
                     ?: throw IllegalStateException("LLM not initialized")
@@ -1041,6 +1078,10 @@ class MediapipeLLMDataSource @Inject constructor(
             }
         }
         return "I am ASHA Sakhi! Ready to answer your queries!\n\n**💡 AI Generated Response**";
+    }
+
+    fun isMemoryReady(): Boolean {
+        return isInitialized && isContentMemorized
     }
 }
 
