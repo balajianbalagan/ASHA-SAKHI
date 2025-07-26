@@ -1,4 +1,4 @@
-# ASHA Sakhi Chat 💡
+# ASHA Sakhi - Edge AI Copilot for Safer Motherhood! 💡
 
 ## Demo Video
 
